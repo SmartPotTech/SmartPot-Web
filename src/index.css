@@ -1,11 +1,20 @@
+/* CSS HEX */
+* {
+  --main-colour: #00B074ff;
+  --hover-main-colour: #D9F3EAff;
+  --secondary-color: #2D9CDBff;
+  --hover-secondary-color: #DFF0FAff;
+  --page-background: #F3F2F7ff;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: rgba(26, 26, 26, 0.87);
+  background-color: var(--page-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;

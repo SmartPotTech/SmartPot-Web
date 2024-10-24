@@ -1,0 +1,56 @@
+/* CSS HEX */
+* {
+    --main-colour: #00B074ff;
+    --hover-main-colour: #D9F3EAff;
+    --secondary-color: #2D9CDBff;
+    --hover-secondary-color: #DFF0FAff;
+    --page-background: #F3F2F7ff;
+    --element-bg: #FFFFFFff;
+
+}
+
+/* Estilos generales para el cuerpo */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos para la sidebar */
+.sidebar {
+    /* Altura completa */
+    height: 100%;
+    /* Ancho de la sidebar */
+    width: 250px;
+    /* Sidebar fija */
+    position: fixed;
+    top: 0;
+    left: 0;
+    /* Color de fondo */
+    background-color: var(--element-bg);
+    /* Espaciado superior */
+    padding-top: 20px;
+}
+
+/* Estilos para los enlaces dentro de la sidebar */
+.item a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #111;
+    display: block;
+}
+
+/* Estilos para los enlaces al pasar el cursor */
+.item a:hover {
+    color: var(--main-colour);
+    background-color: var(--hover-main-colour);
+}
+
+/* Estilos para el contenido principal */
+.main-content {
+    /* Espacio para la sidebar */
+    margin-left: 260px;
+    padding: 20px;
+    background-color: var(--page-background);
+}
