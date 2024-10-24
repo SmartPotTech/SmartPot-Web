@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import "../styles/root.css"
+import "../assets/styles/root.css"
 
 export default function Root() {
     return (

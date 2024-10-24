@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Root from './routes/root.tsx'
+import Root from '../routes/root.tsx'
 
-import './App.css'
-import ErrorPage from './error-page.tsx'
-import PanelEstado from './routes/PanelEstado.tsx';
-import DatosHistoricos from './routes/DatosHistoricos.tsx';
+import '../assets/styles/app.css'
+import ErrorPage from '../error-page.tsx'
+import PanelEstado from '../routes/PanelEstado.tsx';
+import DatosHistoricos from '../routes/DatosHistoricos.tsx';
 
 function App() {
 
