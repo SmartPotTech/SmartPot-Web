@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Root from '../routes/root.tsx'
 
 import '../assets/styles/app.css'
-import ErrorPage from '../error-page.tsx'
+import ErrorPage from '../routes/error-page.tsx'
 import PanelEstado from '../routes/PanelEstado.tsx';
 import DatosHistoricos from '../routes/DatosHistoricos.tsx';
 
