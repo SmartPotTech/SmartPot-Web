@@ -1,11 +1,12 @@
 import { Link, Outlet } from "react-router-dom";
 import "../assets/styles/root.css"
+import SessionBar from "../components/SessionBar";
 
 export default function Root() {
-    return (
-      <>
+  return (
+    <>
+      <div className="content">
         <div id="sidebar" className="sidebar">
-
           <nav>
             <ul>
               <li className="item">
@@ -16,11 +17,15 @@ export default function Root() {
               </li>
             </ul>
           </nav>
-
         </div>
-        <div id="detail" className="main-content">
+
+        <SessionBar />
+        <div id="detail" className="mainContent">
+
+
           <Outlet />
         </div>
-      </>
-    );
-  }
+      </div>
+    </>
+  );
+}

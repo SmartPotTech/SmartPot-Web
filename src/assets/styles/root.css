@@ -16,6 +16,11 @@ body {
     padding: 0;
 }
 
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Estilos para la sidebar */
 .sidebar {
     /* Altura completa */
@@ -30,6 +35,8 @@ body {
     background-color: var(--element-bg);
     /* Espaciado superior */
     padding-top: 20px;
+
+    background-color: aqua;
 }
 
 /* Estilos para los enlaces dentro de la sidebar */
@@ -48,8 +55,10 @@ body {
 }
 
 /* Estilos para el contenido principal */
-.main-content {
+.mainContent {
     /* Espacio para la sidebar */
+    box-sizing: border-box;
+    width: 100%;
     margin-left: 260px;
     padding: 20px;
     background-color: var(--page-background);

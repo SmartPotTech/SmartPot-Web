@@ -5,6 +5,8 @@ import '../assets/styles/app.css'
 import ErrorPage from '../routes/error-page.tsx'
 import PanelEstado from '../routes/PanelEstado.tsx';
 import DatosHistoricos from '../routes/DatosHistoricos.tsx';
+import { useState } from 'react';
+import { AuthProvider } from '../context/AuthContext.tsx';
 
 function App() {
 
@@ -30,7 +32,12 @@ function App() {
 
   return (
     <>
+
+    <AuthProvider>
       <RouterProvider router={router} />
+    </AuthProvider>
+
+
       {/* <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
