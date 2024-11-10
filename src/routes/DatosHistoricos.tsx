@@ -48,6 +48,7 @@ export default function DatosHistoricos() {
                 <div className="CropData">
                     <h3>Crop</h3>
                     <p>{crop ? crop.id : "Loading..."}</p>
+                    <p>{crop ? crop.status : "Loading..."}</p>
                 </div>
 
                 <table className="table CropHistory">
