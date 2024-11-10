@@ -61,7 +61,7 @@ export function AuthProvider( { children }: Props ) {
         console.log("Trying to login;")
 
         let authToken: string = "";
-        await axios.post("http://localhost:8091/auth/login", 
+        await axios.post("https://api-smartpot.onrender.com/auth/login",
             {
                 email, 
                 password 
@@ -88,7 +88,7 @@ export function AuthProvider( { children }: Props ) {
 
             console.log("Verify token...")
 
-            await axios.get("http://localhost:8091/auth/verify", {
+            await axios.get("https://api-smartpot.onrender.com/auth/verify", {
                 headers: {
                     Authorization: "Bearer " + authToken,
                 }
