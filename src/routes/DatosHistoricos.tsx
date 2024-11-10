@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+//import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext"; // Ajusta la ruta según corresponda
 import { getCrop, getHistoryFromCrop } from "../api/Api"; // Ajusta la ruta según corresponda
 import { Crop, History } from "../types/ApiResponses";
@@ -6,7 +7,7 @@ import { Crop, History } from "../types/ApiResponses";
 
 export default function DatosHistoricos() {
     const [history, setHistory] = useState<History[]>([]);
-    const [crop, setCrop] = useState<Crop>();
+    const [crop, setCrop] = useState<Crop | null>(null);
 
     const { user, login } = useAuthContext();
 
@@ -14,7 +15,7 @@ export default function DatosHistoricos() {
         // Función de login inicial
         const loginAndFetchData = async () => {
             // Email, Password
-            await login("", "");
+            await login("juan.perez@example.com", "Contraseña1");
         };
 
         loginAndFetchData();
@@ -46,12 +47,13 @@ export default function DatosHistoricos() {
 
                 <div className="CropData">
                     <h3>Crop</h3>
+                    <p>{crop ? crop.id : "Loading..."}</p>
                 </div>
 
                 <table className="table CropHistory">
                     <thead>
-                        <tr>
-                            <th scope="col">#</th>
+                    <tr>
+                        <th scope="col">#</th>
                             <th scope="col">Atmosphere</th>
                             <th scope="col">Brightness</th>
                             <th scope="col">Humidity</th>
