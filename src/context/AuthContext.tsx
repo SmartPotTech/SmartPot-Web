@@ -1,4 +1,4 @@
-import axios, { AxiosHeaders } from "axios"
+import axios from "axios"
 import { createContext, ReactNode, useContext, useState } from "react"
 
 export type authContextType = {

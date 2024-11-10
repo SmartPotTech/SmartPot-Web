@@ -5,13 +5,12 @@
     --secondary-color: #2D9CDBff;
     --hover-secondary-color: #DFF0FAff;
     --page-background: #F3F2F7ff;
-    --element-bg: #FFFFFFff;
+    --element-bg: #d61616;
 
 }
 
 /* Estilos generales para el cuerpo */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -36,22 +35,24 @@ body {
     /* Espaciado superior */
     padding-top: 20px;
 
-    background-color: aqua;
+    background-color: #ffffff;
 }
 
-/* Estilos para los enlaces dentro de la sidebar */
-.item a {
-    padding: 10px 15px;
-    text-decoration: none;
-    font-size: 18px;
-    color: #111;
-    display: block;
+.title{
+    font-size: 32px;
+    padding-bottom: 20px;
 }
 
-/* Estilos para los enlaces al pasar el cursor */
-.item a:hover {
-    color: var(--main-colour);
-    background-color: var(--hover-main-colour);
+
+
+.ant-menu-item:hover {
+    background-color: #1890ff; /* Color de fondo al pasar el mouse */
+    color: #fff; /* Color del texto al pasar el mouse */
+}
+
+.ant-menu-item-selected {
+    background-color: #D9F3EA !important;
+    color: #29BD8A !important;
 }
 
 /* Estilos para el contenido principal */
