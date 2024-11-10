@@ -19,7 +19,7 @@ export default function DatosHistoricos() {
         };
 
         loginAndFetchData();
-    }, []);
+    }, [login]);
 
     useEffect(() => {
         // Efecto para realizar las peticiones cuando user.id esté disponible
@@ -38,7 +38,7 @@ export default function DatosHistoricos() {
         };
 
         fetchCropAndHistory();
-    }, [user.id]); // Ejecuta este efecto solo cuando user.id cambia
+    }, [user, user.id]); // Ejecuta este efecto solo cuando user.id cambia
 
     return (
         <>
