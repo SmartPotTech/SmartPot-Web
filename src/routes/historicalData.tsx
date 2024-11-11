@@ -1,34 +1,39 @@
-//import React, { useEffect, useState } from "react";
 import { useEffect, useState } from "react";
 import { useAuthContext } from "../context/AuthContext"; // Ajusta la ruta según corresponda
 import { getCrop, getHistoryFromCrop } from "../api/Api"; // Ajusta la ruta según corresponda
 import { Crop, History } from "../types/ApiResponses";
 
-
 export default function HistoricalData() {
     const [history, setHistory] = useState<History[]>([]);
     const [crop, setCrop] = useState<Crop | null>(null);
+    const [loadingData, setLoadingData] = useState<boolean>(true); // Estado de carga
+    const [loadingLogin, setLoadingLogin] = useState<boolean>(false); // Estado de carga de login
 
-    const { user, login } = useAuthContext();
+    const { user, login, isAuthenticated, loading } = useAuthContext();
 
+    // Efecto que se ejecuta al montar el componente, solo si el usuario no está autenticado
     useEffect(() => {
-        // Función de login inicial
         const loginAndFetchData = async () => {
-            try {
-                // Email, Password
-                await login("juan.perez@example.com", "Contraseña1");
-            } catch (error) {
-                console.error("Error during login: ", error);
+            if (!isAuthenticated && !loadingLogin) {
+                setLoadingLogin(true);
+                try {
+                    // Email, Password (normalmente esto sería un formulario)
+                    await login("juan.perez@example.com", "Contraseña1");
+                } catch (error) {
+                    console.error("Error during login: ", error);
+                } finally {
+                    setLoadingLogin(false);
+                }
             }
         };
-
         loginAndFetchData();
-    }, [login]);
+    }, [isAuthenticated, login, loadingLogin]);
 
+    // Efecto para obtener datos del cultivo y su historial una vez que el usuario esté autenticado
     useEffect(() => {
-        // Efecto para realizar las peticiones cuando user.id esté disponible
         const fetchCropAndHistory = async () => {
-            if (user.id != undefined) {
+            if (user?.id) {
+                setLoadingData(true); // Activar carga de datos
                 try {
                     const fetchedCrop = await getCrop(user);
                     setCrop(fetchedCrop);
@@ -36,13 +41,26 @@ export default function HistoricalData() {
                     const fetchedHistory = await getHistoryFromCrop(user, fetchedCrop);
                     setHistory(fetchedHistory);
                 } catch (error) {
-                    console.log("Error fetching crop or history data: ", error);
+                    console.error("Error fetching crop or history data: ", error);
+                } finally {
+                    setLoadingData(false); // Finaliza la carga de datos
                 }
             }
         };
 
-        fetchCropAndHistory();
-    }, [user, user.id]); // Ejecuta este efecto solo cuando user.id cambia
+        if (user?.id) {
+            fetchCropAndHistory();
+        }
+    }, [user]); // Dependemos solo de `user` porque es lo que determina si se puede hacer la solicitud
+
+    // Estado de carga de datos o login
+    if (loading || loadingLogin || loadingData) {
+        return <div>Loading...</div>; // Muestra un mensaje de carga mientras el proceso está en marcha
+    }
+
+    if (!user?.id) {
+        return <div>Failed to authenticate. Please try again.</div>; // Si no se puede autenticar, muestra un mensaje
+    }
 
     return (
         <>
@@ -83,7 +101,6 @@ export default function HistoricalData() {
                     ))}
                     </tbody>
                 </table>
-
             </main>
         </>
     );

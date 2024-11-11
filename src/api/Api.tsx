@@ -1,7 +1,7 @@
 import axios from "axios";
 import { UserData } from "../context/AuthContext";
 import { Crop, History } from "../types/ApiResponses";
-import { cropHistory, userCrop } from "./Endpoints";    
+import { cropHistory, userCrop } from "./Endpoints";
 
 export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<History[]> {
     let history: History[] = [];
@@ -9,7 +9,7 @@ export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<Hi
     console.log("[API/HISTORY] User id: " + user.id)
     console.log("[API/HISTORY] Crop id: " + crop.id)
 
-    await axios.get("https://api-smartpot.onrender.com/" + cropHistory + crop.id ,
+    await axios.get(`${cropHistory}${crop.id}`,
         getAuthHeaders(user)
     )
         .then(response => {
@@ -27,7 +27,7 @@ export async function getCrop(user: UserData): Promise<Crop> {
 
     console.log("[API/CROP] User id: " + user.id)
 
-    await axios.get("https://api-smartpot.onrender.com/" + userCrop + user.id,
+    await axios.get(`${userCrop}${user.id}`,
         getAuthHeaders(user)
     )
         .then(response => {
