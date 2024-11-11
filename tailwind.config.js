@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // Esta línea incluye tus archivos TSX
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
