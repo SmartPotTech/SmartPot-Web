@@ -69,7 +69,7 @@ export default function HistoricalData() {
 
                 <div className="CropData">
                     <h3>Crop</h3>
-                    <p>{crop ? crop.id : "Loading..."}</p>
+                    <p className="text-3xl font-bold underline">{crop ? crop.id : "Loading..."}</p>
                     <p>{crop ? crop.status : "Loading..."}</p>
                 </div>
 
