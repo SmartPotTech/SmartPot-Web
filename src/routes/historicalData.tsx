@@ -55,34 +55,35 @@ export default function HistoricalData() {
                     <p>{crop ? crop.status : "Loading..."}</p>
                 </div>
 
-                <table className="table CropHistory">
-                    <thead>
+                <table className="min-w-full table-auto border-collapse border border-gray-200">
+                    <thead className="bg-gray-100">
                     <tr>
-                        <th scope="col">#</th>
-                            <th scope="col">Atmosphere</th>
-                            <th scope="col">Brightness</th>
-                            <th scope="col">Humidity</th>
-                            <th scope="col">PH</th>
-                            <th scope="col">TDS</th>
-                            <th scope="col">Temperature</th>
-                            <th scope="col">Date</th>
-                        </tr>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">#</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Atmosphere</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Brightness</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Humidity</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">PH</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">TDS</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Temperature</th>
+                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Date</th>
+                    </tr>
                     </thead>
-                    <tbody>
-                        {history.map((e, index) => (
-                            <tr key={index}>
-                                <th scope="row"> {index + 1} </th>
-                                <td> {e.measures.atmosphere} </td>
-                                <td> {e.measures.brightness} </td>
-                                <td> {e.measures.humidity} </td>
-                                <td> {e.measures.ph} </td>
-                                <td> {e.measures.tds} </td>
-                                <td> {e.measures.temperature} </td>
-                                <td> {e.date} </td>
-                            </tr>
-                        ))}
+                    <tbody className="bg-white">
+                    {history.map((e, index) => (
+                        <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                            <td className="px-4 py-2 text-sm text-gray-700">{index + 1}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.atmosphere}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.brightness}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.humidity}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.ph}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.tds}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.temperature}</td>
+                            <td className="px-4 py-2 text-sm text-gray-700">{e.date}</td>
+                        </tr>
+                    ))}
                     </tbody>
                 </table>
+
             </main>
         </>
     );
