@@ -1,6 +1,6 @@
 import axios from "axios";
-import { createContext, ReactNode, useContext, useState, useEffect } from "react";
-import { auth, verifyToken } from "../api/Endpoints";
+import {createContext, ReactNode, useContext, useEffect, useState} from "react";
+import {auth, verifyToken} from "../api/Endpoints";
 
 export type authContextType = {
     user: UserData | null;
@@ -22,8 +22,11 @@ export type UserData = {
 const defaultValues: authContextType = {
     user: null,
     isAuthenticated: false,
-    login: async () => { throw new Error("Function not implemented.") },
-    logout: () => {},
+    login: async () => {
+        throw new Error("Function not implemented.")
+    },
+    logout: () => {
+    },
     loading: false,
     error: null,
 };
@@ -38,7 +41,7 @@ type Props = {
     children: ReactNode;
 }
 
-export function AuthProvider({ children }: Props) {
+export function AuthProvider({children}: Props) {
     const [user, setUser] = useState<UserData | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -84,7 +87,7 @@ export function AuthProvider({ children }: Props) {
         setLoading(true);
         setError(null); // Reset errors on each attempt
         try {
-            const response = await axios.post(auth, { email, password });
+            const response = await axios.post(auth, {email, password});
             const authToken = response.data;
 
             if (!authToken) {
@@ -92,7 +95,7 @@ export function AuthProvider({ children }: Props) {
             }
 
             const responseUser = await axios.get(verifyToken, {
-                headers: { Authorization: `Bearer ${authToken}` },
+                headers: {Authorization: `Bearer ${authToken}`},
             });
 
             const userData: UserData = {

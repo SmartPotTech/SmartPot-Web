@@ -1,43 +1,43 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Root from '../routes/root.tsx'
 
 import '../assets/styles/app.css'
 import ErrorPage from '../routes/error-page.tsx'
 import StatusPanel from '../routes/statusPanel.tsx';
 import HistoricalData from '../routes/historicalData.tsx';
-import { AuthProvider } from '../context/AuthContext.tsx';
+import {AuthProvider} from '../context/AuthContext.tsx';
 
 function App() {
 
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Root />,
-      errorElement: <ErrorPage />,
-      children: [
+    const router = createBrowserRouter([
         {
-          path: "/panel",
-          element: <StatusPanel />
+            path: "/",
+            element: <Root/>,
+            errorElement: <ErrorPage/>,
+            children: [
+                {
+                    path: "/panel",
+                    element: <StatusPanel/>
+                },
+                {
+                    path: "/historial",
+                    element: <HistoricalData/>
+                }
+            ],
         },
-        {
-          path: "/historial",
-          element: <HistoricalData />
-        }
-      ],
-    },
 
 
-  ]);
+    ]);
 
-  return (
-    <>
+    return (
+        <>
 
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+            <AuthProvider>
+                <RouterProvider router={router}/>
+            </AuthProvider>
 
-    </>
-  )
+        </>
+    )
 }
 
 export default App

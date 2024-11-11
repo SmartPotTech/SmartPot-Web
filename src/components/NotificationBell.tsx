@@ -1,4 +1,4 @@
-import { BellOutlined } from "@ant-design/icons";
+import {BellOutlined} from "@ant-design/icons";
 
 const NotificationBell = () => {
     const notificationCount = 2;

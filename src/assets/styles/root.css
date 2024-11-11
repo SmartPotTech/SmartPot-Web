@@ -38,11 +38,10 @@ body {
     background-color: #ffffff;
 }
 
-.title{
+.title {
     font-size: 32px;
     padding-bottom: 20px;
 }
-
 
 
 .ant-menu-item:hover {

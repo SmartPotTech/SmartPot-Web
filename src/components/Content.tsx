@@ -1,7 +1,6 @@
+export default function Content() {
 
-export default function Content(){
-
-    return(
+    return (
         <>
             <main className="mainContent">
                 <p className="mainContentText">

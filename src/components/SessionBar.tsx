@@ -1,5 +1,5 @@
 import "../assets/styles/sessionBar.css"
-import {UserOutlined, BellOutlined} from "@ant-design/icons";
+import {BellOutlined, UserOutlined} from "@ant-design/icons";
 import {Divider} from "antd";
 
 export default function SessionBar() {
@@ -22,10 +22,10 @@ export default function SessionBar() {
                         <span className="notification-badge">{notificationCount}</span>
                     )}
                 </div>
-                <Divider className="Divider" type= 'vertical'></Divider>
+                <Divider className="Divider" type='vertical'></Divider>
 
                 <span className="sessionBarItem">Bienvenid@, Dinamite</span>
-                <UserOutlined className="sessionBarItem perfil"  />
+                <UserOutlined className="sessionBarItem perfil"/>
 
             </header>
 

@@ -2,8 +2,8 @@ export default function StatusPanel() {
     return (
         <>
 
-            <div> Panel de estado! </div>
-        
+            <div> Panel de estado!</div>
+
         </>
     )
 }

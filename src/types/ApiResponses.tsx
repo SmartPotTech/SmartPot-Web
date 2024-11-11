@@ -20,7 +20,7 @@ export type Measures = {
 }
 
 export type Notifications = {
-    id: string, 
+    id: string,
     message: string,
     type: string,
     date: string,

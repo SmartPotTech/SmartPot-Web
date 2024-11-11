@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useAuthContext } from "../context/AuthContext"; // Ajusta la ruta según corresponda
-import { getCrop, getHistoryFromCrop } from "../api/Api"; // Ajusta la ruta según corresponda
-import { Crop, History } from "../types/ApiResponses";
+import {useEffect, useState} from "react";
+import {useAuthContext} from "../context/AuthContext"; // Ajusta la ruta según corresponda
+import {getCrop, getHistoryFromCrop} from "../api/Api"; // Ajusta la ruta según corresponda
+import {Crop, History} from "../types/ApiResponses";
 
 export default function HistoricalData() {
     const [history, setHistory] = useState<History[]>([]);
@@ -9,7 +9,7 @@ export default function HistoricalData() {
     const [loadingData, setLoadingData] = useState<boolean>(true); // Estado de carga
     const [loadingLogin, setLoadingLogin] = useState<boolean>(false); // Estado de carga de login
 
-    const { user, login, isAuthenticated, loading } = useAuthContext();
+    const {user, login, isAuthenticated, loading} = useAuthContext();
 
     // Efecto que se ejecuta al montar el componente, solo si el usuario no está autenticado
     useEffect(() => {
@@ -64,43 +64,53 @@ export default function HistoricalData() {
 
     return (
         <>
-            <main style={{ width: "100%", height: "100%" }}>
-                <div> Datos Historicos </div>
-
-                <div className="CropData">
-                    <h3>Crop</h3>
-                    <p className="text-3xl font-bold underline">{crop ? crop.id : "Loading..."}</p>
-                    <p>{crop ? crop.status : "Loading..."}</p>
+            <main className="w-full min-h-screen bg-gray-50 p-8">
+                <div className="mb-6 text-center">
+                    <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
 
-                <table className="min-w-full table-auto border-collapse border border-gray-200">
-                    <thead className="bg-gray-100">
-                    <tr>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">#</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Atmosphere</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Brightness</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Humidity</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">PH</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">TDS</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Temperature</th>
-                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Date</th>
-                    </tr>
-                    </thead>
-                    <tbody className="bg-white">
-                    {history.map((e, index) => (
-                        <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                            <td className="px-4 py-2 text-sm text-gray-700">{index + 1}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.atmosphere}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.brightness}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.humidity}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.ph}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.tds}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.measures.temperature}</td>
-                            <td className="px-4 py-2 text-sm text-gray-700">{e.date}</td>
+                <div className="CropData bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">Detalles del Cultivo</h3>
+                    <div className="space-y-2">
+                        <p className="text-lg font-bold text-green-600">
+                            Crop ID: <span className="text-xl underline">{crop ? crop.id : "Cargando..."}</span>
+                        </p>
+                        <p className="text-lg text-gray-600">
+                            Estado: <span className="font-semibold">{crop ? crop.status : "Cargando..."}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+                    <table className="min-w-full table-auto border-collapse text-sm">
+                        <thead className="bg-gray-100">
+                        <tr>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="bg-white">
+                        {history.map((e, index) => (
+                            <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                                <td className="px-6 py-4 text-gray-700">{index + 1}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.date}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
             </main>
         </>
     );

@@ -1,7 +1,7 @@
 import axios from "axios";
-import { UserData } from "../context/AuthContext";
-import { Crop, History } from "../types/ApiResponses";
-import { cropHistory, userCrop } from "./Endpoints";
+import {UserData} from "../context/AuthContext";
+import {Crop, History} from "../types/ApiResponses";
+import {cropHistory, userCrop} from "./Endpoints";
 
 export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<History[]> {
     let history: History[] = [];
@@ -15,8 +15,8 @@ export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<Hi
         .then(response => {
             history = response.data;
         })
-        .catch((e) => console.log("Cant fetch history data. err: " + e));    
-    
+        .catch((e) => console.log("Cant fetch history data. err: " + e));
+
     return history;
 }
 
@@ -33,8 +33,8 @@ export async function getCrop(user: UserData): Promise<Crop> {
         .then(response => {
             crop = response.data;
         })
-        .catch((e) => console.log("Cant fetch Crop data. err: " + e));    
-    
+        .catch((e) => console.log("Cant fetch Crop data. err: " + e));
+
     return crop[0];
 }
 
