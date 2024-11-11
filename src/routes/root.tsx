@@ -18,14 +18,20 @@ export default function Root() {
     }));
     return (
         <>
-            <div className="content">
-                <div id="sidebar" className="sidebar">
-                    <h1 className="title">
-                        SmartPot 🥬
-                    </h1>
+            <div className="flex h-screen bg-gray-100">
+                {/* Sidebar */}
+                <div className="w-64 bg-gray-800 text-white p-4">
+                    <h1 className="text-2xl font-bold text-center mb-8">SmartPot 🥬</h1>
 
+                    {/* Menu */}
                     <nav>
-                        <Menu theme="light" mode="inline" defaultSelectedKeys={['2']} items={items}/>
+                        <Menu
+                            theme="light"
+                            mode="inline"
+                            defaultSelectedKeys={['2']}
+                            items={items}
+                            className="space-y-2" // Espaciado entre los items
+                        />
                     </nav>
                 </div>
 
