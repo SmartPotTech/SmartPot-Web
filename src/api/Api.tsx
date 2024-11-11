@@ -9,7 +9,7 @@ export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<Hi
     console.log("[API/HISTORY] User id: " + user.id)
     console.log("[API/HISTORY] Crop id: " + crop.id)
 
-    await axios.get("http://localhost:8091" + cropHistory + crop.id ,
+    await axios.get("https://smarpot.netlify.app" + cropHistory + crop.id ,
         getAuthHeaders(user)
     )
         .then(response => {
@@ -27,7 +27,7 @@ export async function getCrop(user: UserData): Promise<Crop> {
 
     console.log("[API/CROP] User id: " + user.id)
 
-    await axios.get("http://localhost:8091" + userCrop + user.id,
+    await axios.get("https://smarpot.netlify.app" + userCrop + user.id,
         getAuthHeaders(user)
     )
         .then(response => {
