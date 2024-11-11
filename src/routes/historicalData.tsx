@@ -64,7 +64,7 @@ export default function HistoricalData() {
 
     return (
         <>
-            <main  style={{ width: "100%", height: "100%", backgroundColor: "#f9fafb", padding: "2rem" }}>
+            <main  className="mainContent" style={{ width: "100%", height: "100%", backgroundColor: "#f9fafb", padding: "2rem" }}>
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
