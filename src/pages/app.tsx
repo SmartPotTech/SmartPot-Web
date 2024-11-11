@@ -3,8 +3,8 @@ import Root from '../routes/root.tsx'
 
 import '../assets/styles/app.css'
 import ErrorPage from '../routes/error-page.tsx'
-import PanelEstado from '../routes/PanelEstado.tsx';
-import DatosHistoricos from '../routes/DatosHistoricos.tsx';
+import StatusPanel from '../routes/statusPanel.tsx';
+import HistoricalData from '../routes/historicalData.tsx';
 import { AuthProvider } from '../context/AuthContext.tsx';
 
 function App() {
@@ -17,11 +17,11 @@ function App() {
       children: [
         {
           path: "/panel",
-          element: <PanelEstado />
+          element: <StatusPanel />
         },
         {
           path: "/historial",
-          element: <DatosHistoricos />
+          element: <HistoricalData />
         }
       ],
     },

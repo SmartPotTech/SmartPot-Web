@@ -1,4 +1,4 @@
-export default function PanelEstado() {
+export default function StatusPanel() {
     return (
         <>
 

@@ -5,7 +5,7 @@ import { getCrop, getHistoryFromCrop } from "../api/Api"; // Ajusta la ruta seg�
 import { Crop, History } from "../types/ApiResponses";
 
 
-export default function DatosHistoricos() {
+export default function HistoricalData() {
     const [history, setHistory] = useState<History[]>([]);
     const [crop, setCrop] = useState<Crop | null>(null);
 
@@ -14,8 +14,12 @@ export default function DatosHistoricos() {
     useEffect(() => {
         // Función de login inicial
         const loginAndFetchData = async () => {
-            // Email, Password
-            await login("juan.perez@example.com", "Contraseña1");
+            try {
+                // Email, Password
+                await login("juan.perez@example.com", "Contraseña1");
+            } catch (error) {
+                console.error("Error during login: ", error);
+            }
         };
 
         loginAndFetchData();

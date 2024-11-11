@@ -108,6 +108,14 @@ export function AuthProvider( { children }: Props ) {
     }
 
     const logout = () => {
+        setUser({
+            authToken: "",
+            id: "",
+            name: "",
+            lastname: "",
+            role: "",
+        });
+        localStorage.removeItem("authToken");
         throw new Error("Function not implemented.")
     }
 
