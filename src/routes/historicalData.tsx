@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
-import {useAuthContext} from "../context/AuthContext"; // Ajusta la ruta según corresponda
-import {getCrop, getHistoryFromCrop} from "../api/Api"; // Ajusta la ruta según corresponda
+import {useAuthContext} from "../context/AuthContext";
+import {getCrop, getHistoryFromCrop} from "../api/Api";
 import {Crop, History} from "../types/ApiResponses";
+import D3Chart from "../components/D3Chart.tsx";
 
 export default function HistoricalData() {
     const [history, setHistory] = useState<History[]>([]);
@@ -64,7 +65,8 @@ export default function HistoricalData() {
 
     return (
         <>
-            <main  className="mainContent" style={{ width: "100%", height: "100%", backgroundColor: "#f9fafb", padding: "2rem" }}>
+            <main className="mainContent"
+                  style={{width: "100%", height: "100%", backgroundColor: "#f9fafb", padding: "2rem"}}>
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
@@ -81,7 +83,7 @@ export default function HistoricalData() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+                <div className="overflow-x-auto bg-white shadow-md rounded-lg mb-8">
                     <table className="min-w-full table-auto border-collapse text-sm">
                         <thead className="bg-gray-100">
                         <tr>
@@ -110,6 +112,13 @@ export default function HistoricalData() {
                         ))}
                         </tbody>
                     </table>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+                    <D3Chart history={history} measure="brightness" label="Brillo"/>
+                    <D3Chart history={history} measure="humidity" label="Humedad"/>
+                    <D3Chart history={history} measure="ph" label="pH"/>
+                    <D3Chart history={history} measure="tds" label="TDS"/>
+                    <D3Chart history={history} measure="temperature" label="Temperatura"/>
                 </div>
             </main>
         </>
