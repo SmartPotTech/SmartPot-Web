@@ -112,7 +112,7 @@ export function AuthProvider({children}: Props) {
             localStorage.setItem("authToken", authToken);
         } catch (err: any) {
             console.error("Login error:", err);
-            setError(err.message || "An error occurred during login.");
+            setError(err.response.data.message || "An error occurred during login.");
         } finally {
             setLoading(false);
         }

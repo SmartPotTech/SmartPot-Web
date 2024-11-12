@@ -1,7 +1,7 @@
 import axios from "axios";
 import {UserData} from "../context/AuthContext";
-import {Crop, History} from "../types/ApiResponses";
-import {cropHistory, userCrop} from "./Endpoints";
+import {Crop, History, Notifications} from "../types/ApiResponses";
+import {cropHistory, userCrop, userNotifications} from "./Endpoints";
 
 export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<History[]> {
     let history: History[] = [];
@@ -36,6 +36,23 @@ export async function getCrop(user: UserData): Promise<Crop> {
         .catch((e) => console.log("Cant fetch Crop data. err: " + e));
 
     return crop[0];
+}
+
+export async function getNotifications(user: UserData): Promise<Notifications[]> {
+    let notifications: Notifications[] = [];
+
+    console.log("[API/NOTIFICATIOS] User id: " +  + user.id)
+
+    await axios.get(`${userNotifications}${user.id}`,
+        getAuthHeaders(user)
+    )
+        .then(response => {
+            notifications = response.data;
+        })
+        .catch((e) => console.log("Cant fetch notifications data. err" + e))
+
+    return notifications;
+
 }
 
 function getAuthHeaders(user: UserData) {

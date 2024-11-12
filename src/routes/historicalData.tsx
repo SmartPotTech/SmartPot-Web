@@ -9,25 +9,25 @@ export default function HistoricalData() {
     const [loadingData, setLoadingData] = useState<boolean>(true); // Estado de carga
     const [loadingLogin, setLoadingLogin] = useState<boolean>(false); // Estado de carga de login
 
-    const {user, login, isAuthenticated, loading} = useAuthContext();
+    const {user, loading} = useAuthContext();
 
     // Efecto que se ejecuta al montar el componente, solo si el usuario no está autenticado
-    useEffect(() => {
-        const loginAndFetchData = async () => {
-            if (!isAuthenticated && !loadingLogin) {
-                setLoadingLogin(true);
-                try {
-                    // Email, Password (normalmente esto sería un formulario)
-                    await login("juan.perez@example.com", "Contraseña1");
-                } catch (error) {
-                    console.error("Error during login: ", error);
-                } finally {
-                    setLoadingLogin(false);
-                }
-            }
-        };
-        loginAndFetchData();
-    }, [isAuthenticated, login, loadingLogin]);
+    // useEffect(() => {
+    //     const loginAndFetchData = async () => {
+    //         if (!isAuthenticated && !loadingLogin) {
+    //             setLoadingLogin(true);
+    //             try {
+    //                 // Email, Password (normalmente esto sería un formulario)
+    //                 await login("juan.perez@example.com", "Contraseña1");
+    //             } catch (error) {
+    //                 console.error("Error during login: ", error);
+    //             } finally {
+    //                 setLoadingLogin(false);
+    //             }
+    //         }
+    //     };
+    //     loginAndFetchData();
+    // }, [isAuthenticated, login, loadingLogin]);
 
     // Efecto para obtener datos del cultivo y su historial una vez que el usuario esté autenticado
     useEffect(() => {

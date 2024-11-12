@@ -14,4 +14,4 @@ export const cropHistory = `${BASE_URL}/Historial/crop/`;
 export const userCrop = `${BASE_URL}/Cultivos/User/`;
 
 // Notifications
-export const userNotifications = `${BASE_URL}/Notificiaciones/`;
+export const userNotifications = `${BASE_URL}/Notificaciones/`;
