@@ -8,7 +8,7 @@ export default function HistoricalData() {
     const [history, setHistory] = useState<History[]>([]);
     const [crop, setCrop] = useState<Crop | null>(null);
     const [loadingData, setLoadingData] = useState<boolean>(true); // Estado de carga
-    const [loadingLogin, setLoadingLogin] = useState<boolean>(false); // Estado de carga de login
+    const [loadingLogin] = useState<boolean>(false); // Estado de carga de login
 
     const {user, loading} = useAuthContext();
 
