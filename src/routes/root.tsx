@@ -43,7 +43,7 @@ export default function Root() {
                         </h1>
     
                         <nav>
-                            <Menu theme="light" mode="inline" defaultSelectedKeys={['2']} items={items}/>
+                            <Menu theme="light" mode="inline" defaultSelectedKeys={['1']} items={items}/>
                         </nav>
                     </div>
     
