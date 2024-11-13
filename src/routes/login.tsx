@@ -1,12 +1,12 @@
-import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
-import { useAuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import {FormEvent, SyntheticEvent, useEffect, useState} from "react";
+import {useAuthContext} from "../context/AuthContext";
+import {useNavigate} from "react-router-dom";
 import logo from "../assets/images/lechuga.png";
 
 
 export default function Login() {
 
-    const { login, isAuthenticated, error } = useAuthContext();
+    const {login, isAuthenticated, error} = useAuthContext();
     let navigate = useNavigate();
 
     const [email, setEmail] = useState<string>("");

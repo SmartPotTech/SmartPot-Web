@@ -31,11 +31,10 @@ body {
     top: 0;
     left: 0;
     /* Color de fondo */
-    background-color: var(--element-bg);
     /* Espaciado superior */
     padding-top: 20px;
 
-    background-color: #ffffff;
+    background-color: #ffffff !important;
 }
 
 .title {
