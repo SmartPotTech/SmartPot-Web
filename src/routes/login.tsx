@@ -1,6 +1,6 @@
-import {FormEvent, SyntheticEvent, useEffect, useState} from "react";
-import {useAuthContext} from "../context/AuthContext";
-import {useNavigate} from "react-router-dom";
+import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
+import { useAuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/lechuga.png";
 
 

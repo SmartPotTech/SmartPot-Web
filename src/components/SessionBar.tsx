@@ -1,9 +1,8 @@
 import "../assets/styles/sessionBar.css"
 import {UserOutlined} from "@ant-design/icons";
 import {Divider} from "antd";
-import { useAuthContext } from "../context/AuthContext";
 import NotificationBell from "./NotificationBell.tsx";
-
+import { useAuthContext } from "../contexts/AuthContext";
 
 export default function SessionBar() {
 

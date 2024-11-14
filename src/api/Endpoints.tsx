@@ -8,7 +8,7 @@ export const auth = `${BASE_URL}/auth/login`;
 export const verifyToken = `${BASE_URL}/auth/verify`;
 
 // History
-export const cropHistory = `${BASE_URL}/Historial/crop/`;
+export const cropHistory = `${BASE_URL}/Records/crop/`;
 
 // Crops
 export const userCrop = `${BASE_URL}/Cultivos/User/`;

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useAuthContext} from "../context/AuthContext";
+import {useAuthContext} from "../contexts/AuthContext";
 import {getCrop, getHistoryFromCrop} from "../api/Api";
 import {Crop, History} from "../types/ApiResponses";
 import D3Chart from "../components/D3Chart.tsx";

@@ -5,7 +5,7 @@ import '../assets/styles/app.css'
 import ErrorPage from '../routes/errorPage.tsx'
 import StatusPanel from '../routes/statusPanel.tsx';
 import HistoricalData from '../routes/historicalData.tsx';
-import { AuthProvider } from '../context/AuthContext.tsx';
+import { AuthProvider } from '../contexts/AuthContext.tsx';
 import Login from '../routes/login.tsx';
 
 function App() {

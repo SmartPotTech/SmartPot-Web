@@ -1,5 +1,5 @@
 import axios from "axios";
-import {UserData} from "../context/AuthContext";
+import {UserData} from "../contexts/AuthContext";
 import {Crop, History, Notifications} from "../types/ApiResponses";
 import {cropHistory, userCrop, userNotifications} from "./Endpoints";
 

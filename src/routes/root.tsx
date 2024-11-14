@@ -5,7 +5,7 @@ import {Menu} from "antd";
 import React, { useEffect } from "react";
 import {BarChartOutlined, HomeOutlined} from "@ant-design/icons";
 import Content from "../components/Content.tsx";
-import { useAuthContext } from "../context/AuthContext.tsx";
+import { useAuthContext } from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
 
 export default function Root() {
