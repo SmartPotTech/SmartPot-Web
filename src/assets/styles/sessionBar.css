@@ -1,5 +1,5 @@
 .sessionBar {
-    padding-top: 15px;
+    padding-top: 50px;
     position: fixed;
     top: 0;
     left: 250px;
@@ -9,7 +9,7 @@
     align-items: center;
     background-color: #F3F2F7;
     box-sizing: border-box;
-    z-index: 1000;
+
     justify-content: flex-end;
 }
 

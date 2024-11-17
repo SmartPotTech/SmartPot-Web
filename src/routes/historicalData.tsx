@@ -3,6 +3,7 @@ import {useAuthContext} from "../contexts/AuthContext";
 import {getCrop, getHistoryFromCrop} from "../api/Api";
 import {Crop, History} from "../types/ApiResponses";
 import D3Chart from "../components/D3Chart.tsx";
+import "../assets/styles/MainContainer.css";
 
 export default function HistoricalData() {
     const [history, setHistory] = useState<History[]>([]);
@@ -66,7 +67,7 @@ export default function HistoricalData() {
     return (
         <>
             <main className="mainContent"
-                  style={{width: "100%", height: "100%", backgroundColor: "#f9fafb", padding: "2rem"}}>
+                  style={{height: "100%", backgroundColor: "#f9fafb", padding: "2rem"}}>
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>

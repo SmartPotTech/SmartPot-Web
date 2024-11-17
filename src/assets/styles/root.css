@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+
 /* CSS HEX */
 * {
     --main-colour: #00B074ff;
@@ -6,7 +9,6 @@
     --hover-secondary-color: #DFF0FAff;
     --page-background: #F3F2F7ff;
     --element-bg: #d61616;
-
 }
 
 /* Estilos generales para el cuerpo */
@@ -18,47 +20,97 @@ body {
 .content {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-/* Estilos para la sidebar */
+/* styles.css */
+
+/* Estilos generales para la sidebar */
 .sidebar {
-    /* Altura completa */
-    height: 100%;
-    /* Ancho de la sidebar */
+    font-family: "Merriweather Sans", sans-serif;
+    height: 100vh;
     width: 250px;
-    /* Sidebar fija */
     position: fixed;
     top: 0;
     left: 0;
-    /* Color de fondo */
-    /* Espaciado superior */
-    padding-top: 20px;
-
+    padding-top: 30px;
     background-color: #ffffff !important;
+}
+
+
+.sidebar.closed {
+    transform: translateX(-100%); /* Mueve la sidebar fuera de la vista */
 }
 
 .title {
     font-size: 32px;
     padding-bottom: 20px;
+    padding-left: 20px;
+}
+
+/* Estilos para el contenido principal */
+.main-content {
+    margin-left: 250px; /* Dejar espacio para la sidebar */
+    transition: margin-left 0.3s ease-in-out; /* Transición para el margen */
 }
 
 
+
+/* Media query para pantallas de 800px o menos */
+@media screen and (min-width: 800px) and (max-width: 1024px) {
+    .sidebar{
+        width: 80px;
+        text-align: center;
+    }
+
+    .title{
+        padding-left: 0px !important;
+    }
+
+}
+
+@media screen and (max-width: 799px) {
+    .sidebar {
+        position: fixed; /* Mantiene la sidebar fija */
+        bottom: 0 !important; /* Coloca la sidebar en la parte inferior */
+        left: 0; /* Alinea la sidebar a la izquierda */
+        right: 0; /* Alinea la sidebar a la derecha */
+        height: auto; /* Altura automática para que no ocupe toda la pantalla */
+        width: 100%; /* Ancho completo en pantallas pequeñas */
+        padding: 10px 0; /* Espaciado vertical */
+    }
+
+    .main-content {
+        margin-left: 0; /* Sin margen en pantallas pequeñas */
+        margin-bottom: 60px; /* Espacio para la sidebar en la parte inferior */
+    }
+}
+
+.sidebar-mobile{
+    width: 100%;
+    bottom: 0;
+    position: fixed;
+    left: 0;
+    right: 0;
+    text-align: center;
+    align-content: center;
+    font-size: 20px;
+}
+
+
+
+
+.ant-menu{
+    border-inline-end: 0px !important;
+}
+
 .ant-menu-item:hover {
-    background-color: #1890ff; /* Color de fondo al pasar el mouse */
-    color: #fff; /* Color del texto al pasar el mouse */
+    background-color: #1890ff;
+    color: #fff;
+
 }
 
 .ant-menu-item-selected {
     background-color: #D9F3EA !important;
     color: #29BD8A !important;
-}
-
-/* Estilos para el contenido principal */
-.mainContent {
-    /* Espacio para la sidebar */
-    box-sizing: border-box;
-    width: 100%;
-    margin-left: 260px;
-    padding: 20px;
-    background-color: var(--page-background);
 }
