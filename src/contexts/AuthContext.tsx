@@ -43,15 +43,18 @@ type Props = {
 
 export function AuthProvider({children}: Props) {
     const [user, setUser] = useState<UserData | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     // Load user from localStorage if available
     useEffect(() => {
+        setLoading(true);
         const storedToken = localStorage.getItem("authToken");
         if (storedToken) {
             verifyStoredToken(storedToken);
+        } else {
+            setLoading(false)
         }
     }, []);
 
@@ -112,7 +115,11 @@ export function AuthProvider({children}: Props) {
             localStorage.setItem("authToken", authToken);
         } catch (err: any) {
             console.error("Login error:", err);
-            setError(err.response.data.message || "An error occurred during login.");
+            try {
+                setError(err.response.data.message || "An error occurred during login.");
+            } catch {
+                setError(err.message || "An error ocurred during login.")
+            }
         } finally {
             setLoading(false);
         }

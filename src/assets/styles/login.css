@@ -1,0 +1,7 @@
+* {
+    --main-colour: #00B074ff;
+}
+
+.bg-main-colour {
+    background-color: var(--main-colour);
+}

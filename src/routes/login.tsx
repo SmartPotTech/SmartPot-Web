@@ -2,16 +2,24 @@ import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/lechuga.png";
+import Loading from "../components/Loading";
+import "../assets/styles/login.css"
 
 
 export default function Login() {
 
-    const {login, isAuthenticated, error} = useAuthContext();
+    const {login, isAuthenticated, error, loading} = useAuthContext();
     let navigate = useNavigate();
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
+    useEffect(() => {
+        console.log(isAuthenticated)
+        if (isAuthenticated) {
+            navigate("/panel")
+        }
+    }, [isAuthenticated]);
 
     const handleChangeEmail = (e: FormEvent<HTMLInputElement>) => {
         setEmail(e.currentTarget.value);
@@ -29,13 +37,7 @@ export default function Login() {
             .catch(error => console.log(error));
     }
 
-    useEffect(() => {
-        console.log(isAuthenticated)
-        if (isAuthenticated) {
-            navigate("/panel")
-        }
-    }, [isAuthenticated]);
-
+    if (loading) return (<Loading />);
 
     return (
         <>
@@ -77,7 +79,7 @@ export default function Login() {
                                     type="email"
                                     required
                                     autoComplete="email"
-                                    className="bg-white block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                    className="bg-white font-semibold p-2 block w-full rounded-md border-0 py-1.5 text-gray-800 shadow-sm ring-1 ring-inset ring-green-300 placeholder:text-green-400 focus:ring-2 focus:ring-inset focus:ring-green-300 sm:text-sm/6"
                                     value={email}
                                     onChange={handleChangeEmail}
                                 />
@@ -90,7 +92,7 @@ export default function Login() {
                                     Password
                                 </label>
                                 <div className="text-sm">
-                                    <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                                    <a href="#" className="font-semibold text-green-600 hover:text-green-400">
                                         Forgot password?
                                     </a>
                                 </div>
@@ -102,7 +104,7 @@ export default function Login() {
                                     type="password"
                                     required
                                     autoComplete="current-password"
-                                    className="bg-white block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
+                                    className="bg-white font-semibold p-2 block w-full rounded-md border-0 py-1.5 text-gray-800 shadow-sm ring-1 ring-inset ring-green-300 placeholder:text-green-400 focus:ring-2 focus:ring-inset focus:ring-green-300 sm:text-sm/6"
                                     value={password}
                                     onChange={handleChangePassword}
                                 />
@@ -116,17 +118,17 @@ export default function Login() {
                         <div>
                             <button
                                 type="submit"
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                className="bg-main-colour flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                             >
-                                Sign in
+                                { loading ? ("Loading") : ("Sign in") }
                             </button>
                         </div>
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
                         Not a exclusive member of smartpot 🤢?{' '}
-                        <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                            Start a 14 day free trial
+                        <a href="#" className="font-semibold text-green-600 hover:text-green-500">
+                            Free 15-day trial for the poor!
                         </a>
                     </p>
                 </div>

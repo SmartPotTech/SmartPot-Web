@@ -5,6 +5,7 @@ import React, {useEffect} from "react";
 import Content from "../components/Content.tsx";
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
+import Loading from "../components/Loading.tsx";
 
 import {BarChartOutlined, HomeOutlined} from "@ant-design/icons";
 import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
@@ -12,7 +13,7 @@ import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
 
 export default function Root() {
 
-    const {isAuthenticated} = useAuthContext();
+    const {isAuthenticated, loading} = useAuthContext();
     let navigate = useNavigate();
 
     const icons = [HomeOutlined, BarChartOutlined];
@@ -27,6 +28,7 @@ export default function Root() {
         }
     }, [isAuthenticated, navigate]);
 
+    if (loading) return ( <Loading/> );
 
     return (
         <>
