@@ -7,10 +7,11 @@ import {BarChartOutlined, HomeOutlined} from "@ant-design/icons";
 import Content from "../components/Content.tsx";
 import { useAuthContext } from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
+import Loading from "../components/Loading.tsx";
 
 export default function Root() {
 
-    const {isAuthenticated} = useAuthContext();
+    const {isAuthenticated, loading} = useAuthContext();
     let navigate = useNavigate();
 
     const icons = [HomeOutlined, BarChartOutlined];
@@ -30,6 +31,7 @@ export default function Root() {
         }
     }, [isAuthenticated]);
 
+    if (loading) return ( <Loading/> );
 
     return (
         <>
