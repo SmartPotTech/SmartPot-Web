@@ -57,9 +57,9 @@ body {
 }
 
 /* Estilos para el contenido principal */
-.main-content {
-    margin-left: 250px; /* Dejar espacio para la sidebar */
-    transition: margin-left 0.3s ease-in-out; /* Transición para el margen */
+.mainContent {
+
+    padding-top: 120px;
 }
 
 
@@ -69,6 +69,7 @@ body {
     .sidebar{
         width: 80px;
         text-align: center;
+        padding-top: 45px;
     }
 
     .title{

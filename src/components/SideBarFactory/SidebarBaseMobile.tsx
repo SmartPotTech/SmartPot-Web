@@ -1,5 +1,4 @@
-// SidebarMobileBase.tsx
-import React, {useState} from "react";
+import React from "react";
 import {BottomNavigation, BottomNavigationAction} from "@mui/material";
 import {SidebarProps} from "./ISideBar";
 

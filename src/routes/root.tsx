@@ -1,8 +1,7 @@
-import { Outlet, useNavigate} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import "../assets/styles/root.css"
 import SessionBar from "../components/SessionBar";
-import React, {useEffect} from "react";
-import Content from "../components/Content.tsx";
+import {useEffect} from "react";
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
 import Loading from "../components/Loading.tsx";
@@ -28,7 +27,7 @@ export default function Root() {
         }
     }, [isAuthenticated, navigate]);
 
-    if (loading) return ( <Loading/> );
+    if (loading) return (<Loading/>);
 
     return (
         <>
@@ -36,13 +35,9 @@ export default function Root() {
                 isAuthenticated ?
                     (
                         <div className="content">
-
                             <SessionBar/>
-
-                            <Content/>
-
                             <Outlet/>
-                            <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths} />
+                            <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths}/>
                         </div>
                     )
                     :
