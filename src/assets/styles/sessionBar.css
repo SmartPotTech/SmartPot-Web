@@ -13,6 +13,28 @@
     justify-content: flex-end;
 }
 
+@media screen and (min-width: 800px) and (max-width: 1024px){
+
+    .sessionBar{
+        width: calc(100% - 80px);
+        left: 80px;
+    }
+
+}
+
+@media screen and (max-width: 799px) {
+    .sessionBar {
+        width: 100%;
+        left: 0;
+        right: 0; /* Asegura que no se desplace fuera */
+        margin: 0 auto; /* Centra el contenido */
+        padding: 0; /* Evita espacio adicional */
+        box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+    }
+}
+
+
+
 .Divider {
     height: 30px;
     border-left: 2px solid #cfcdd6;

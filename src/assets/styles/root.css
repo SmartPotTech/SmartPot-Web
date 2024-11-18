@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+
 
 /* CSS HEX */
 * {
@@ -37,6 +39,12 @@ body {
     background-color: #ffffff !important;
 }
 
+.logout{
+    left: 12px;
+    position: absolute;
+    bottom: 0;
+    background-color: #ffffff;
+}
 
 .sidebar.closed {
     transform: translateX(-100%); /* Mueve la sidebar fuera de la vista */
@@ -67,19 +75,11 @@ body {
         padding-left: 0px !important;
     }
 
+
+
 }
 
 @media screen and (max-width: 799px) {
-    .sidebar {
-        position: fixed; /* Mantiene la sidebar fija */
-        bottom: 0 !important; /* Coloca la sidebar en la parte inferior */
-        left: 0; /* Alinea la sidebar a la izquierda */
-        right: 0; /* Alinea la sidebar a la derecha */
-        height: auto; /* Altura automática para que no ocupe toda la pantalla */
-        width: 100%; /* Ancho completo en pantallas pequeñas */
-        padding: 10px 0; /* Espaciado vertical */
-    }
-
     .main-content {
         margin-left: 0; /* Sin margen en pantallas pequeñas */
         margin-bottom: 60px; /* Espacio para la sidebar en la parte inferior */

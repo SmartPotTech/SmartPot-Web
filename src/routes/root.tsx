@@ -14,7 +14,7 @@ import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
 export default function Root() {
 
     const {isAuthenticated, loading} = useAuthContext();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const icons = [HomeOutlined, BarChartOutlined];
     const labels = ["Panel de inicio", "Datos Históricos"];

@@ -10,13 +10,11 @@ export const SidebarFactory: React.FC<SidebarProps> = (props) => {
 
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-    // Manejar el evento de cambio de tamaño de la ventana
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       const handleResize = () => setScreenWidth(window.innerWidth);
       window.addEventListener("resize", handleResize);
 
-      // Limpieza del listener
       return () => window.removeEventListener("resize", handleResize);
     }, []);
 
@@ -31,7 +29,6 @@ export const SidebarFactory: React.FC<SidebarProps> = (props) => {
       return sidebarPhone.render();
     }
 
-    // Caso de seguridad (aunque no se debería ejecutar)
     throw new Error("Unexpected screen width");
   };
 

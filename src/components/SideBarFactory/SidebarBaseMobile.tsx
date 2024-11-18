@@ -6,7 +6,7 @@ import {SidebarProps} from "./ISideBar";
 import {useNavigate} from "react-router-dom";
 
 const SidebarBaseMobile: React.FC<SidebarProps> = ({icons, labels, paths}) => {
-    const [value, setValue] = React.useState('recents');
+    const [value, setValue] = React.useState(0);
     const navigate = useNavigate();
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -17,9 +17,9 @@ const SidebarBaseMobile: React.FC<SidebarProps> = ({icons, labels, paths}) => {
     return (
         <BottomNavigation sx={{
             width: '100%', "& .Mui-selected": {
-                color: "#29BD8A", // Color para el icono y el texto cuando está seleccionado
+                color: "#29BD8A !important",
             },
-        }} value={value} onChange={handleChange} showLabels>
+        }} value={value} onChange={handleChange}>
             {icons.map((Icon, index) => (
                 <BottomNavigationAction
                     key={index}

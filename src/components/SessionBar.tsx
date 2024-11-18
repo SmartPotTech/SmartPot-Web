@@ -6,7 +6,7 @@ import { useAuthContext } from "../contexts/AuthContext";
 
 export default function SessionBar() {
 
-    const { user, logout } = useAuthContext();
+    const { user} = useAuthContext();
 
 
     return (
@@ -19,8 +19,6 @@ export default function SessionBar() {
 
                 <span className="sessionBarItem">Bienvenid@, {user?.name}</span>
                 <UserOutlined className="sessionBarItem perfil"/>
-
-                <button onClick={logout}> Logout </button>
 
             </header>
 
