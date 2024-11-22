@@ -1,0 +1,23 @@
+/* Main content styles */
+.mainContent {
+    padding-top: 120px;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+}
+
+/* Tablet */
+@media screen and (min-width: 800px) and (max-width: 1024px) {
+    .mainContent {
+        margin-left: 80px;   
+        width: calc(100% - 80px);
+    }
+}
+
+/* Mobile */
+@media screen and (max-width: 799px) {
+    .mainContent {
+        margin-left: 0;
+        width: 100%;
+        padding-top: 80px;
+    }
+}
