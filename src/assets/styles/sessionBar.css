@@ -1,10 +1,10 @@
 .sessionBar {
-    padding-top: 50px;
+    padding-top: 0px;
     position: fixed;
     top: 0;
     left: 250px;
     width: calc(100% - 250px);
-    height: 120px;
+    height: 60px;
     display: flex;
     align-items: center;
     background-color: #F3F2F7;
@@ -17,7 +17,7 @@
     .sessionBar{
         width: calc(100% - 80px);
         left: 80px;
-        padding-top: 10px;
+        padding-top: 0px;
     }
 
 }
