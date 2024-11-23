@@ -7,6 +7,7 @@ import StatusPanel from '../routes/statusPanel.tsx';
 import HistoricalData from '../routes/historicalData.tsx';
 import { AuthProvider } from '../contexts/AuthContext.tsx';
 import Login from '../routes/login.tsx';
+import Profile from '../routes/profile.tsx';
 
 function App() {
 
@@ -29,6 +30,10 @@ function App() {
                 {
                     path: "/historial",
                     element: <HistoricalData/>
+                },
+                {
+                    path: "/perfil",
+                    element: <Profile/>
                 }
             ],
         },
