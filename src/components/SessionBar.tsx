@@ -17,7 +17,7 @@ export default function SessionBar() {
                 <Divider className="Divider" type='vertical'></Divider>
 
                 <span className="sessionBarItem">Bienvenid@, {user?.name}</span>
-                <UserOutlined className="sessionBarItem perfil"/>
+                <a href="perfil"><UserOutlined className="sessionBarItem perfil"/></a>
 
             </header>
 

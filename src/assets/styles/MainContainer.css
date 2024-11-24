@@ -1,8 +1,8 @@
 /* Main content styles */
 .mainContent {
+    margin-left: 130px;
+    width: 100%;
     padding-top: 120px;
-    margin-left: 250px;
-    width: calc(100% - 250px);
 }
 
 /* Tablet */

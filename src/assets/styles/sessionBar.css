@@ -1,5 +1,5 @@
 .sessionBar {
-    padding-top: 0px;
+    padding-top: 20px;
     position: fixed;
     top: 0;
     left: 250px;
@@ -24,11 +24,8 @@
 
 @media screen and (max-width: 799px) {
     .sessionBar {
-        width: 100%;
+        width: 100vw;
         left: 0;
-        right: 0; /* Asegura que no se desplace fuera */
-        margin: 0 auto; /* Centra el contenido */
-        padding: 0; /* Evita espacio adicional */
         box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
     }
 }
