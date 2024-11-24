@@ -7,6 +7,9 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const auth = `${BASE_URL}/auth/login`;
 export const verifyToken = `${BASE_URL}/auth/verify`;
 
+// User 
+export const userUpdate =  `${BASE_URL}/Users/Update/`
+
 // History
 export const cropHistory = `${BASE_URL}/Records/crop/`;
 

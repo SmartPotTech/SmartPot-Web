@@ -1,12 +1,14 @@
 import axios from "axios";
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {auth, verifyToken} from "../api/Endpoints";
+import {auth, userUpdate, verifyToken} from "../api/Endpoints";
+import { userDTO } from "../types/ApiResponses";
 
 export type authContextType = {
     user: UserData | null;
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
+    updateUser: (user: userDTO) => void;
     loading: boolean;
     error: string | null;
 };
@@ -26,6 +28,8 @@ const defaultValues: authContextType = {
         throw new Error("Function not implemented.")
     },
     logout: () => {
+    },
+    updateUser: (_userDTO: userDTO) => {
     },
     loading: false,
     error: null,
@@ -131,12 +135,35 @@ export function AuthProvider({children}: Props) {
         localStorage.removeItem("authToken");
     };
 
+    const updateUser = async (userDTO: userDTO) => {
+        setError(null);
+        try {
+            if (user != null) {
+                setLoading(true)
+                let response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
+                    headers: {
+                        Authorization: `Bearer ${user.authToken}`,
+                    },
+                })
+                
+                setUser(
+                    response.data as UserData
+                )
+            }
+        } catch (err) {
+            console.log("Error updating user: " + err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     const values: authContextType = {
         user,
         isAuthenticated,
         login,
         logout,
         loading,
+        updateUser,
         error,
     };
 

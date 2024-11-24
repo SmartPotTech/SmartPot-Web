@@ -25,3 +25,11 @@ export type Notifications = {
     type: string,
     date: string,
 }
+
+export type userDTO = {
+    name: string,
+    lastname: string,
+    email: string | null,
+    password: string | null,
+    role: string | null
+}
