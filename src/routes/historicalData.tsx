@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useAuthContext} from "../contexts/AuthContext";
 import {getCrop, getHistoryFromCrop} from "../api/Api";
 import {Crop, History} from "../types/ApiResponses";
-import D3Chart from "../components/D3Chart.tsx";
+// import D3Chart from "../components/D3Chart.tsx";
 import "../assets/styles/MainContainer.css";
 
 export default function HistoricalData() {
@@ -13,23 +13,6 @@ export default function HistoricalData() {
 
     const {user, loading} = useAuthContext();
 
-    // Efecto que se ejecuta al montar el componente, solo si el usuario no está autenticado
-    // useEffect(() => {
-    //     const loginAndFetchData = async () => {
-    //         if (!isAuthenticated && !loadingLogin) {
-    //             setLoadingLogin(true);
-    //             try {
-    //                 // Email, Password (normalmente esto sería un formulario)
-    //                 await login("juan.perez@example.com", "Contraseña1");
-    //             } catch (error) {
-    //                 console.error("Error during login: ", error);
-    //             } finally {
-    //                 setLoadingLogin(false);
-    //             }
-    //         }
-    //     };
-    //     loginAndFetchData();
-    // }, [isAuthenticated, login, loadingLogin]);
 
     // Efecto para obtener datos del cultivo y su historial una vez que el usuario esté autenticado
     useEffect(() => {
@@ -114,14 +97,17 @@ export default function HistoricalData() {
                         </tbody>
                     </table>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-                    <D3Chart history={history} measure="brightness" label="Brillo"/>
-                    <D3Chart history={history} measure="humidity" label="Humedad"/>
-                    <D3Chart history={history} measure="ph" label="pH"/>
-                    <D3Chart history={history} measure="tds" label="TDS"/>
-                    <D3Chart history={history} measure="temperature" label="Temperatura"/>
-                </div>
+
+
             </main>
         </>
-    );
+    );/*
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <D3Chart history={history} measure="brightness" label="Brillo"/>
+        <D3Chart history={history} measure="humidity" label="Humedad"/>
+        <D3Chart history={history} measure="ph" label="pH"/>
+        <D3Chart history={history} measure="tds" label="TDS"/>
+        <D3Chart history={history} measure="temperature" label="Temperatura"/>
+    </div>
+    */
 }

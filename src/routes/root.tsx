@@ -21,11 +21,11 @@ export default function Root() {
 
 
     useEffect(() => {
-        console.log(isAuthenticated)
-        if (!isAuthenticated) {
-            navigate("/login")
+        if (!loading && !isAuthenticated) {
+            navigate("/login");
         }
-    }, [isAuthenticated, navigate]);
+    }, [loading, isAuthenticated, navigate]);
+
 
     if (loading) return (<Loading/>);
 

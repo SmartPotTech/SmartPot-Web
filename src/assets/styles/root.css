@@ -56,11 +56,7 @@ body {
     padding-left: 20px;
 }
 
-/* Estilos para el contenido principal */
-.mainContent {
 
-    padding-top: 120px;
-}
 
 
 
@@ -80,15 +76,9 @@ body {
 
 }
 
-@media screen and (max-width: 799px) {
-    .main-content {
-        margin-left: 0; /* Sin margen en pantallas pequeñas */
-        margin-bottom: 60px; /* Espacio para la sidebar en la parte inferior */
-    }
-}
 
 .sidebar-mobile{
-    width: 100%;
+    width: 100vw;
     bottom: 0;
     position: fixed;
     left: 0;
