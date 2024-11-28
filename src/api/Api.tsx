@@ -38,7 +38,7 @@ export async function getCrop(user: UserData): Promise<Crop> {
     return crop[0];
 }
 
-export async function getNotifications(user: { id: string }): Promise<Notifications[]> {
+export async function getNotifications(user: UserData): Promise<Notifications[]> {
     let notifications: Notifications[] = [];
 
     console.log("[API/NOTIFICATIOS] User id: " +  + user.id)

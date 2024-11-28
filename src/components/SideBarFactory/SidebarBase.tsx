@@ -12,7 +12,7 @@ const SidebarBase: React.FC<SidebarProps> = ({ title, icons, labels, paths }) =>
         icon: <Icon style={{ fontSize: '20px',}}/>, // Crea el elemento del ícono
         label: <Link to={paths[index]}>{labels[index]}</Link>, // Link con etiqueta
     }));
-    const { user, logout } = useAuthContext();
+    const { logout } = useAuthContext();
 
     return (
         <div id="sidebar" className="sidebar">

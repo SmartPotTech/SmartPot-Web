@@ -13,8 +13,7 @@ export default function SessionBar() {
         <>
 
             <header className="sessionBar">
-
-                <NotificationBell user={user} />
+                <NotificationBell/>
                 <Divider className="Divider" type='vertical'></Divider>
 
                 <span className="sessionBarItem">Bienvenid@, {user?.name}</span>

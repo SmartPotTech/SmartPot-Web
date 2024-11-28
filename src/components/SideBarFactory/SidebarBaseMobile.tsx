@@ -8,7 +8,7 @@ const SidebarBaseMobile: React.FC<SidebarProps> = ({icons, labels, paths}) => {
     const [value, setValue] = React.useState(0);
     const navigate = useNavigate();
 
-    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue); // Actualiza el valor seleccionado
         navigate(paths[newValue]); // Redirige a la ruta correspondiente
     };
