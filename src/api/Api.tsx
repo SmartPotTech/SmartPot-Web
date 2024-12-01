@@ -1,7 +1,7 @@
 import axios from "axios";
 import {UserData} from "../contexts/AuthContext";
 import {Crop, History, Notifications} from "../types/ApiResponses";
-import {cropHistory, userCrop, userNotifications} from "./Endpoints";
+import {cropHistory, cropHistoryRange, userCrop, userNotifications} from "./Endpoints";
 
 export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<History[]> {
     let history: History[] = [];
@@ -16,6 +16,23 @@ export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<Hi
             history = response.data;
         })
         .catch((e) => console.log("Cant fetch history data. err: " + e));
+
+    return history;
+}
+
+export async function getHistoryFromDateRange(user: UserData, crop: Crop, ranges: {startDate: string, endDate: string}): Promise<History[]> {
+    let history: History[] = [];
+
+    console.log("[API/HISTORY RANGE] fetching history from range")
+    console.log("[API/HISTORY] User id: " + user.id)
+    console.log("[API/HISTORY] Crop id: " + crop.id)
+
+    await axios.post(`${cropHistoryRange}${crop.id}`, ranges, getAuthHeaders(user))
+        .then( response => {
+            console.log(response)
+            history = response.data
+        })
+        .catch((e) => console.log("Cant fetch history data from ranges: " + e));
 
     return history;
 }
