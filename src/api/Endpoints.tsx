@@ -12,6 +12,7 @@ export const userUpdate =  `${BASE_URL}/Users/Update/`
 
 // History
 export const cropHistory = `${BASE_URL}/Records/crop/`;
+export const cropHistoryRange = `${BASE_URL}/Records/crop/between/`;
 
 // Crops
 export const userCrop = `${BASE_URL}/Cultivos/User/`;
