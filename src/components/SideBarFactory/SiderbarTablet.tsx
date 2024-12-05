@@ -1,5 +1,5 @@
 // SidebarTablet.tsx
-import React from "react";
+//import React from "react";
 import { SidebarProps, SidebarInterface } from "./ISideBar.ts";
 import SidebarBase from "./SidebarBase";
 
