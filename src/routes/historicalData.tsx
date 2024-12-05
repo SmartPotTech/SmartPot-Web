@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 import { getCrop, getHistoryFromCrop, getHistoryFromDateRange } from "../api/Api";
 import { Crop, History } from "../types/ApiResponses";
-// import D3Chart from "../components/D3Chart.tsx";
+import PlotlyChart from "../components/PlotlyChart.tsx";
 import "../assets/styles/MainContainer.css";
 import Loading from "../components/Loading";
 
@@ -103,7 +103,7 @@ export default function HistoricalData() {
     return (
         <>
             <main className="mainContent"
-                style={{ backgroundColor: "#f9fafb", padding: "2rem" }}>
+                  style={{backgroundColor: "#f9fafb", padding: "2rem"}}>
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
@@ -130,59 +130,68 @@ export default function HistoricalData() {
                             showPreview={true}
                             moveRangeOnFirstSelection={true}
                             months={2}
-                            shownDate={subMonths(new Date(), 1)} 
+                            shownDate={subMonths(new Date(), 1)}
                             initialFocusedRange={[0, 1]}
                             maxDate={new Date()}
                         />
                     </Dropdown>
 
-                    <button 
-                        className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
+                    <button
+                        className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
                         onClick={fetchCropAndHistoryByRange}
                     >
-                            Filtrar
+                        Filtrar
                     </button>
 
                     <table className="min-w-full table-auto border-collapse text-sm">
                         <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
-                            </tr>
+                        <tr>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
+                        </tr>
                         </thead>
                         <tbody className="bg-white">
-                            {history.map((e, index) => (
-                                <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                                    <td className="px-6 py-4 text-gray-700">{index + 1}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
-                                    <td className="px-6 py-4 text-gray-700">{e.date}</td>
-                                </tr>
-                            ))}
+                        {history.map((e, index) => (
+                            <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                                <td className="px-6 py-4 text-gray-700">{index + 1}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
+                                <td className="px-6 py-4 text-gray-700">{e.date}</td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
-
-
+                <div className="grid grid-cols-1 gap-6">
+                    <div className="h-full">
+                        <PlotlyChart history={history} measure="brightness" label="Brillo"/>
+                    </div>
+                    <div className="h-full">
+                        <PlotlyChart history={history} measure="humidity" label="Humedad"/>
+                    </div>
+                    <div className="h-full">
+                        <PlotlyChart history={history} measure="ph" label="pH"/>
+                    </div>
+                    <div className="h-full">
+                        <PlotlyChart history={history} measure="tds" label="TDS"/>
+                    </div>
+                    <div className="h-full">
+                        <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+                    </div>
+                </div>
             </main>
         </>
-    );/*
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-        <D3Chart history={history} measure="brightness" label="Brillo"/>
-        <D3Chart history={history} measure="humidity" label="Humedad"/>
-        <D3Chart history={history} measure="ph" label="pH"/>
-        <D3Chart history={history} measure="tds" label="TDS"/>
-        <D3Chart history={history} measure="temperature" label="Temperatura"/>
-    </div>
-    */
+
+    );
+
 }
