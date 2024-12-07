@@ -14,7 +14,7 @@ RUN npm install -g npm@10.8.2
 RUN npm install
 
 # Copiar el resto de los archivos al contenedor
-COPY . .
+COPY . ./
 
 # Compilar TypeScript si es necesario
 RUN npm run build
@@ -23,4 +23,4 @@ RUN npm run build
 EXPOSE 5173
 
 # Comando para arrancar el servidor de desarrollo de Vite
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev", "--", "--host"]
