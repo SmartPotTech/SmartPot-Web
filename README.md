@@ -2,12 +2,6 @@
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/5d675e13-68c9-4d3d-a61d-da09db0574c4/deploy-status)](https://app.netlify.com/sites/smarpot/deploys)
 
-¡Gracias por compartir el ejemplo! A continuación, te adapto la documentación para **la imagen `web-smartpot`** siguiendo el formato del ejemplo que ya tienes, y con los detalles específicos para esta nueva imagen:
-
----
-
-# **Web-SmartPot**
-
 ## **Deployment**
 
 ### 1. **Creación de la Imagen Docker**
