@@ -12,7 +12,7 @@ export default function SessionBar() {
     return (
         <>
 
-            <header className="sessionBar">
+            <header className="sessionBar z-20">
 
                 <NotificationBell user={user} />
                 <Divider className="Divider" type='vertical'></Divider>
