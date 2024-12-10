@@ -8,7 +8,7 @@ import Loading from "../components/Loading";
 
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { subDays, subMonths } from "date-fns";  
+import { subDays, subMonths } from "date-fns";
 import { DateRange, RangeKeyDict } from 'react-date-range';
 import Dropdown from "../components/Dropdown";
 
@@ -17,6 +17,7 @@ export default function HistoricalData() {
     const [crop, setCrop] = useState<Crop | null>(null);
     const [loadingData, setLoadingData] = useState<boolean>(true); // Estado de carga
     const [loadingLogin] = useState<boolean>(false); // Estado de carga de login
+    const [toggleTable, setToggleTable] = useState<boolean>(true)
 
     const { user, loading } = useAuthContext();
 
@@ -31,14 +32,14 @@ export default function HistoricalData() {
     }]);
     const [rangeText, setRangeText] = useState("Sin rango selecionado");
 
-    const handleDateSelect = (ranges: RangeKeyDict) => { 
-        const startDate = ranges.selection.startDate; 
-        const endDate = ranges.selection.endDate; 
-        if (endDate != undefined && startDate != undefined) { 
+    const handleDateSelect = (ranges: RangeKeyDict) => {
+        const startDate = ranges.selection.startDate;
+        const endDate = ranges.selection.endDate;
+        if (endDate != undefined && startDate != undefined) {
             setDate(prevDate => [{ ...prevDate[0], startDate, endDate }]);
-            console.log(date[0].startDate + "\n" + date[0].endDate); 
-            setRangeText(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`); 
-        } 
+            console.log(date[0].startDate + "\n" + date[0].endDate);
+            setRangeText(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+        }
     };
 
     const fetchCropAndHistoryByRange = async () => {
@@ -103,7 +104,7 @@ export default function HistoricalData() {
     return (
         <>
             <main className="mainContent"
-                  style={{backgroundColor: "#f9fafb", padding: "2rem"}}>
+                style={{ backgroundColor: "#f9fafb", padding: "2rem" }}>
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
@@ -122,72 +123,98 @@ export default function HistoricalData() {
 
                 <div className="overflow-x-auto bg-white shadow-md rounded-lg mb-8">
 
-                    <Dropdown buttonLabel={rangeText}>
-                        <DateRange
-                            onChange={handleDateSelect}
-                            ranges={date}
-                            direction="horizontal"
-                            showPreview={true}
-                            moveRangeOnFirstSelection={true}
-                            months={2}
-                            shownDate={subMonths(new Date(), 1)}
-                            initialFocusedRange={[0, 1]}
-                            maxDate={new Date()}
-                        />
-                    </Dropdown>
+                    <div className="flex content-between justify-between">
+                        <span className="m-2">
+                            <Dropdown buttonLabel={rangeText}>
+                                <DateRange
+                                    onChange={handleDateSelect}
+                                    ranges={date}
+                                    direction="horizontal"
+                                    showPreview={true}
+                                    moveRangeOnFirstSelection={true}
+                                    months={2}
+                                    shownDate={subMonths(new Date(), 1)}
+                                    initialFocusedRange={[0, 1]}
+                                    maxDate={new Date()}
+                                />
+                            </Dropdown>
+                            <button
+                                className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                                onClick={fetchCropAndHistoryByRange}
+                            >
+                                Filtrar
+                            </button>
+                        </span>
+                        <span className="m-2">
+                            <button
+                                className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                                onClick={() => setToggleTable(!toggleTable)}
+                            > {
+                                    toggleTable ?
+                                        ("Cambiar a graficas")
+                                        :
+                                        ("Cambiar a tabla")
+                                } </button>
+                        </span>
+                    </div>
 
-                    <button
-                        className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
-                        onClick={fetchCropAndHistoryByRange}
-                    >
-                        Filtrar
-                    </button>
 
-                    <table className="min-w-full table-auto border-collapse text-sm">
-                        <thead className="bg-gray-100">
-                        <tr>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
-                        </tr>
-                        </thead>
-                        <tbody className="bg-white">
-                        {history.map((e, index) => (
-                            <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                                <td className="px-6 py-4 text-gray-700">{index + 1}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
-                                <td className="px-6 py-4 text-gray-700">{e.date}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-                <div className="grid grid-cols-1 gap-6">
-                    <div className="h-full">
-                        <PlotlyChart history={history} measure="brightness" label="Brillo"/>
-                    </div>
-                    <div className="h-full">
-                        <PlotlyChart history={history} measure="humidity" label="Humedad"/>
-                    </div>
-                    <div className="h-full">
-                        <PlotlyChart history={history} measure="ph" label="pH"/>
-                    </div>
-                    <div className="h-full">
-                        <PlotlyChart history={history} measure="tds" label="TDS"/>
-                    </div>
-                    <div className="h-full">
-                        <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
-                    </div>
+
+                    {
+                        toggleTable ?
+                            (
+                                <table className="min-w-full table-auto border-collapse text-sm">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
+                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white">
+                                        {history.map((e, index) => (
+                                            <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                                                <td className="px-6 py-4 text-gray-700">{index + 1}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
+                                                <td className="px-6 py-4 text-gray-700">{e.date}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+
+                            )
+                            :
+                            (
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div className="h-full">
+                                        <PlotlyChart history={history} measure="brightness" label="Brillo" />
+                                    </div>
+                                    <div className="h-full">
+                                        <PlotlyChart history={history} measure="humidity" label="Humedad" />
+                                    </div>
+                                    <div className="h-full">
+                                        <PlotlyChart history={history} measure="ph" label="pH" />
+                                    </div>
+                                    <div className="h-full">
+                                        <PlotlyChart history={history} measure="tds" label="TDS" />
+                                    </div>
+                                    <div className="h-full">
+                                        <PlotlyChart history={history} measure="temperature" label="Temperatura" />
+                                    </div>
+                                </div>
+                            )
+                    }
+
                 </div>
             </main>
         </>
