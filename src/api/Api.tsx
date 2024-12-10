@@ -1,7 +1,10 @@
 import axios from "axios";
 import {UserData} from "../contexts/AuthContext";
-import {Crop, History, Notifications} from "../types/ApiResponses";
+import {Crop, History, Measures, Notifications} from "../types/ApiResponses";
 import {cropHistory, cropHistoryRange, userCrop, userNotifications} from "./Endpoints";
+import { FlyweightFactory } from "../components/Flyweight/FlyweightFactory";
+
+let measureFactory = new FlyweightFactory<Measures>()
 
 export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<History[]> {
     let history: History[] = [];
@@ -17,7 +20,11 @@ export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<Hi
         })
         .catch((e) => console.log("Cant fetch history data. err: " + e));
 
-    return history;
+    measureFactory.showFlyweights();
+    return history.map(e => {
+        e.measures = measureFactory.getFlyweight(e.measures).sharedState
+        return e;
+    });
 }
 
 export async function getHistoryFromDateRange(user: UserData, crop: Crop, ranges: {startDate: string, endDate: string}): Promise<History[]> {
@@ -34,7 +41,11 @@ export async function getHistoryFromDateRange(user: UserData, crop: Crop, ranges
         })
         .catch((e) => console.log("Cant fetch history data from ranges: " + e));
 
-    return history;
+    measureFactory.showFlyweights()
+    return history.map(e => {
+        e.measures = measureFactory.getFlyweight(e.measures).sharedState
+        return e
+    });
 }
 
 // TODO: Este metodo deberia devolver solo un cultivo, mas sin enbargo la solicitud devuelve varios
