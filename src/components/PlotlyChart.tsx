@@ -60,8 +60,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({ history, measure, label }) =>
     };
 
     return (
-        <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md mb-8">
-            <h3 className="text-lg font-semibold text-center mb-4">{label}</h3>
+        <div className="chart-container overflow-auto max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mb-8">
             <Plot
                 data={[traceArea, traceLine]}
                 layout={layout}
