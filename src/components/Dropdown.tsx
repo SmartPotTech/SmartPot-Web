@@ -25,7 +25,7 @@ const Dropdown: React.FC<DropdownProps> = ({ children, buttonLabel }) => {
 
             <div ref={ref}>
                 {isOpen && (
-                    <div className="origin-top-right absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    <div className="origin-top-right absolute z-10 left-10 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                         {children}
                     </div>
                 )}
