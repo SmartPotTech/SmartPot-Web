@@ -172,22 +172,12 @@ export default function HistoricalData() {
                         </tbody>
                     </table>
                 </div>
-                <div className="grid grid-cols-1 gap-6">
-                    <div className="h-full">
+                <div className="overflow-auto max-w-full">
                         <PlotlyChart history={history} measure="brightness" label="Brillo"/>
-                    </div>
-                    <div className="h-full">
                         <PlotlyChart history={history} measure="humidity" label="Humedad"/>
-                    </div>
-                    <div className="h-full">
                         <PlotlyChart history={history} measure="ph" label="pH"/>
-                    </div>
-                    <div className="h-full">
                         <PlotlyChart history={history} measure="tds" label="TDS"/>
-                    </div>
-                    <div className="h-full">
                         <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
-                    </div>
                 </div>
             </main>
         </>
