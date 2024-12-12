@@ -124,7 +124,7 @@ export default function HistoricalData() {
                 <div className="overflow-x-auto bg-white shadow-md rounded-lg mb-8">
 
                     <div className="flex content-between justify-between">
-                        <span className="m-2">
+                        <span className="m-4">
                             <Dropdown buttonLabel={rangeText}>
                                 <DateRange
                                     onChange={handleDateSelect}
@@ -145,7 +145,7 @@ export default function HistoricalData() {
                                 Filtrar
                             </button>
                         </span>
-                        <span className="m-2">
+                        <span className="m-4">
                             <button
                                 className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
                                 onClick={() => setToggleTable(!toggleTable)}
@@ -195,22 +195,12 @@ export default function HistoricalData() {
                             )
                             :
                             (
-                                <div className="grid grid-cols-1 gap-6">
-                                    <div className="h-full">
-                                        <PlotlyChart history={history} measure="brightness" label="Brillo" />
-                                    </div>
-                                    <div className="h-full">
-                                        <PlotlyChart history={history} measure="humidity" label="Humedad" />
-                                    </div>
-                                    <div className="h-full">
-                                        <PlotlyChart history={history} measure="ph" label="pH" />
-                                    </div>
-                                    <div className="h-full">
-                                        <PlotlyChart history={history} measure="tds" label="TDS" />
-                                    </div>
-                                    <div className="h-full">
-                                        <PlotlyChart history={history} measure="temperature" label="Temperatura" />
-                                    </div>
+                                <div className="overflow-auto max-w-full">
+                                    <PlotlyChart history={history} measure="brightness" label="Brillo" />
+                                    <PlotlyChart history={history} measure="humidity" label="Humedad" />
+                                    <PlotlyChart history={history} measure="ph" label="pH" />
+                                    <PlotlyChart history={history} measure="tds" label="TDS" />
+                                    <PlotlyChart history={history} measure="temperature" label="Temperatura" />
                                 </div>
                             )
                     }
