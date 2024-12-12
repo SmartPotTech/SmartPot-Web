@@ -17,38 +17,34 @@ export default function Profile() {
 
     return (
         <>
-                <main className="mainContent">
-                    <div className="cd__main">
-                        <div className="profile-page">
-                            <div className="content">
-                                <div className="content__cover">
-                                    <div className="content__avatar"></div>
-                                    <div className="content__bull">
-                                        <span></span><span></span><span></span><span></span><span></span>
-                                    </div>
-                                </div>
+            <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+                <h1 className="text-3xl font-semibold text-center mb-6">Profile Page</h1>
 
-                                <div className="content__title">
-                                    <h1>{user?.name} {user?.lastname}</h1><span>Colombia</span>
-                                </div>
-                                <div className="content__description">
-                                    <p>{user?.email}</p>
-                                </div>
-                                <ul className="content__list">
-                                    <li><span>1</span>Cultivos</li>
-                                </ul>
-                                <div className="content__button">
-                                    <a className="button" href="#">
-                                        <div className="button__border"></div>
-                                        <div className="button__bg"></div>
-                                        <p className="button__text">Editar perfil</p>
-                                    </a>
-                                </div>
-                            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    {/* User Details */}
+                    <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-semibold mb-4">User Information</h2>
+                        <div className="flex flex-col space-y-2">
+                            <p><span className="font-semibold">Name:</span> {user?.name} {user?.lastname}</p>
+                            <p><span className="font-semibold">Email:</span> {user?.email || "Not provided"}</p>
+                            <p><span className="font-semibold">Role:</span> {user?.role}</p>
                         </div>
                     </div>
 
-                </main>
+                    {/* Update Profile Section */}
+                    <div className="bg-blue-50 p-6 rounded-lg shadow-md flex flex-col items-center">
+                        <h2 className="text-2xl font-semibold mb-4">Update Your Profile</h2>
+                        <p className="text-gray-600 mb-6">Want to update your information? Click the button below to
+                            update your profile.</p>
+                        <button
+                            className="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-200"
+                            onClick={handleUpdate}
+                        >
+                            Update Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
         </>
     )
 
