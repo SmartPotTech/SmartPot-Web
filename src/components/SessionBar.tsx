@@ -14,11 +14,11 @@ export default function SessionBar() {
 
             <header className="sessionBar z-20">
 
-                <NotificationBell user={user} />
+                <NotificationBell></NotificationBell>
                 <Divider className="Divider" type='vertical'></Divider>
 
                 <span className="sessionBarItem">Bienvenid@, {user?.name}</span>
-                <a href="perfil"><UserOutlined className="sessionBarItem perfil"/></a>
+                <UserOutlined className="sessionBarItem perfil"/>
 
             </header>
 

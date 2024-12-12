@@ -1,11 +1,10 @@
-import { BellOutlined } from "@ant-design/icons";
-import { Notifications } from "../types/ApiResponses";
-import { getNotifications } from "../api/Api";
-import { useEffect, useState } from "react";
-import { useAuthContext } from "../contexts/AuthContext";
-
+import {BellOutlined} from "@ant-design/icons";
+import {Notifications} from "../types/ApiResponses";
+import {getNotifications} from "../api/Api";
+import {useEffect, useState} from "react";
+import {useAuthContext} from "../contexts/AuthContext";
 const NotificationBell: React.FC = () => {
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const [notifications, setNotifications] = useState<Notifications[]>([]);
 
     const fetchNotifications = async () => {
@@ -20,8 +19,9 @@ const NotificationBell: React.FC = () => {
     };
 
     useEffect(() => {
-        if (user?.id && user?.authToken) fetchNotifications();
-    }, [user]);
+            if (user?.id && user?.authToken) fetchNotifications();
+        },
+        [user]);
 
     return (
         <div className="notification-container">
