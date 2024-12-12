@@ -6,7 +6,7 @@ import {useAuthContext} from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
 import Loading from "../components/Loading.tsx";
 
-import {BarChartOutlined, HomeOutlined, UserOutlined} from "@ant-design/icons";
+import {BarChartOutlined, HomeOutlined} from "@ant-design/icons";
 import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
 
 
@@ -15,9 +15,9 @@ export default function Root() {
     const {isAuthenticated, loading} = useAuthContext();
     const navigate = useNavigate();
 
-    const icons = [HomeOutlined, BarChartOutlined, UserOutlined];
-    const labels = ["Panel de inicio", "Datos Históricos", "Perfil"];
-    const paths = ["/panel", "/historial", "/perfil"];
+    const icons = [HomeOutlined, BarChartOutlined];
+    const labels = ["Panel de inicio", "Datos Históricos"];
+    const paths = ["/panel", "/historial"];
 
 
     useEffect(() => {
