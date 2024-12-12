@@ -19,6 +19,7 @@ export type UserData = {
     name: string;
     lastname: string;
     role: string;
+    email: string;
 };
 
 const defaultValues: authContextType = {
@@ -79,6 +80,7 @@ export function AuthProvider({children}: Props) {
                     name: responseUser.data.name,
                     lastname: responseUser.data.lastname,
                     role: responseUser.data.role,
+                    email: responseUser.data.email,
                 });
                 setIsAuthenticated(true);
             }
@@ -111,6 +113,7 @@ export function AuthProvider({children}: Props) {
                 name: responseUser.data.name,
                 lastname: responseUser.data.lastname,
                 role: responseUser.data.role,
+                email: responseUser.data.email,
             };
 
             // Set user and token in state and localStorage
@@ -140,7 +143,7 @@ export function AuthProvider({children}: Props) {
         try {
             if (user != null) {
                 setLoading(true)
-                let response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
+                const response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
                     headers: {
                         Authorization: `Bearer ${user.authToken}`,
                     },
