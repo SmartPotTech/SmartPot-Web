@@ -19,8 +19,11 @@ COPY . ./
 # Compilar TypeScript si es necesario
 RUN npm run build
 
-# Exponer el puerto en el que Vite corre (puerto por defecto 5173)
+# Instalar el paquete 'serve' para servir los archivos estáticos
+RUN npm install -g serve
+
+#  Exponer el puerto en el que se va a correr la aplicación (puerto por defecto 5173)
 EXPOSE 5173
 
-# Comando para arrancar el servidor de desarrollo de Vite
-CMD ["npm", "run", "dev", "--", "--host"]
+# Comando para arrancar el servidor estático de producción
+CMD ["serve", "-s", "dist", "-l", "5173"]
