@@ -1,4 +1,6 @@
 import { useAuthContext } from "../contexts/AuthContext"
+import "../assets/styles/Profile.css"
+
 export default function Profile() {
 
     const {user, updateUser } = useAuthContext();
