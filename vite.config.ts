@@ -21,5 +21,9 @@ export default defineConfig({
       assert: 'assert',
     },
   },
+  define: {
+    'process.env': {},
+    'global': 'window',
+  }
 
 });
