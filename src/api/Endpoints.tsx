@@ -16,6 +16,7 @@ export const cropHistoryRange = `${BASE_URL}/Records/crop/between/`;
 
 // Crops
 export const userCrop = `${BASE_URL}/Cultivos/User/`;
+export const numCrop = `${BASE_URL}/Cultivos/count/`;
 
 // Notifications
 export const userNotifications = `${BASE_URL}/Notificaciones/`;

@@ -8,7 +8,7 @@ export type authContextType = {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
-    updateUser: (user: userDTO) => void;
+    updateUser: (user: { name: string; email: string; lastname: string }) => void;
     loading: boolean;
     error: string | null;
 };

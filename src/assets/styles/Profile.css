@@ -10,7 +10,7 @@
 .profile-page {
     display: flex;
     min-height: 250px;
-    padding-top: 5rem;
+
 }
 @media (max-width: 990px) {
     .profile-page {

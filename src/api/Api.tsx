@@ -1,10 +1,10 @@
 import axios from "axios";
 import {UserData} from "../contexts/AuthContext";
 import {Crop, History, Measures, Notifications} from "../types/ApiResponses";
-import {cropHistory, cropHistoryRange, userCrop, userNotifications} from "./Endpoints";
+import {cropHistory, cropHistoryRange, numCrop, userCrop, userNotifications} from "./Endpoints";
 import { FlyweightFactory } from "../components/Flyweight/FlyweightFactory";
 
-let measureFactory = new FlyweightFactory<Measures>()
+const measureFactory = new FlyweightFactory<Measures>()
 
 export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<History[]> {
     let history: History[] = [];
@@ -64,6 +64,21 @@ export async function getCrop(user: UserData): Promise<Crop> {
         .catch((e) => console.log("Cant fetch Crop data. err: " + e));
 
     return crop[0];
+}
+export async function getNumCrop(user: UserData): Promise<number> {
+    let num = 0;
+
+    console.log("[API/CROP] User id: " + user.id)
+
+    await axios.get(`${numCrop}${user.id}`,
+        getAuthHeaders(user)
+    )
+        .then(response => {
+            num = response.data;
+        })
+        .catch((e) => console.log("Cant fetch Crop data. err: " + e));
+    console.log("++++++++++"+ num)
+    return num;
 }
 
 export async function getNotifications(user: UserData): Promise<Notifications[]> {
