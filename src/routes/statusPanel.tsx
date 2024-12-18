@@ -7,23 +7,22 @@ export default function StatusPanel() {
     const { user } = useAuthContext();
     const [crop, setCrop] = useState<Crop | null>(null);
 
-    // Función para obtener el cultivo
     const fetchCrop = async () => {
-        if (user) {  // Verifica que el usuario esté disponible
+        if (user) {
             try {
                 const fetchedCrop = await getCrop(user);
-                setCrop(fetchedCrop); // Actualiza el estado con los datos obtenidos
-                console.log(fetchedCrop); // Muestra los datos en la consola para depuración
+                setCrop(fetchedCrop);
+                console.log(fetchedCrop);
             } catch (error) {
                 console.error("Error fetching crop or history data: ", error);
             }
         }
     };
 
-    // Llama a fetchCrop cuando el componente se monta o cuando el `user` cambia
+
     useEffect(() => {
-        fetchCrop(); // Llama a la función para obtener el cultivo
-    }, [user]); // Dependencia de `user` para actualizar si cambia
+        fetchCrop();
+    }, [user]);
 
     return (
         <>
