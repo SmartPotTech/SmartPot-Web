@@ -29,6 +29,7 @@ const defaultValues: authContextType = {
     },
     logout: () => {
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateUser: (_userDTO: userDTO) => {
     },
     loading: false,
@@ -140,12 +141,12 @@ export function AuthProvider({children}: Props) {
         try {
             if (user != null) {
                 setLoading(true)
-                let response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
+                const response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
                     headers: {
                         Authorization: `Bearer ${user.authToken}`,
                     },
                 })
-                
+
                 setUser(
                     response.data as UserData
                 )
