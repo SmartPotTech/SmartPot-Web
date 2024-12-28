@@ -1,0 +1,47 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      # Paso 1: Chequear el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
+      # Paso 2: Configurar Node.js (para instalar dependencias y construir el proyecto)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+    
+      # Paso 3: Instalar dependencias de Node.js
+      - name: Install dependencies
+        run: npm install
+    
+      # Paso 4: Construir la aplicación con Vite
+      - name: Build with Vite
+        run: npm run build
+    
+      # Paso 5: Construir la imagen Docker
+      - name: Build the Docker image
+        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:${{ secrets.DOCKER_APP_TAG }} .
+    
+      # Paso 6: Iniciar sesión en Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+    
+      # Paso 7: Hacer push de la imagen Docker a Docker Hub
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_APP_NAME }}:${{ secrets.DOCKER_APP_TAG }}
