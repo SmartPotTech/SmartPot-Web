@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@emotion/styled": "^11.13.0",
-    "@mui/material": "^6.1.7",
+    "@mui/material": "^6.3.0",
     "antd": "^5.21.6",
     "assert": "^2.1.0",
     "axios": "^1.7.7",
