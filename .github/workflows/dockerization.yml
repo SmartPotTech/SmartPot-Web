@@ -1,4 +1,4 @@
-name: Dockerization of Application web
+name: Dockerization of web application
 
 on:
   push:
