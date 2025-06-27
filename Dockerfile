@@ -14,12 +14,15 @@ RUN npm install -g pnpm
 RUN pnpm install
 
 # Copiar el resto de los archivos al contenedor
-COPY . .
+COPY . ./
 
 # Compilar TypeScript si es necesario
 RUN pnpm run build
 
-# Exponer el puerto en el que Vite corre (puerto por defecto 5173)
+# Instalar el paquete 'serve' para servir los archivos estáticos
+RUN npm install -g serve
+
+#  Exponer el puerto en el que se va a correr la aplicación (puerto por defecto 5173)
 EXPOSE 5173
 
 # Comando para arrancar el servidor de desarrollo de Vite

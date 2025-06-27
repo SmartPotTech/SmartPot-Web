@@ -21,7 +21,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({ history, measure, label }) =>
     const { line, fill } = measureColors[measure] || { line: "#000", fill: "#EEE" };
 
     const xValues = history.map(d => new Date(d.date));
-    const yValues = history.map(d => d.measures[measure]);
+    const yValues = history.map(d => d.measures[measure] || 0 );
 
     const traceArea = {
         x: xValues,
@@ -42,7 +42,6 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({ history, measure, label }) =>
         line: { color: line, width: 2 }
     };
 
-    // Opciones del gráfico
     const layout = {
         title: label,
         xaxis: {
@@ -57,8 +56,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({ history, measure, label }) =>
         margin: {
             t: 20, r: 30, b: 60, l: 40
         }
-    };
-
+    }
     return (
         <div className="chart-container overflow-auto max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mb-8">
             <Plot

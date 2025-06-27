@@ -4,6 +4,8 @@
 
 ## **Deployment**
 
+[![Dockerization](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/dockerization.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/dockerization.yml)
+
 ### 1. **Creación de la Imagen Docker**
 
 

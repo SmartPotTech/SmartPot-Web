@@ -8,7 +8,7 @@ export type authContextType = {
     isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
-    updateUser: (user: { name: string; email: string; lastname: string }) => void;
+    updateUser: (user: userDTO) => void;
     loading: boolean;
     error: string | null;
 };
@@ -19,7 +19,6 @@ export type UserData = {
     name: string;
     lastname: string;
     role: string;
-    email: string;
 };
 
 const defaultValues: authContextType = {
@@ -30,6 +29,7 @@ const defaultValues: authContextType = {
     },
     logout: () => {
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateUser: (_userDTO: userDTO) => {
     },
     loading: false,
@@ -80,7 +80,6 @@ export function AuthProvider({children}: Props) {
                     name: responseUser.data.name,
                     lastname: responseUser.data.lastname,
                     role: responseUser.data.role,
-                    email: responseUser.data.email,
                 });
                 setIsAuthenticated(true);
             }
@@ -113,7 +112,6 @@ export function AuthProvider({children}: Props) {
                 name: responseUser.data.name,
                 lastname: responseUser.data.lastname,
                 role: responseUser.data.role,
-                email: responseUser.data.email,
             };
 
             // Set user and token in state and localStorage
@@ -138,17 +136,17 @@ export function AuthProvider({children}: Props) {
         localStorage.removeItem("authToken");
     };
 
-   /* const updateUser = async (userDTO: userDTO) => {
+    const updateUser = async (userDTO: userDTO) => {
         setError(null);
         try {
             if (user != null) {
                 setLoading(true)
-                let response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
+                const response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
                     headers: {
                         Authorization: `Bearer ${user.authToken}`,
                     },
                 })
-                
+
                 setUser(
                     response.data as UserData
                 )
@@ -158,46 +156,7 @@ export function AuthProvider({children}: Props) {
         } finally {
             setLoading(false)
         }
-    }*/
-    const updateUser = async (userDTO: userDTO) => {
-        setError(null);
-        if (!user?.authToken) {
-            console.error("No hay token de autenticación disponible.");
-            setError("No estás autenticado.");
-            return;
-        }
-
-        
-        const hasEmailChanged = user.email !== userDTO.email;
-
-        const updatedUserDTO = { ...userDTO };
-        if (!hasEmailChanged) {
-            delete updatedUserDTO.email;
-        }
-
-        try {
-            setLoading(true);
-            const response = await axios.put(`${userUpdate}${user.id}`, updatedUserDTO, {
-                headers: {
-                    Authorization: `Bearer ${user.authToken}`,
-                },
-            });
-
-            setUser(response.data as UserData);
-        } catch (err: any) {
-            if (err.response?.status === 401) {
-                console.error("Error 401: No autorizado.");
-                setError("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
-                logout();
-            } else {
-                console.error("Error actualizando usuario:", err);
-                setError(err.response?.data?.message || "Ocurrió un error al actualizar.");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    }
 
     const values: authContextType = {
         user,
