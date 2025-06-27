@@ -26,4 +26,4 @@ RUN npm install -g serve
 EXPOSE 5173
 
 # Comando para arrancar el servidor de desarrollo de Vite
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "run", "dev", "--host"]
