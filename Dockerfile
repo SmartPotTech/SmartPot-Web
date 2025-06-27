@@ -1,29 +1,33 @@
 # Usar la imagen oficial de Node.js 20
 FROM node:20-alpine
 
-# Directorio de trabajo dentro del contenedor
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos de package.json y pnpm-lock.yaml al contenedor
+# Instalar pnpm correctamente con corepack
+RUN corepack enable && corepack prepare pnpm@10.12.4 --activate
+
+# Definir el binario global para pnpm
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+# Copiar package.json y pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 
-# Instalar pnpm
-RUN npm install -g pnpm
-
-# Instalar las dependencias del proyecto usando pnpm
+# Instalar dependencias
 RUN pnpm install
 
-# Copiar el resto de los archivos al contenedor
-COPY . ./
+# Copiar el resto del código
+COPY . .
 
-# Compilar TypeScript si es necesario
+# Compilar
 RUN pnpm run build
 
-# Instalar el paquete 'serve' para servir los archivos estáticos
-RUN npm install -g serve
+# Instalar `serve` globalmente
+RUN pnpm add -g serve
 
-#  Exponer el puerto en el que se va a correr la aplicación (puerto por defecto 5173)
+# Exponer puerto
 EXPOSE 5173
 
-# Comando para arrancar el servidor de desarrollo de Vite
-CMD ["pnpm", "run", "dev", "--host"]
+# Comando para servir los archivos compilados
+CMD ["serve", "-s", "dist", "-l", "5173"]
