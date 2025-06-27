@@ -96,7 +96,7 @@ export function AuthProvider({children}: Props) {
         setError(null); // Reset errors on each attempt
         try {
             const response = await axios.post(auth, {email, password});
-            const authToken = response.data;
+            const authToken = response.data.token;
 
             if (!authToken) {
                 throw new Error("No token received from the server.");
