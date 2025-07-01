@@ -2,7 +2,7 @@ import axios from "axios";
 import {UserData} from "../contexts/AuthContext";
 import {Crop, History, Measures, Notifications} from "../types/ApiResponses";
 import {cropHistory, cropHistoryRange, numCrop, userCrop, userNotifications} from "./Endpoints";
-import { FlyweightFactory } from "../components/Flyweight/FlyweightFactory";
+import {FlyweightFactory} from "../components/Flyweight/FlyweightFactory";
 
 const measureFactory = new FlyweightFactory<Measures>()
 
@@ -27,7 +27,10 @@ export async function getHistoryFromCrop(user: UserData, crop: Crop): Promise<Hi
     });
 }
 
-export async function getHistoryFromDateRange(user: UserData, crop: Crop, ranges: {startDate: string, endDate: string}): Promise<History[]> {
+export async function getHistoryFromDateRange(user: UserData, crop: Crop, ranges: {
+    startDate: string,
+    endDate: string
+}): Promise<History[]> {
     let history: History[] = [];
 
     console.log("[API/HISTORY RANGE] fetching history from range")
@@ -35,7 +38,7 @@ export async function getHistoryFromDateRange(user: UserData, crop: Crop, ranges
     console.log("[API/HISTORY] Crop id: " + crop.id)
 
     await axios.post(`${cropHistoryRange}${crop.id}`, ranges, getAuthHeaders(user))
-        .then( response => {
+        .then(response => {
             console.log(response)
             history = response.data
         })
@@ -65,6 +68,7 @@ export async function getCrop(user: UserData): Promise<Crop> {
 
     return crop[0];
 }
+
 export async function getNumCrop(user: UserData): Promise<number> {
     let num = 0;
 
@@ -77,14 +81,14 @@ export async function getNumCrop(user: UserData): Promise<number> {
             num = response.data;
         })
         .catch((e) => console.log("Cant fetch Crop data. err: " + e));
-    console.log("++++++++++"+ num)
+    console.log("++++++++++" + num)
     return num;
 }
 
 export async function getNotifications(user: UserData): Promise<Notifications[]> {
     let notifications: Notifications[] = [];
 
-    console.log("[API/NOTIFICATIOS] User id: " +  + user.id)
+    console.log("[API/NOTIFICATIOS] User id: " + +user.id)
 
     await axios.get(`${userNotifications}${user.id}`,
         getAuthHeaders(user)

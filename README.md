@@ -8,7 +8,6 @@
 
 ### 1. **Creación de la Imagen Docker**
 
-
 2. **Ejecuta el siguiente comando** para construir la imagen Docker a partir del `Dockerfile`:
 
    ```bash
@@ -16,7 +15,8 @@
    ```
 
     - Esto construirá la imagen **`web-smartpot`** con el tag `latest`.
-    - Si necesitas especificar una plataforma (por ejemplo, para garantizar compatibilidad en diferentes arquitecturas), puedes agregar la opción `--platform linux/amd64` al comando.
+    - Si necesitas especificar una plataforma (por ejemplo, para garantizar compatibilidad en diferentes arquitecturas),
+      puedes agregar la opción `--platform linux/amd64` al comando.
 
    **Ejemplo con plataforma**:
 
@@ -44,5 +44,6 @@
    docker push sebastian190030/web-smartpot:latest
    ```
 
-    - Este comando subirá la imagen al repositorio público en Docker Hub con el nombre `sebastian190030/web-smartpot` y el tag `latest`.
+    - Este comando subirá la imagen al repositorio público en Docker Hub con el nombre `sebastian190030/web-smartpot` y
+      el tag `latest`.
     - Si la imagen no tiene un tag explícito, Docker usará el tag `latest` por defecto.

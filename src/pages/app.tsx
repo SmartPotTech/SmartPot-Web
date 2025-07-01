@@ -5,7 +5,7 @@ import '../assets/styles/app.css'
 import ErrorPage from '../routes/errorPage.tsx'
 import StatusPanel from '../routes/statusPanel.tsx';
 import HistoricalData from '../routes/historicalData.tsx';
-import { AuthProvider } from '../contexts/AuthContext.tsx';
+import {AuthProvider} from '../contexts/AuthContext.tsx';
 import Login from '../routes/login.tsx';
 
 
@@ -14,7 +14,7 @@ function App() {
     const router = createBrowserRouter([
         {
             path: "/login",
-            element: <Login />,
+            element: <Login/>,
             errorElement: <ErrorPage/>
         },
         {

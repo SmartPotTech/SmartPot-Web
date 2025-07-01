@@ -3,6 +3,7 @@ import {Notifications} from "../types/ApiResponses";
 import {getNotifications} from "../api/Api";
 import {useEffect, useState} from "react";
 import {useAuthContext} from "../contexts/AuthContext";
+
 const NotificationBell: React.FC = () => {
     const {user} = useAuthContext();
     const [notifications, setNotifications] = useState<Notifications[]>([]);

@@ -39,7 +39,7 @@ body {
     background-color: #ffffff !important;
 }
 
-.logout{
+.logout {
     left: 12px;
     position: absolute;
     bottom: 0;
@@ -57,29 +57,23 @@ body {
 }
 
 
-
-
-
 /* Media query para pantallas de 800px o menos */
 @media screen and (min-width: 800px) and (max-width: 1024px) {
-    .sidebar{
+    .sidebar {
         width: 80px;
         text-align: center;
         padding-top: 45px;
     }
 
-    .title{
+    .title {
         padding-left: 0px !important;
     }
-
-
-
 
 
 }
 
 
-.sidebar-mobile{
+.sidebar-mobile {
     width: 100vw;
     bottom: 0;
     position: fixed;
@@ -91,9 +85,7 @@ body {
 }
 
 
-
-
-.ant-menu{
+.ant-menu {
     border-inline-end: 0px !important;
 }
 

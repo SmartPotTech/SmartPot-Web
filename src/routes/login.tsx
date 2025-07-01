@@ -1,6 +1,6 @@
-import { FormEvent, SyntheticEvent, useEffect, useState } from "react";
-import { useAuthContext } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import {FormEvent, SyntheticEvent, useEffect, useState} from "react";
+import {useAuthContext} from "../contexts/AuthContext";
+import {useNavigate} from "react-router-dom";
 import logo from "../assets/images/lechuga.png";
 import Loading from "../components/Loading";
 import "../assets/styles/login.css"
@@ -37,7 +37,7 @@ export default function Login() {
             .catch(error => console.log(error));
     }
 
-    if (loading) return (<Loading />);
+    if (loading) return (<Loading/>);
 
     return (
         <>
@@ -120,7 +120,7 @@ export default function Login() {
                                 type="submit"
                                 className="bg-main-colour flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                             >
-                                { loading ? ("Loading") : ("Sign in") }
+                                {loading ? ("Loading") : ("Sign in")}
                             </button>
                         </div>
                     </form>

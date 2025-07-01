@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { useAuthContext } from "../contexts/AuthContext";
-import { getCrop, getHistoryFromCrop, getHistoryFromDateRange } from "../api/Api";
-import { Crop, History } from "../types/ApiResponses";
+import {useEffect, useState} from "react";
+import {useAuthContext} from "../contexts/AuthContext";
+import {getCrop, getHistoryFromCrop, getHistoryFromDateRange} from "../api/Api";
+import {Crop, History} from "../types/ApiResponses";
 import PlotlyChart from "../components/PlotlyChart.tsx";
 import "../assets/styles/MainContainer.css";
 import Loading from "../components/Loading";
 
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
-import { subDays, subMonths } from "date-fns";
-import { DateRange, RangeKeyDict } from 'react-date-range';
+import {subDays, subMonths} from "date-fns";
+import {DateRange, RangeKeyDict} from 'react-date-range';
 import Dropdown from "../components/Dropdown";
 
 export default function HistoricalData() {
@@ -19,7 +19,7 @@ export default function HistoricalData() {
     const [loadingLogin] = useState<boolean>(false); // Estado de carga de login
     const [toggleTable, setToggleTable] = useState<boolean>(true)
 
-    const { user, loading } = useAuthContext();
+    const {user, loading} = useAuthContext();
 
     const [date, setDate] = useState<[{
         startDate: Date | undefined,
@@ -36,7 +36,7 @@ export default function HistoricalData() {
         const startDate = ranges.selection.startDate;
         const endDate = ranges.selection.endDate;
         if (endDate != undefined && startDate != undefined) {
-            setDate(prevDate => [{ ...prevDate[0], startDate, endDate }]);
+            setDate(prevDate => [{...prevDate[0], startDate, endDate}]);
             console.log(date[0].startDate + "\n" + date[0].endDate);
             setRangeText(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
         }
@@ -94,7 +94,7 @@ export default function HistoricalData() {
 
     // Estado de carga de datos o login
     if (loading || loadingLogin || loadingData) {
-        return <Loading />; // Muestra un mensaje de carga mientras el proceso está en marcha
+        return <Loading/>; // Muestra un mensaje de carga mientras el proceso está en marcha
     }
 
     if (!user?.id) {
@@ -104,7 +104,7 @@ export default function HistoricalData() {
     return (
         <>
             <main className="mainContent"
-                style={{ backgroundColor: "#f9fafb"}}>
+                  style={{backgroundColor: "#f9fafb"}}>
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
@@ -150,14 +150,13 @@ export default function HistoricalData() {
                                 className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
                                 onClick={() => setToggleTable(!toggleTable)}
                             > {
-                                    toggleTable ?
-                                        ("Cambiar a graficas")
-                                        :
-                                        ("Cambiar a tabla")
-                                } </button>
+                                toggleTable ?
+                                    ("Cambiar a graficas")
+                                    :
+                                    ("Cambiar a tabla")
+                            } </button>
                         </span>
                     </div>
-
 
 
                     {
@@ -165,30 +164,30 @@ export default function HistoricalData() {
                             (
                                 <table className="min-w-full table-auto border-collapse text-sm">
                                     <thead className="bg-gray-100">
-                                        <tr>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
-                                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
-                                        </tr>
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
+                                    </tr>
                                     </thead>
                                     <tbody className="bg-white">
-                                        {history.map((e, index) => (
-                                            <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                                                <td className="px-6 py-4 text-gray-700">{index + 1}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
-                                                <td className="px-6 py-4 text-gray-700">{e.date}</td>
-                                            </tr>
-                                        ))}
+                                    {history.map((e, index) => (
+                                        <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                                            <td className="px-6 py-4 text-gray-700">{index + 1}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
+                                            <td className="px-6 py-4 text-gray-700">{e.date}</td>
+                                        </tr>
+                                    ))}
                                     </tbody>
                                 </table>
 
@@ -196,11 +195,11 @@ export default function HistoricalData() {
                             :
                             (
                                 <div className="overflow-auto max-w-full">
-                                    <PlotlyChart history={history} measure="brightness" label="Brillo" />
-                                    <PlotlyChart history={history} measure="humidity" label="Humedad" />
-                                    <PlotlyChart history={history} measure="ph" label="pH" />
-                                    <PlotlyChart history={history} measure="tds" label="TDS" />
-                                    <PlotlyChart history={history} measure="temperature" label="Temperatura" />
+                                    <PlotlyChart history={history} measure="brightness" label="Brillo"/>
+                                    <PlotlyChart history={history} measure="humidity" label="Humedad"/>
+                                    <PlotlyChart history={history} measure="ph" label="pH"/>
+                                    <PlotlyChart history={history} measure="tds" label="TDS"/>
+                                    <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
                                 </div>
                             )
                     }

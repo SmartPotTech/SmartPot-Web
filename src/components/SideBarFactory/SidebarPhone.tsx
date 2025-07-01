@@ -1,5 +1,5 @@
 // SidebarMobile.tsx
-import { SidebarProps, SidebarInterface } from "./ISideBar";
+import {SidebarInterface, SidebarProps} from "./ISideBar";
 import SidebarBaseMobile from "./SidebarBaseMobile.tsx";
 
 
@@ -17,7 +17,7 @@ export class SidebarPhone implements SidebarInterface {
                     icons={this.props.icons}
                     labels={[]}
                     paths={this.props.paths}
-                 title="title"/>
+                    title="title"/>
             </div>
         );
     }

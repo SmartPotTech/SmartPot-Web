@@ -4,12 +4,22 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
-    "typeRoots": ["node_modules/@types", "./src/types"],
-    "types": ["vite/client", "plotly.js"]
+    "typeRoots": [
+      "node_modules/@types",
+      "./src/types"
+    ],
+    "types": [
+      "vite/client",
+      "plotly.js"
+    ]
   },
   "files": [],
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ]
 }

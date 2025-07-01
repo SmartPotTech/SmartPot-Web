@@ -1,5 +1,5 @@
 // SidebarPC.tsx
-import { SidebarProps, SidebarInterface } from "./ISideBar.ts";
+import {SidebarInterface, SidebarProps} from "./ISideBar.ts";
 import SidebarBase from "./SidebarBase";
 
 export class SidebarPC implements SidebarInterface {
@@ -12,7 +12,7 @@ export class SidebarPC implements SidebarInterface {
 
     render(): JSX.Element {
         return (
-            
+
             <div className="sidebar-pc">
                 <SidebarBase {...this.props} />
             </div>

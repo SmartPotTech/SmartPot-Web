@@ -1,10 +1,10 @@
-import { useAuthContext } from "../contexts/AuthContext.tsx";
-import { getCrop} from "../api/Api.tsx";
-import { Crop } from "../types/ApiResponses.tsx";
-import { useState, useEffect } from "react";
+import {useAuthContext} from "../contexts/AuthContext.tsx";
+import {getCrop} from "../api/Api.tsx";
+import {Crop} from "../types/ApiResponses.tsx";
+import {useEffect, useState} from "react";
 
 export default function StatusPanel() {
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const [crop, setCrop] = useState<Crop | null>(null);
 
     const fetchCrop = async () => {
@@ -27,7 +27,7 @@ export default function StatusPanel() {
     return (
         <>
             <div className="flex bg-white rounded-lg shadow-md overflow-hidden max-w-2xl"
-            style={{padding: "1rem"}}>
+                 style={{padding: "1rem"}}>
                 {/* Image container */}
                 <div className="w-1/3 relative">
                     <img
