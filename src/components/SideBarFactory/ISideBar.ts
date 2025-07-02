@@ -1,4 +1,6 @@
 // SidebarInterface.ts
+import React from "react";
+
 export interface SidebarProps {
     title: string;
     icons: React.ElementType[]; // Tipos de los íconos
@@ -8,5 +10,5 @@ export interface SidebarProps {
 
 
 export interface SidebarInterface {
-    render(): JSX.Element;
+    render(): React.ReactElement;
 }
