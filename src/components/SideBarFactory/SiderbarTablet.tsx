@@ -2,6 +2,7 @@
 //import React from "react";
 import {SidebarInterface, SidebarProps} from "./ISideBar.ts";
 import SidebarBase from "./SidebarBase";
+import React from "react";
 
 export class SidebarTablet implements SidebarInterface {
     private props: SidebarProps;
@@ -10,7 +11,7 @@ export class SidebarTablet implements SidebarInterface {
         this.props = props;
     }
 
-    render(): JSX.Element {
+    render(): React.ReactElement {
 
 
         return (

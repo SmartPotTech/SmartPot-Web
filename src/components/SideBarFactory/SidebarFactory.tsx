@@ -6,7 +6,7 @@ import {SidebarTablet} from "./SiderbarTablet.tsx";
 import {SidebarPhone} from "./SidebarPhone.tsx";
 
 export const SidebarFactory: React.FC<SidebarProps> = (props) => {
-    const getSidebarInstance = (): JSX.Element => {
+    const getSidebarInstance = (): React.ReactElement => {
 
         const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
