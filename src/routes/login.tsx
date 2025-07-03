@@ -9,7 +9,7 @@ import "../assets/styles/login.css"
 export default function Login() {
 
     const {login, isAuthenticated, error, loading} = useAuthContext();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -41,15 +41,8 @@ export default function Login() {
 
     return (
         <>
-            {/*
-          This example requires updating your template:
-  
-          ```
-          <html class="h-full bg-white">
-          <body class="h-full">
-          ```
-        */}
-            <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+            {}
+            <div id="loginCard" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 ">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <img
                         alt="smartpot"
@@ -69,7 +62,7 @@ export default function Login() {
                         onSubmit={handleSubmit}
                     >
                         <div>
-                            <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+                            <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
                                 Email address
                             </label>
                             <div className="mt-2">
@@ -126,9 +119,9 @@ export default function Login() {
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
-                        Not a exclusive member of smartpot 🤢?{' '}
-                        <a href="#" className="font-semibold text-green-600 hover:text-green-500">
-                            Free 15-day trial for the poor!
+                        Don’t have an account yet?{" "}
+                        <a href="/auth/register" className="font-semibold text-green-600 hover:text-green-500">
+                            Create your account
                         </a>
                     </p>
                 </div>

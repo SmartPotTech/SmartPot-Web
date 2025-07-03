@@ -1,5 +1,5 @@
 // SidebarFactory.tsx
-import React, {useEffect, useState} from "react";
+import React, {JSX, useEffect, useState} from "react";
 import { SidebarProps } from "./ISideBar";
 import { SidebarPC } from "./SideBarPC";
 import {SidebarTablet} from "./SiderbarTablet.tsx";
@@ -8,6 +8,7 @@ import {SidebarPhone} from "./SidebarPhone.tsx";
 export const SidebarFactory: React.FC<SidebarProps> = (props) => {
   const getSidebarInstance = (): JSX.Element => {
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
     // eslint-disable-next-line react-hooks/rules-of-hooks

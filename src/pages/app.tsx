@@ -7,14 +7,20 @@ import StatusPanel from '../routes/statusPanel.tsx';
 import HistoricalData from '../routes/historicalData.tsx';
 import { AuthProvider } from '../contexts/AuthContext.tsx';
 import Login from '../routes/login.tsx';
+import Register from '../routes/register.tsx';
 
 
 function App() {
 
     const router = createBrowserRouter([
         {
-            path: "/login",
+            path: "/auth/login",
             element: <Login />,
+            errorElement: <ErrorPage/>
+        },
+        {
+            path: "/auth/register",
+            element: <Register />,
             errorElement: <ErrorPage/>
         },
         {

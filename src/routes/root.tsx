@@ -22,7 +22,7 @@ export default function Root() {
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
-            navigate("/login");
+            navigate("/auth/login");
         }
     }, [loading, isAuthenticated, navigate]);
 

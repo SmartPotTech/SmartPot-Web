@@ -5,3 +5,10 @@
 .bg-main-colour {
     background-color: var(--main-colour);
 }
+
+#loginCard{
+    background-color: white;
+    border-radius: 2rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
+}

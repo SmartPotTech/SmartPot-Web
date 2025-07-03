@@ -1,6 +1,7 @@
 // SidebarPC.tsx
 import { SidebarProps, SidebarInterface } from "./ISideBar.ts";
 import SidebarBase from "./SidebarBase";
+import {JSX} from "react";
 
 export class SidebarPC implements SidebarInterface {
     private props: SidebarProps;
