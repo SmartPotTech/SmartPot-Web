@@ -1,7 +1,7 @@
 import axios from "axios";
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {auth, userUpdate, verifyToken} from "../api/Endpoints";
-import { userDTO } from "../types/ApiResponses";
+import {userDTO} from "../types/ApiResponses";
 
 export type authContextType = {
     user: UserData | null;

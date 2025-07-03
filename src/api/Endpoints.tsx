@@ -8,7 +8,7 @@ export const auth = `${BASE_URL}/auth/login`;
 export const verifyToken = `${BASE_URL}/auth/verify`;
 
 // User 
-export const userUpdate =  `${BASE_URL}/Users/Update/`
+export const userUpdate = `${BASE_URL}/Users/Update/`
 
 // History
 export const cropHistory = `${BASE_URL}/Records/crop/`;

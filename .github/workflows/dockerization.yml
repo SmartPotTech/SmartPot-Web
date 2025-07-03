@@ -1,4 +1,6 @@
 name: Dockerization of web application
+permissions:
+  contents: read
 
 on:
   push:

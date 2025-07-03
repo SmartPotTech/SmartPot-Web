@@ -1,5 +1,5 @@
 // SidebarInterface.ts
-import {JSX} from "react";
+import React from "react";
 
 export interface SidebarProps {
     title: string;
@@ -10,5 +10,5 @@ export interface SidebarProps {
 
 
 export interface SidebarInterface {
-    render(): JSX.Element;
+    render(): React.ReactElement;
 }

@@ -1,4 +1,4 @@
-import { Flyweight } from "./Flyweight";
+import {Flyweight} from "./Flyweight";
 
 export class FlyweightFactory<T> {
     private flyweights: Map<string, Flyweight<T>> = new Map();
