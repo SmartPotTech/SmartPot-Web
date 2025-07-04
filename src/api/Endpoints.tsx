@@ -8,8 +8,8 @@ export const auth = `${BASE_URL}/auth/login`;
 export const verifyToken = `${BASE_URL}/auth/verify`;
 
 // User 
-export const userUpdate = `${BASE_URL}/Users/Update/`
-
+export const userUpdate =  `${BASE_URL}/Users/Update/`
+export const userCreate =  `${BASE_URL}/Users/Create/`
 // History
 export const cropHistory = `${BASE_URL}/Records/crop/`;
 export const cropHistoryRange = `${BASE_URL}/Records/crop/between/`;
