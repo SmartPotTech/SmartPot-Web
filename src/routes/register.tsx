@@ -1,5 +1,6 @@
 import logo from "../assets/images/lechuga.png";
-import { useState } from "react";
+import React, { useState } from "react";
+import {userCreate} from "../api/Endpoints.tsx";
 
 export default function Register(){
     const [formData, setFormData] = useState({
@@ -7,7 +8,7 @@ export default function Register(){
         lastname: '',
         email: '',
         password: '',
-        role: 'USER' // valor por defecto
+        role: 'USER'
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -24,12 +25,12 @@ export default function Register(){
         
         try {
             // Llamada a la API
-            const response = await fetch('/api/register', {
+            const response = await fetch(userCreate, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
-            
+            console.log(response);
             if (!response.ok) throw new Error('Error en el registro');
             
             // Redirección o manejo de éxito
@@ -151,8 +152,8 @@ export default function Register(){
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
-                        Do you have an account yet?{" "}
-                        <a href="#" className="font-semibold text-green-600 hover:text-green-500">
+                        Do you have an account?{" "}
+                        <a href="/auth/login" className="font-semibold text-green-600 hover:text-green-500">
                             Sign in to your account
                         </a>
                     </p>
