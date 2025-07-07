@@ -1,11 +1,12 @@
 import axios from "axios";
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {auth, userUpdate, verifyToken} from "../api/Endpoints";
+import {auth, authRegister, userUpdate, verifyToken} from "../api/Endpoints";
 import {userDTO} from "../types/ApiResponses";
 
 export type authContextType = {
     user: UserData | null;
     isAuthenticated: boolean;
+    register: (email: string, password: string, name: string, lastname: string) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
     updateUser: (user: userDTO) => void;
@@ -24,6 +25,9 @@ export type UserData = {
 const defaultValues: authContextType = {
     user: null,
     isAuthenticated: false,
+    register: async () => {
+        throw new Error("Function not implemented.")
+    },
     login: async () => {
         throw new Error("Function not implemented.")
     },
@@ -136,6 +140,54 @@ export function AuthProvider({children}: Props) {
         localStorage.removeItem("authToken");
     };
 
+
+    const register = async (email: string, password: string, name: string, lastname: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.post(authRegister, {
+                email,
+                password,
+                name,
+                lastname,
+                role: 'USER'
+            });
+            
+            const authToken = response.data.token;
+
+            if (!authToken) {
+                throw new Error("No token received from the server.");
+            }
+
+            const responseUser = await axios.get(verifyToken, {
+                headers: {Authorization: `Bearer ${authToken}`},
+            });
+
+            const userData: UserData = {
+                authToken,
+                id: responseUser.data.id,
+                name: responseUser.data.name,
+                lastname: responseUser.data.lastname,
+                role: responseUser.data.role,
+            };
+
+            
+            setUser(userData);
+            setIsAuthenticated(true);
+            localStorage.setItem("authToken", authToken);
+
+        } catch (err: any) {
+            console.error("Register error:", err);
+            try {
+                setError(err.response.data.message || "Error al registrar el usuario.");
+            } catch {
+                setError(err.message || "Error durante el registro.")
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const updateUser = async (userDTO: userDTO) => {
         setError(null);
         try {
@@ -161,6 +213,7 @@ export function AuthProvider({children}: Props) {
     const values: authContextType = {
         user,
         isAuthenticated,
+        register,
         login,
         logout,
         loading,

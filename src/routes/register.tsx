@@ -1,43 +1,39 @@
 import logo from "../assets/images/lechuga.png";
-import { useState } from "react";
+import React, {FormEvent, useEffect, useState} from "react";
+import {useAuthContext} from "../contexts/AuthContext.tsx";
+import {useNavigate} from "react-router-dom";
 
 export default function Register(){
+    const {register, isAuthenticated, error, loading} = useAuthContext();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        name: '',
-        lastname: '',
-        email: '',
-        password: '',
-        role: 'USER' // valor por defecto
+        name: "",
+        lastname: "",
+        email: "",
+        password: ""
     });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+    useEffect(() => {
+        console.log(isAuthenticated)
+        if (isAuthenticated) {
+            navigate("/panel")
+        }
+    }, [isAuthenticated]);
+
+    const handleChange = (e: FormEvent<HTMLInputElement>) => {
+        const { name, value } = e.currentTarget;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-        
-        try {
-            // Llamada a la API
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            
-            if (!response.ok) throw new Error('Error en el registro');
-            
-            // Redirección o manejo de éxito
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Error desconocido');
-        } finally {
-            setLoading(false);
-        }
+
+        await register(formData.email, formData.password, formData.name, formData.lastname)
+            .then(r => console.log(r))
+            .catch(error => console.log(error));
     };
 
     return(
@@ -151,8 +147,8 @@ export default function Register(){
                     </form>
 
                     <p className="mt-10 text-center text-sm/6 text-gray-500">
-                        Do you have an account yet?{" "}
-                        <a href="#" className="font-semibold text-green-600 hover:text-green-500">
+                        Do you have an account?{" "}
+                        <a href="/auth/login" className="font-semibold text-green-600 hover:text-green-500">
                             Sign in to your account
                         </a>
                     </p>
