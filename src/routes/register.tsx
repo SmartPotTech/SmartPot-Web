@@ -2,6 +2,7 @@ import logo from "../assets/images/lechuga.png";
 import React, {FormEvent, useEffect, useState} from "react";
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
+import Loading from "../components/Loading.tsx"
 
 export default function Register(){
     const {register, isAuthenticated, error, loading} = useAuthContext();
@@ -35,6 +36,8 @@ export default function Register(){
             .then(r => console.log(r))
             .catch(error => console.log(error));
     };
+
+    if (loading) return (<Loading/>);
 
     return(
         <>
