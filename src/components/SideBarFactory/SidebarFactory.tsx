@@ -8,8 +8,8 @@ import {SidebarPhone} from "./SidebarPhone.tsx";
 export const SidebarFactory: React.FC<SidebarProps> = (props) => {
     const getSidebarInstance = (): React.ReactElement => {
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
         // eslint-disable-next-line react-hooks/rules-of-hooks
         useEffect(() => {

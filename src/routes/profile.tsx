@@ -1,10 +1,18 @@
-import { useAuthContext } from "../contexts/AuthContext.tsx";
-import { useState } from "react";
-import { EditOutlined, SaveOutlined, UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, CalendarOutlined } from "@ant-design/icons";
+import {useAuthContext} from "../contexts/AuthContext.tsx";
+import {useState} from "react";
+import {
+    CalendarOutlined,
+    EditOutlined,
+    EnvironmentOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    SaveOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 import "../assets/styles/Profile.css";
 
 export default function Profile() {
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || "",
@@ -46,13 +54,13 @@ export default function Profile() {
                 {/* Acciones (editar/guardar) */}
                 <div className="content__actions">
                     {!isEditing ? (
-                        <a onClick={() => setIsEditing(true)} style={{ cursor: 'pointer', color: '#00B074' }}>
-                            <EditOutlined style={{ marginRight: '8px' }} />
+                        <a onClick={() => setIsEditing(true)} style={{cursor: 'pointer', color: '#00B074'}}>
+                            <EditOutlined style={{marginRight: '8px'}}/>
                             <span>Editar Perfil</span>
                         </a>
                     ) : (
-                        <a onClick={handleSave} style={{ cursor: 'pointer', color: '#00B074' }}>
-                            <SaveOutlined style={{ marginRight: '8px' }} />
+                        <a onClick={handleSave} style={{cursor: 'pointer', color: '#00B074'}}>
+                            <SaveOutlined style={{marginRight: '8px'}}/>
                             <span>Guardar Cambios</span>
                         </a>
                     )}
@@ -66,7 +74,7 @@ export default function Profile() {
 
                 <div className="content__description">
                     <p>
-                        Gestiona tu información personal y configuración de cuenta. 
+                        Gestiona tu información personal y configuración de cuenta.
                         Mantén tus datos actualizados para una mejor experiencia.
                     </p>
                 </div>
@@ -74,7 +82,7 @@ export default function Profile() {
                 {/* Lista de información */}
                 <div className="content__list">
                     <li>
-                        <UserOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <UserOutlined style={{color: '#00B074', marginRight: '10px'}}/>
                         <span>
                             <strong>Nombre:</strong>
                             {isEditing ? (
@@ -91,13 +99,13 @@ export default function Profile() {
                                     }}
                                 />
                             ) : (
-                                <span style={{ marginLeft: '10px' }}>{formData.name}</span>
+                                <span style={{marginLeft: '10px'}}>{formData.name}</span>
                             )}
                         </span>
                     </li>
-                    
+
                     <li>
-                        <UserOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <UserOutlined style={{color: '#00B074', marginRight: '10px'}}/>
                         <span>
                             <strong>Apellido:</strong>
                             {isEditing ? (
@@ -114,13 +122,13 @@ export default function Profile() {
                                     }}
                                 />
                             ) : (
-                                <span style={{ marginLeft: '10px' }}>{formData.lastname}</span>
+                                <span style={{marginLeft: '10px'}}>{formData.lastname}</span>
                             )}
                         </span>
                     </li>
-                    
+
                     <li>
-                        <MailOutlined style={{ color: '#2D9CDB', marginRight: '10px' }} />
+                        <MailOutlined style={{color: '#2D9CDB', marginRight: '10px'}}/>
                         <span>
                             <strong>Email:</strong>
                             {isEditing ? (
@@ -137,13 +145,13 @@ export default function Profile() {
                                     }}
                                 />
                             ) : (
-                                <span style={{ marginLeft: '10px' }}>{formData.email}</span>
+                                <span style={{marginLeft: '10px'}}>{formData.email}</span>
                             )}
                         </span>
                     </li>
-                    
+
                     <li>
-                        <PhoneOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <PhoneOutlined style={{color: '#00B074', marginRight: '10px'}}/>
                         <span>
                             <strong>Teléfono:</strong>
                             {isEditing ? (
@@ -160,13 +168,13 @@ export default function Profile() {
                                     }}
                                 />
                             ) : (
-                                <span style={{ marginLeft: '10px' }}>{formData.phone || 'No especificado'}</span>
+                                <span style={{marginLeft: '10px'}}>{formData.phone || 'No especificado'}</span>
                             )}
                         </span>
                     </li>
-                    
+
                     <li>
-                        <EnvironmentOutlined style={{ color: '#2D9CDB', marginRight: '10px' }} />
+                        <EnvironmentOutlined style={{color: '#2D9CDB', marginRight: '10px'}}/>
                         <span>
                             <strong>Ubicación:</strong>
                             {isEditing ? (
@@ -183,41 +191,41 @@ export default function Profile() {
                                     }}
                                 />
                             ) : (
-                                <span style={{ marginLeft: '10px' }}>{formData.location || 'No especificada'}</span>
+                                <span style={{marginLeft: '10px'}}>{formData.location || 'No especificada'}</span>
                             )}
                         </span>
                     </li>
-                    
+
                     <li>
-                        <CalendarOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <CalendarOutlined style={{color: '#00B074', marginRight: '10px'}}/>
                         <span>
                             <strong>Miembro desde:</strong>
-                            <span style={{ marginLeft: '10px' }}>{formData.joinDate}</span>
+                            <span style={{marginLeft: '10px'}}>{formData.joinDate}</span>
                         </span>
                     </li>
                 </div>
 
                 {/* Estadísticas del usuario */}
-                <div style={{ 
-                    padding: '20px', 
-                    margin: '20px', 
-                    backgroundColor: '#F3F2F7', 
+                <div style={{
+                    padding: '20px',
+                    margin: '20px',
+                    backgroundColor: '#F3F2F7',
                     borderRadius: '12px',
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
                     gap: '20px'
                 }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00B074' }}>12</div>
-                        <div style={{ fontSize: '14px', color: '#666' }}>Cultivos Completados</div>
+                    <div style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '24px', fontWeight: 'bold', color: '#00B074'}}>12</div>
+                        <div style={{fontSize: '14px', color: '#666'}}>Cultivos Completados</div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2D9CDB' }}>3</div>
-                        <div style={{ fontSize: '14px', color: '#666' }}>Cultivos Activos</div>
+                    <div style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '24px', fontWeight: 'bold', color: '#2D9CDB'}}>3</div>
+                        <div style={{fontSize: '14px', color: '#666'}}>Cultivos Activos</div>
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00B074' }}>156</div>
-                        <div style={{ fontSize: '14px', color: '#666' }}>Días de Uso</div>
+                    <div style={{textAlign: 'center'}}>
+                        <div style={{fontSize: '24px', fontWeight: 'bold', color: '#00B074'}}>156</div>
+                        <div style={{fontSize: '14px', color: '#666'}}>Días de Uso</div>
                     </div>
                 </div>
 

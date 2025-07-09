@@ -4,7 +4,7 @@ import {useAuthContext} from "../contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import Loading from "../components/Loading.tsx"
 
-export default function Register(){
+export default function Register() {
     const {register, isAuthenticated, error, loading} = useAuthContext();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ export default function Register(){
     }, [isAuthenticated]);
 
     const handleChange = (e: FormEvent<HTMLInputElement>) => {
-        const { name, value } = e.currentTarget;
+        const {name, value} = e.currentTarget;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -39,7 +39,7 @@ export default function Register(){
 
     if (loading) return (<Loading/>);
 
-    return(
+    return (
         <>
             {}
             <div id="loginCard" className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 ">
@@ -62,7 +62,8 @@ export default function Register(){
                         onSubmit={handleSubmit}
                     >
                         <div>
-                            <label htmlFor="name" className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
+                            <label htmlFor="name"
+                                   className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
                                 Name
                             </label>
                             <div className="mt-2">
@@ -80,7 +81,8 @@ export default function Register(){
                         </div>
 
                         <div>
-                            <label htmlFor="lastname" className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
+                            <label htmlFor="lastname"
+                                   className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
                                 Last Name
                             </label>
                             <div className="mt-2">
@@ -98,7 +100,8 @@ export default function Register(){
                         </div>
 
                         <div>
-                            <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
+                            <label htmlFor="email"
+                                   className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
                                 Email address
                             </label>
                             <div className="mt-2">
@@ -144,7 +147,7 @@ export default function Register(){
                                 type="submit"
                                 className="bg-main-colour flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
                             >
-                                { loading ? ("Loading") : ("Sign up") }
+                                {loading ? ("Loading") : ("Sign up")}
                             </button>
                         </div>
                     </form>
@@ -158,5 +161,5 @@ export default function Register(){
                 </div>
             </div>
         </>
-)
+    )
 }
