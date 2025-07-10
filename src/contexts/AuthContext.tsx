@@ -152,7 +152,7 @@ export function AuthProvider({children}: Props) {
                 lastname,
                 role: 'USER'
             });
-            
+
             const authToken = response.data.token;
 
             if (!authToken) {
@@ -171,7 +171,7 @@ export function AuthProvider({children}: Props) {
                 role: responseUser.data.role,
             };
 
-            
+
             setUser(userData);
             setIsAuthenticated(true);
             localStorage.setItem("authToken", authToken);

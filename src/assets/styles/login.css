@@ -6,10 +6,10 @@
     background-color: var(--main-colour);
 }
 
-#loginCard {
-    background-color: white !important;
-    border-radius: 2rem !important;
-    padding-left: 6rem !important;
-    padding-right: 6rem !important;
+#loginCard{
+    background-color: white;
+    border-radius: 2rem;
+    padding-left: 6rem;
+    padding-right: 6rem;
 }
 

@@ -16,12 +16,12 @@ function App() {
     const router = createBrowserRouter([
         {
             path: "/auth/login",
-            element: <Login />,
+            element: <Login/>,
             errorElement: <ErrorPage/>
         },
         {
             path: "/auth/register",
-            element: <Register />,
+            element: <Register/>,
             errorElement: <ErrorPage/>
         },
         {
