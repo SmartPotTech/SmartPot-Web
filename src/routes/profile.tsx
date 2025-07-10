@@ -1,10 +1,18 @@
-import { useAuthContext } from "../contexts/AuthContext.tsx";
-import { useState } from "react";
-import { EditOutlined, SaveOutlined, UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, CalendarOutlined } from "@ant-design/icons";
+import {useAuthContext} from "../contexts/AuthContext.tsx";
+import {useState} from "react";
+import {
+    CalendarOutlined,
+    EditOutlined,
+    EnvironmentOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    SaveOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 import "../assets/styles/Profile.css";
 
 export default function Profile() {
-    const { user } = useAuthContext();
+    const {user} = useAuthContext();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || "",
@@ -46,13 +54,13 @@ export default function Profile() {
                 <div className="content__actions">
                     <div></div> {/* Spacer */}
                     {!isEditing ? (
-                        <a onClick={() => setIsEditing(true)} style={{ cursor: 'pointer', color: '#00B074' }}>
-                            <EditOutlined style={{ marginRight: '8px' }} />
+                        <a onClick={() => setIsEditing(true)} style={{cursor: 'pointer', color: '#00B074'}}>
+                            <EditOutlined style={{marginRight: '8px'}}/>
                             <span>Editar Perfil</span>
                         </a>
                     ) : (
-                        <a onClick={handleSave} style={{ cursor: 'pointer', color: '#00B074' }}>
-                            <SaveOutlined style={{ marginRight: '8px' }} />
+                        <a onClick={handleSave} style={{cursor: 'pointer', color: '#00B074'}}>
+                            <SaveOutlined style={{marginRight: '8px'}}/>
                             <span>Guardar Cambios</span>
                         </a>
                     )}

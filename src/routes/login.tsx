@@ -62,7 +62,8 @@ export default function Login() {
                         onSubmit={handleSubmit}
                     >
                         <div>
-                            <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
+                            <label htmlFor="email"
+                                   className="block text-sm/6 font-medium text-gray-900 flex items-center justify-between">
                                 Email address
                             </label>
                             <div className="mt-2">

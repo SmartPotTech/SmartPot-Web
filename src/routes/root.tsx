@@ -15,9 +15,9 @@ export default function Root() {
     const {isAuthenticated, loading} = useAuthContext();
     const navigate = useNavigate();
 
-    const icons = [HomeOutlined, BarChartOutlined,UserOutlined];
-    const labels = ["Panel de inicio", "Datos Históricos","Perfil"];
-    const paths = ["/panel", "/historial","/perfil"];
+    const icons = [HomeOutlined, BarChartOutlined, UserOutlined];
+    const labels = ["Panel de inicio", "Datos Históricos", "Perfil"];
+    const paths = ["/panel", "/historial", "/perfil"];
 
 
     useEffect(() => {
