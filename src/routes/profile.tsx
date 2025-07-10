@@ -17,10 +17,10 @@ export default function Profile() {
     const [formData, setFormData] = useState({
         name: user?.name || "",
         lastname: user?.lastname || "",
-        email: "usuario@ejemplo.com", // Valor por defecto ya que no está en UserData
-        phone: "", // Valor por defecto ya que no está en UserData
-        location: "", // Valor por defecto ya que no está en UserData
-        joinDate: "2024-01-15" // Valor por defecto ya que no está en UserData
+        email: "usuario@ejemplo.com",
+        phone: "",
+        location: "",
+        joinDate: "2024-01-15"
     });
 
     const handleInputChange = (field: string, value: string) => {
@@ -31,7 +31,6 @@ export default function Profile() {
     };
 
     const handleSave = () => {
-        // Aquí iría la lógica para guardar los cambios
         console.log("Guardando cambios:", formData);
         setIsEditing(false);
     };
@@ -53,6 +52,7 @@ export default function Profile() {
 
                 {/* Acciones (editar/guardar) */}
                 <div className="content__actions">
+                    <div></div> {/* Spacer */}
                     {!isEditing ? (
                         <a onClick={() => setIsEditing(true)} style={{cursor: 'pointer', color: '#00B074'}}>
                             <EditOutlined style={{marginRight: '8px'}}/>
@@ -79,153 +79,127 @@ export default function Profile() {
                     </p>
                 </div>
 
-                {/* Lista de información */}
-                <div className="content__list">
-                    <li>
-                        <UserOutlined style={{color: '#00B074', marginRight: '10px'}}/>
-                        <span>
+                {/* Lista de información - Reorganizada */}
+                <div className="content__info">
+                    <div className="info__item">
+                        <div className="info__icon">
+                            <UserOutlined style={{ color: '#00B074' }} />
+                        </div>
+                        <div className="info__content">
                             <strong>Nombre:</strong>
                             {isEditing ? (
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        padding: '4px 8px',
-                                        marginLeft: '10px',
-                                        width: '200px'
-                                    }}
+                                    className="info__input"
                                 />
                             ) : (
-                                <span style={{marginLeft: '10px'}}>{formData.name}</span>
+                                <span>{formData.name}</span>
                             )}
-                        </span>
-                    </li>
+                        </div>
+                    </div>
 
-                    <li>
-                        <UserOutlined style={{color: '#00B074', marginRight: '10px'}}/>
-                        <span>
+                    <div className="info__item">
+                        <div className="info__icon">
+                            <UserOutlined style={{ color: '#00B074' }} />
+                        </div>
+                        <div className="info__content">
                             <strong>Apellido:</strong>
                             {isEditing ? (
                                 <input
                                     type="text"
                                     value={formData.lastname}
                                     onChange={(e) => handleInputChange('lastname', e.target.value)}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        padding: '4px 8px',
-                                        marginLeft: '10px',
-                                        width: '200px'
-                                    }}
+                                    className="info__input"
                                 />
                             ) : (
-                                <span style={{marginLeft: '10px'}}>{formData.lastname}</span>
+                                <span>{formData.lastname}</span>
                             )}
-                        </span>
-                    </li>
+                        </div>
+                    </div>
 
-                    <li>
-                        <MailOutlined style={{color: '#2D9CDB', marginRight: '10px'}}/>
-                        <span>
+                    <div className="info__item">
+                        <div className="info__icon">
+                            <MailOutlined style={{ color: '#2D9CDB' }} />
+                        </div>
+                        <div className="info__content">
                             <strong>Email:</strong>
                             {isEditing ? (
                                 <input
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => handleInputChange('email', e.target.value)}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        padding: '4px 8px',
-                                        marginLeft: '10px',
-                                        width: '200px'
-                                    }}
+                                    className="info__input"
                                 />
                             ) : (
-                                <span style={{marginLeft: '10px'}}>{formData.email}</span>
+                                <span>{formData.email}</span>
                             )}
-                        </span>
-                    </li>
+                        </div>
+                    </div>
 
-                    <li>
-                        <PhoneOutlined style={{color: '#00B074', marginRight: '10px'}}/>
-                        <span>
+                    <div className="info__item">
+                        <div className="info__icon">
+                            <PhoneOutlined style={{ color: '#00B074' }} />
+                        </div>
+                        <div className="info__content">
                             <strong>Teléfono:</strong>
                             {isEditing ? (
                                 <input
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        padding: '4px 8px',
-                                        marginLeft: '10px',
-                                        width: '200px'
-                                    }}
+                                    className="info__input"
                                 />
                             ) : (
-                                <span style={{marginLeft: '10px'}}>{formData.phone || 'No especificado'}</span>
+                                <span>{formData.phone || 'No especificado'}</span>
                             )}
-                        </span>
-                    </li>
+                        </div>
+                    </div>
 
-                    <li>
-                        <EnvironmentOutlined style={{color: '#2D9CDB', marginRight: '10px'}}/>
-                        <span>
+                    <div className="info__item">
+                        <div className="info__icon">
+                            <EnvironmentOutlined style={{ color: '#2D9CDB' }} />
+                        </div>
+                        <div className="info__content">
                             <strong>Ubicación:</strong>
                             {isEditing ? (
                                 <input
                                     type="text"
                                     value={formData.location}
                                     onChange={(e) => handleInputChange('location', e.target.value)}
-                                    style={{
-                                        border: '1px solid #ddd',
-                                        borderRadius: '4px',
-                                        padding: '4px 8px',
-                                        marginLeft: '10px',
-                                        width: '200px'
-                                    }}
+                                    className="info__input"
                                 />
                             ) : (
-                                <span style={{marginLeft: '10px'}}>{formData.location || 'No especificada'}</span>
+                                <span>{formData.location || 'No especificada'}</span>
                             )}
-                        </span>
-                    </li>
+                        </div>
+                    </div>
 
-                    <li>
-                        <CalendarOutlined style={{color: '#00B074', marginRight: '10px'}}/>
-                        <span>
+                    <div className="info__item">
+                        <div className="info__icon">
+                            <CalendarOutlined style={{ color: '#00B074' }} />
+                        </div>
+                        <div className="info__content">
                             <strong>Miembro desde:</strong>
-                            <span style={{marginLeft: '10px'}}>{formData.joinDate}</span>
-                        </span>
-                    </li>
+                            <span>{formData.joinDate}</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Estadísticas del usuario */}
-                <div style={{
-                    padding: '20px',
-                    margin: '20px',
-                    backgroundColor: '#F3F2F7',
-                    borderRadius: '12px',
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-                    gap: '20px'
-                }}>
-                    <div style={{textAlign: 'center'}}>
-                        <div style={{fontSize: '24px', fontWeight: 'bold', color: '#00B074'}}>12</div>
-                        <div style={{fontSize: '14px', color: '#666'}}>Cultivos Completados</div>
+                <div className="content__stats">
+                    <div className="stat__item">
+                        <div className="stat__number">12</div>
+                        <div className="stat__label">Cultivos Completados</div>
                     </div>
-                    <div style={{textAlign: 'center'}}>
-                        <div style={{fontSize: '24px', fontWeight: 'bold', color: '#2D9CDB'}}>3</div>
-                        <div style={{fontSize: '14px', color: '#666'}}>Cultivos Activos</div>
+                    <div className="stat__item">
+                        <div className="stat__number">3</div>
+                        <div className="stat__label">Cultivos Activos</div>
                     </div>
-                    <div style={{textAlign: 'center'}}>
-                        <div style={{fontSize: '24px', fontWeight: 'bold', color: '#00B074'}}>156</div>
-                        <div style={{fontSize: '14px', color: '#666'}}>Días de Uso</div>
+                    <div className="stat__item">
+                        <div className="stat__number">156</div>
+                        <div className="stat__label">Días de Uso</div>
                     </div>
                 </div>
 
