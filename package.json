@@ -13,7 +13,7 @@
     "@ant-design/icons": "^6.0.0",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^7.0.2",
-    "antd": "^5.26.4",
+    "antd": "^5.26.5",
     "assert": "^2.1.0",
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
