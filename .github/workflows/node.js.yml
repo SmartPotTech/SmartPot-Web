@@ -21,8 +21,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'  # Cambiar cache a pnpm
-
+          cache: 'pnpm'
+          
       - name: Install pnpm
         run: npm install -g pnpm
 
