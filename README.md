@@ -5,6 +5,10 @@
 ## **Deployment**
 
 [![Dockerization](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/dockerization.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/dockerization.yml)
+[![CodeQL Advanced](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/codeql.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/codeql.yml)
+[![Dependabot Updates](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/dependabot/dependabot-updates)
+[![ESLint](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/eslint.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/eslint.yml)
+[![Node.js CI](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/node.js.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/node.js.yml)
 
 ### 1. **Creación de la Imagen Docker**
 
