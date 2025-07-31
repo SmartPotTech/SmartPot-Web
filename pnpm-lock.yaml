@@ -58,8 +58,8 @@ importers:
         version: 3.0.0
     devDependencies:
       '@eslint/js':
-        specifier: ^9.31.0
-        version: 9.31.0
+        specifier: ^9.32.0
+        version: 9.32.0
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.1.11
