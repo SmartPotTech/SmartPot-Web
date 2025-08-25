@@ -32,7 +32,7 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@types/d3": "^7.4.3",
     "@types/plotly.js": "^3.0.3",
-    "@types/react": "^19.1.10",
+    "@types/react": "^19.1.11",
     "@types/react-date-range": "^1.4.9",
     "@types/react-dom": "^19.1.6",
     "@types/react-plotly.js": "^2.6.3",
