@@ -1,6 +1,7 @@
 # SmartPot-Web
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/5d675e13-68c9-4d3d-a61d-da09db0574c4/deploy-status)](https://app.netlify.com/sites/smarpot/deploys)
+[![wakatime](https://wakatime.com/badge/user/45f93d1b-ca86-4c83-a72b-206ab33d0abb/project/acae46b4-b61b-4a35-9e05-f05e736ca91c.svg)](https://wakatime.com/badge/user/45f93d1b-ca86-4c83-a72b-206ab33d0abb/project/acae46b4-b61b-4a35-9e05-f05e736ca91c)
 
 ## **Deployment**
 
