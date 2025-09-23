@@ -79,13 +79,11 @@ export default function Profile() {
                     </p>
                 </div>
 
-                {/* Lista de información - Reorganizada */}
-                <div className="content__info">
-                    <div className="info__item">
-                        <div className="info__icon">
-                            <UserOutlined style={{ color: '#00B074' }} />
-                        </div>
-                        <div className="info__content">
+                {/* Lista de información */}
+                <div className="content__list">
+                    <li>
+                        <UserOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <span>
                             <strong>Nombre:</strong>
                             {isEditing ? (
                                 <input
@@ -95,16 +93,14 @@ export default function Profile() {
                                     className="info__input"
                                 />
                             ) : (
-                                <span>{formData.name}</span>
+                                <span style={{ marginLeft: '10px' }}>{formData.name}</span>
                             )}
-                        </div>
-                    </div>
+                        </span>
+                    </li>
 
-                    <div className="info__item">
-                        <div className="info__icon">
-                            <UserOutlined style={{ color: '#00B074' }} />
-                        </div>
-                        <div className="info__content">
+                    <li>
+                        <UserOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <span>
                             <strong>Apellido:</strong>
                             {isEditing ? (
                                 <input
@@ -114,16 +110,14 @@ export default function Profile() {
                                     className="info__input"
                                 />
                             ) : (
-                                <span>{formData.lastname}</span>
+                                <span style={{ marginLeft: '10px' }}>{formData.lastname}</span>
                             )}
-                        </div>
-                    </div>
+                        </span>
+                    </li>
 
-                    <div className="info__item">
-                        <div className="info__icon">
-                            <MailOutlined style={{ color: '#2D9CDB' }} />
-                        </div>
-                        <div className="info__content">
+                    <li>
+                        <MailOutlined style={{ color: '#2D9CDB', marginRight: '10px' }} />
+                        <span>
                             <strong>Email:</strong>
                             {isEditing ? (
                                 <input
@@ -133,16 +127,14 @@ export default function Profile() {
                                     className="info__input"
                                 />
                             ) : (
-                                <span>{formData.email}</span>
+                                <span style={{ marginLeft: '10px' }}>{formData.email}</span>
                             )}
-                        </div>
-                    </div>
+                        </span>
+                    </li>
 
-                    <div className="info__item">
-                        <div className="info__icon">
-                            <PhoneOutlined style={{ color: '#00B074' }} />
-                        </div>
-                        <div className="info__content">
+                    <li>
+                        <PhoneOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <span>
                             <strong>Teléfono:</strong>
                             {isEditing ? (
                                 <input
@@ -152,16 +144,14 @@ export default function Profile() {
                                     className="info__input"
                                 />
                             ) : (
-                                <span>{formData.phone || 'No especificado'}</span>
+                                <span style={{ marginLeft: '10px' }}>{formData.phone || 'No especificado'}</span>
                             )}
-                        </div>
-                    </div>
+                        </span>
+                    </li>
 
-                    <div className="info__item">
-                        <div className="info__icon">
-                            <EnvironmentOutlined style={{ color: '#2D9CDB' }} />
-                        </div>
-                        <div className="info__content">
+                    <li>
+                        <EnvironmentOutlined style={{ color: '#2D9CDB', marginRight: '10px' }} />
+                        <span>
                             <strong>Ubicación:</strong>
                             {isEditing ? (
                                 <input
@@ -171,35 +161,41 @@ export default function Profile() {
                                     className="info__input"
                                 />
                             ) : (
-                                <span>{formData.location || 'No especificada'}</span>
+                                <span style={{ marginLeft: '10px' }}>{formData.location || 'No especificada'}</span>
                             )}
-                        </div>
-                    </div>
+                        </span>
+                    </li>
 
-                    <div className="info__item">
-                        <div className="info__icon">
-                            <CalendarOutlined style={{ color: '#00B074' }} />
-                        </div>
-                        <div className="info__content">
+                    <li>
+                        <CalendarOutlined style={{ color: '#00B074', marginRight: '10px' }} />
+                        <span>
                             <strong>Miembro desde:</strong>
-                            <span>{formData.joinDate}</span>
-                        </div>
-                    </div>
+                            <span style={{ marginLeft: '10px' }}>{formData.joinDate}</span>
+                        </span>
+                    </li>
                 </div>
 
                 {/* Estadísticas del usuario */}
-                <div className="content__stats">
-                    <div className="stat__item">
-                        <div className="stat__number">12</div>
-                        <div className="stat__label">Cultivos Completados</div>
+                <div style={{
+                    padding: '20px',
+                    margin: '20px',
+                    backgroundColor: '#F3F2F7',
+                    borderRadius: '12px',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                    gap: '20px'
+                }}>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00B074' }}>12</div>
+                        <div style={{ fontSize: '14px', color: '#666' }}>Cultivos Completados</div>
                     </div>
-                    <div className="stat__item">
-                        <div className="stat__number">3</div>
-                        <div className="stat__label">Cultivos Activos</div>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2D9CDB' }}>3</div>
+                        <div style={{ fontSize: '14px', color: '#666' }}>Cultivos Activos</div>
                     </div>
-                    <div className="stat__item">
-                        <div className="stat__number">156</div>
-                        <div className="stat__label">Días de Uso</div>
+                    <div style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#00B074' }}>156</div>
+                        <div style={{ fontSize: '14px', color: '#666' }}>Días de Uso</div>
                     </div>
                 </div>
 
