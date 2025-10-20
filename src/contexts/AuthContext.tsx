@@ -73,7 +73,7 @@ export function AuthProvider({children}: Props) {
             setLoading(true);
             const responseUser = await axios.get(verifyToken, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `SmartPot-OAuth ${token}`,
                 },
             });
 
@@ -107,7 +107,7 @@ export function AuthProvider({children}: Props) {
             }
 
             const responseUser = await axios.get(verifyToken, {
-                headers: {Authorization: `Bearer ${authToken}`},
+                headers: {Authorization: `SmartPot-OAuth ${authToken}`},
             });
 
             const userData: UserData = {
@@ -160,7 +160,7 @@ export function AuthProvider({children}: Props) {
             }
 
             const responseUser = await axios.get(verifyToken, {
-                headers: {Authorization: `Bearer ${authToken}`},
+                headers: {Authorization: `SmartPot-OAuth ${authToken}`},
             });
 
             const userData: UserData = {
@@ -195,7 +195,7 @@ export function AuthProvider({children}: Props) {
                 setLoading(true)
                 const response = await axios.put(`${userUpdate}${user.id}`, userDTO, {
                     headers: {
-                        Authorization: `Bearer ${user.authToken}`,
+                        Authorization: `SmartPot-OAuth ${user.authToken}`,
                     },
                 })
 

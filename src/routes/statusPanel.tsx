@@ -1,56 +1,74 @@
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import {getCrop} from "../api/Api.tsx";
 import {Crop} from "../types/ApiResponses.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback} from "react";
+import {CropCard} from "../components/CropCard.tsx";
 
 export default function StatusPanel() {
     const {user} = useAuthContext();
     const [crop, setCrop] = useState<Crop | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchCrop = async () => {
+    const fetchCrop = useCallback(async () => {
         if (user) {
             try {
+                setIsLoading(true);
                 const fetchedCrop = await getCrop(user);
                 setCrop(fetchedCrop);
                 console.log(fetchedCrop);
             } catch (error) {
                 console.error("Error fetching crop or history data: ", error);
+            } finally {
+                setIsLoading(false);
             }
         }
-    };
+    }, [user]);
 
 
     useEffect(() => {
         fetchCrop();
-    }, [user]);
+    }, [fetchCrop]);
 
     return (
         <>
-            <div className="flex bg-white rounded-lg shadow-md overflow-hidden max-w-2xl"
-                 style={{padding: "1rem"}}>
-                {/* Image container */}
-                <div className="w-1/3 relative">
-                    <img
-                        src={"src/assets/images/lechuga.png"}
-                        alt={"title"}
-                        className="h-full w-full object-cover"
-                    />
-                </div>
-
-                {/* Content container */}
-                <div className="w-2/3 p-6">
-                    {/* Category */}
-                    <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">
-                        El estado del cultivo
-                    </p>
-
-                    {/* Title */}
-                    <h2 className="mt-2 text-xl font-bold text-gray-900">
-                        {crop?.status || "Cargando..."}
-                    </h2>
+            <div className="inline-grid grid-cols-3 gap-4">
 
 
-                </div>
+            <CropCard
+                imageSrc="src/assets/images/lechuga.png"
+                imageAlt="Cultivo"
+                category="El estado del cultivo"
+                title={crop?.status || "Sin estado"}
+                isLoading={isLoading}
+            />
+            <CropCard
+                imageSrc="src/assets/images/lechuga.png"
+                imageAlt="pH del cultivo"
+                category="El pH del cultivo"
+                title={crop?.status || "Sin estado"}
+                isLoading={isLoading}
+            />
+            <CropCard
+                imageSrc="src/assets/images/lechuga.png"
+                imageAlt="Humedad del cultivo"
+                category="La humedad del cultivo"
+                title={crop?.status || "Sin estado"}
+                isLoading={isLoading}
+            />
+            <CropCard
+                imageSrc="src/assets/images/lechuga.png"
+                imageAlt="Cultivo"
+                category="El estado del cultivo"
+                title={crop?.status || "Sin estado"}
+                isLoading={isLoading}
+            />
+            <CropCard
+                imageSrc="src/assets/images/lechuga.png"
+                imageAlt="Cultivo"
+                category="El estado del cultivo"
+                title={crop?.status || "Sin estado"}
+                isLoading={isLoading}
+            />
             </div>
         </>
     );

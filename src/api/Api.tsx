@@ -105,7 +105,7 @@ export async function getNotifications(user: UserData): Promise<Notifications[]>
 function getAuthHeaders(user: UserData) {
     return {
         headers: {
-            Authorization: "Bearer " + user.authToken,
+            Authorization: "SmartPot-OAuth " + user.authToken,
         }
     }
 }
