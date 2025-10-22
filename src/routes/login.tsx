@@ -42,7 +42,7 @@ export default function Login() {
     return (
         <>
             {}
-            <div id="loginCard" className="bg-white rounded-2xl p-8 shadow flex min-h-screen flex-1 flex-col justify-center px-6 sm:px-10 lg:px-16">
+            <div id="loginCard" className="bg-white rounded-2xl p-8 shadow flex min-h-full flex-1 flex-col justify-center px-6 sm:px-10 lg:px-16">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <img
                         alt="smartpot"
@@ -86,7 +86,7 @@ export default function Login() {
                                     Password
                                 </label>
                                 <div className="text-sm">
-                                    <a href="#" className="font-semibold text-green-600 hover:text-green-400">
+                                    <a href="/auth/forgotPassword" className="font-semibold text-green-600 hover:text-green-400">
                                         Forgot password?
                                     </a>
                                 </div>

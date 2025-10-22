@@ -5,7 +5,7 @@ import {useEffect} from "react";
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
 import Loading from "../components/Loading.tsx";
-
+import "../assets/styles/MainContainer.css"
 import {BarChartOutlined, HomeOutlined, UserOutlined} from "@ant-design/icons";
 import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
 
@@ -34,9 +34,11 @@ export default function Root() {
             {
                 isAuthenticated ?
                     (
-                        <div className="content">
+                        <div className="flex flex-col flex-1">
                             <SessionBar/>
-                            <Outlet/>
+                            <main className="ml-sidebar-desktop md:ml-sidebar-tablet sm:ml-0 pt-16 px-4 min-h-screen bg-page-bg">
+                                <Outlet/>
+                            </main>
                             <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths}/>
                         </div>
                     )

@@ -8,6 +8,7 @@ import HistoricalData from '../routes/historicalData.tsx';
 import {AuthProvider} from '../contexts/AuthContext.tsx';
 import Login from '../routes/login.tsx';
 import Register from '../routes/register.tsx';
+import ForgotPassword from "../routes/forgotPassword.tsx";
 
 
 
@@ -24,6 +25,12 @@ function App() {
             element: <Register/>,
             errorElement: <ErrorPage/>
         },
+        {
+            path:"/auth/forgotPassword",
+            element: <ForgotPassword/>,
+            errorElement: <ErrorPage/>
+        },
+
         {
             id: "app",
             path: "/",
