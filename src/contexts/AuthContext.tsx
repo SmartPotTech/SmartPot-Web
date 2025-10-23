@@ -103,6 +103,7 @@ export function AuthProvider({children}: Props) {
             const authToken = response.data.token;
 
             if (!authToken) {
+                console.error("Error logging in: " + response);
                 throw new Error("No token received from the server in API: " + auth);
             }
 
