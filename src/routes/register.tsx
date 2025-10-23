@@ -1,4 +1,4 @@
-import logo from "../assets/images/lechuga.png";
+import logo from "../../public/lechuga.png";
 import React, {FormEvent, useEffect, useState} from "react";
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
