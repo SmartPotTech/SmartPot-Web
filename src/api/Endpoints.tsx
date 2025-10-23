@@ -1,7 +1,7 @@
 // api endpoints
 
 // URL base desde el archivo .env
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || process.env.VITE_API_BASE_URL || "http://localhost:8091"
 
 // Auth
 export const auth = `${BASE_URL}/auth/login`;
