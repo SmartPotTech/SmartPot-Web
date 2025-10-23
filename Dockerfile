@@ -38,7 +38,7 @@ RUN corepack enable && corepack prepare pnpm@10.12.4 --activate && pnpm add -g s
 COPY --from=build /app/dist ./dist
 
 # Copiar el entrypoint
-COPY docker/entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Exponer el puerto
