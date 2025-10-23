@@ -9,12 +9,12 @@ interface CropCardProps {
 }
 
 export const CropCard: React.FC<CropCardProps> = ({
-    imageSrc,
-    imageAlt,
-    category,
-    title,
-    isLoading = false
-}) => {
+                                                      imageSrc,
+                                                      imageAlt,
+                                                      category,
+                                                      title,
+                                                      isLoading = false
+                                                  }) => {
     return (
         <div className="flex bg-white rounded-lg shadow-md overflow-hidden max-w-2xl"
              style={{padding: "1rem"}}>

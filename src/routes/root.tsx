@@ -36,7 +36,8 @@ export default function Root() {
                     (
                         <div className="flex flex-col flex-1">
                             <SessionBar/>
-                            <main className="ml-sidebar-desktop md:ml-sidebar-tablet sm:ml-0 pt-16 px-4 min-h-screen bg-page-bg">
+                            <main
+                                className="ml-sidebar-desktop md:ml-sidebar-tablet sm:ml-0 pt-16 px-4 min-h-screen bg-page-bg">
                                 <Outlet/>
                             </main>
                             <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths}/>

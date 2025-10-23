@@ -13,8 +13,8 @@
     display: flex;
     min-height: 250px;
     margin-top: 2rem;
-    justify-content: center;  /* Centra horizontalmente */
-    align-items: center;      /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
     width: calc(100% - 250px); /* Resta el ancho del sidebar */
     margin-left: 250px; /* Desplaza por el sidebar */
     padding: 20px;

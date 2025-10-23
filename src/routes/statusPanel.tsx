@@ -1,7 +1,7 @@
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import {getCrop} from "../api/Api.tsx";
 import {Crop} from "../types/ApiResponses.tsx";
-import {useEffect, useState, useCallback} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {CropCard} from "../components/CropCard.tsx";
 
 export default function StatusPanel() {
@@ -34,41 +34,41 @@ export default function StatusPanel() {
             <div className="inline-grid grid-cols-3 gap-4">
 
 
-            <CropCard
-                imageSrc="src/assets/images/lechuga.png"
-                imageAlt="Cultivo"
-                category="El estado del cultivo"
-                title={crop?.status || "Sin estado"}
-                isLoading={isLoading}
-            />
-            <CropCard
-                imageSrc="src/assets/images/lechuga.png"
-                imageAlt="pH del cultivo"
-                category="El pH del cultivo"
-                title={crop?.status || "Sin estado"}
-                isLoading={isLoading}
-            />
-            <CropCard
-                imageSrc="src/assets/images/lechuga.png"
-                imageAlt="Humedad del cultivo"
-                category="La humedad del cultivo"
-                title={crop?.status || "Sin estado"}
-                isLoading={isLoading}
-            />
-            <CropCard
-                imageSrc="src/assets/images/lechuga.png"
-                imageAlt="Cultivo"
-                category="El estado del cultivo"
-                title={crop?.status || "Sin estado"}
-                isLoading={isLoading}
-            />
-            <CropCard
-                imageSrc="src/assets/images/lechuga.png"
-                imageAlt="Cultivo"
-                category="El estado del cultivo"
-                title={crop?.status || "Sin estado"}
-                isLoading={isLoading}
-            />
+                <CropCard
+                    imageSrc="src/assets/images/lechuga.png"
+                    imageAlt="Cultivo"
+                    category="El estado del cultivo"
+                    title={crop?.status || "Sin estado"}
+                    isLoading={isLoading}
+                />
+                <CropCard
+                    imageSrc="src/assets/images/lechuga.png"
+                    imageAlt="pH del cultivo"
+                    category="El pH del cultivo"
+                    title={crop?.status || "Sin estado"}
+                    isLoading={isLoading}
+                />
+                <CropCard
+                    imageSrc="src/assets/images/lechuga.png"
+                    imageAlt="Humedad del cultivo"
+                    category="La humedad del cultivo"
+                    title={crop?.status || "Sin estado"}
+                    isLoading={isLoading}
+                />
+                <CropCard
+                    imageSrc="src/assets/images/lechuga.png"
+                    imageAlt="Cultivo"
+                    category="El estado del cultivo"
+                    title={crop?.status || "Sin estado"}
+                    isLoading={isLoading}
+                />
+                <CropCard
+                    imageSrc="src/assets/images/lechuga.png"
+                    imageAlt="Cultivo"
+                    category="El estado del cultivo"
+                    title={crop?.status || "Sin estado"}
+                    isLoading={isLoading}
+                />
             </div>
         </>
     );

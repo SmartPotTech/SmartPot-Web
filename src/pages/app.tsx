@@ -11,7 +11,6 @@ import Register from '../routes/register.tsx';
 import ForgotPassword from "../routes/forgotPassword.tsx";
 
 
-
 function App() {
 
     const router = createBrowserRouter([
@@ -26,7 +25,7 @@ function App() {
             errorElement: <ErrorPage/>
         },
         {
-            path:"/auth/forgotPassword",
+            path: "/auth/forgotPassword",
             element: <ForgotPassword/>,
             errorElement: <ErrorPage/>
         },
