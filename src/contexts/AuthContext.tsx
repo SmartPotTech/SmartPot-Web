@@ -103,7 +103,7 @@ export function AuthProvider({children}: Props) {
             const authToken = response.data.token;
 
             if (!authToken) {
-                throw new Error("No token received from the server.");
+                throw new Error("No token received from the server in API: " + auth);
             }
 
             const responseUser = await axios.get(verifyToken, {
