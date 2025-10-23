@@ -3,7 +3,7 @@
 # ===============================
 FROM node:20-alpine AS build
 
-# Establecer directorio de trabajo
+# Directorio de trabajo
 WORKDIR /app
 
 # Habilitar pnpm
@@ -11,13 +11,13 @@ RUN corepack enable && corepack prepare pnpm@10.12.4 --activate
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-# Copiar archivos de dependencias
+# Copiar dependencias
 COPY package.json pnpm-lock.yaml ./
 
 # Instalar dependencias
 RUN pnpm install --frozen-lockfile
 
-# Copiar todo el código
+# Copiar el resto del código
 COPY . .
 
 # Compilar el proyecto
@@ -25,14 +25,24 @@ RUN pnpm run build
 
 
 # ===============================
-# Stage 2: Imagen final para servir
+# Stage 2: Imagen final (serve)
 # ===============================
 FROM node:20-alpine
 
 WORKDIR /app
 
+# Definir entorno para PNPM global
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+# Instalar corepack y pnpm
+RUN corepack enable && corepack prepare pnpm@10.12.4 --activate
+
+# Crear el directorio global si no existe (previene error)
+RUN mkdir -p $PNPM_HOME && chmod -R 777 $PNPM_HOME
+
 # Instalar `serve` globalmente
-RUN corepack enable && corepack prepare pnpm@10.12.4 --activate && pnpm add -g serve
+RUN pnpm add -g serve
 
 # Copiar los archivos compilados desde el build stage
 COPY --from=build /app/dist ./dist
@@ -44,7 +54,7 @@ RUN chmod +x /entrypoint.sh
 # Exponer el puerto
 EXPOSE 5173
 
-# Definir variables por defecto (pueden ser sobreescritas en docker-compose o entorno)
+# Variable por defecto (puede ser sobrescrita)
 ENV VITE_API_BASE_URL="http://localhost:8091"
 
 # Usar el entrypoint
