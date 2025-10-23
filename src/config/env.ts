@@ -7,7 +7,7 @@ type EnvValue = string | undefined;
  * @param required - Si true, lanza error si no existe
  */
 export function getEnv(key: string, defaultValue?: string, required = false): string {
-    const value: EnvValue = import.meta.env[key as keyof typeof import.meta.env];
+    const value: EnvValue = (import.meta.env as Record<string, string | undefined>)[key];
 
     if (value !== undefined && value !== "") {
         return value;
