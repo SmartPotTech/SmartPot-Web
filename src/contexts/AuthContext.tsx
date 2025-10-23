@@ -88,7 +88,7 @@ export function AuthProvider({children}: Props) {
                 setIsAuthenticated(true);
             }
         } catch (err) {
-            console.error("Error verifying token:", err);
+            console.error("Error verifying token in API: " + verifyToken, err);
             logout(); // Logout if token verification fails
         } finally {
             setLoading(false);
@@ -125,9 +125,9 @@ export function AuthProvider({children}: Props) {
         } catch (err: any) {
             console.error("Login error:", err);
             try {
-                setError(err.response.data.message || "An error occurred during login.");
+                setError(err.response.data.message || "An error occurred during login in API: " + auth);
             } catch {
-                setError(err.message || "An error ocurred during login.")
+                setError(err.message || "An error ocurred during login in API: " + auth);
             }
         } finally {
             setLoading(false);
