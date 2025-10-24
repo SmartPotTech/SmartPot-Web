@@ -1,16 +1,4 @@
-.sessionBar {
-    padding-top: 20px;
-    position: fixed;
-    top: 0;
-    left: 250px;
-    width: calc(100% - 250px);
-    height: 60px;
-    display: flex;
-    align-items: center;
-    background-color: #F3F2F7;
-    box-sizing: border-box;
-    justify-content: flex-end;
-}
+
 
 @media screen and (min-width: 800px) and (max-width: 1024px) {
 

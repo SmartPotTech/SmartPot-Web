@@ -35,12 +35,18 @@ export default function Root() {
                 isAuthenticated ?
                     (
                         <div className="flex flex-col flex-1">
-                            <SessionBar/>
-                            <main
-                                className="ml-sidebar-desktop md:ml-sidebar-tablet sm:ml-0 pt-24 px-4 min-h-screen bg-page-bg flex justify-center">
-                                <Outlet/>
-                            </main>
                             <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths}/>
+
+                            <div className="flex-1 flex flex-col ml-64 md:ml-20 lg:ml-64">
+                                <SessionBar/>
+                                <main
+                                    className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+                                    <Outlet/>
+                                </main>
+                            </div>
+
+
+
                         </div>
                     )
                     :

@@ -12,7 +12,8 @@ export default function SessionBar() {
     return (
         <>
 
-            <header className="sessionBar z-20">
+            <header className="sessionBar z-20 pt-5 top-0 fixed flex justify-self-end items-center h-15.5 left-64
+            md:left-20 lg:left-64 right-0">
 
                 <NotificationBell></NotificationBell>
                 <Divider className="Divider" type='vertical'></Divider>

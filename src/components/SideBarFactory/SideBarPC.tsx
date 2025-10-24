@@ -14,7 +14,8 @@ export class SidebarPC implements SidebarInterface {
     render(): React.ReactElement {
         return (
 
-            <div className="sidebar-pc">
+            <div className="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[15rem]
+             flex-col pt-5 bg-white shadow-lg items-center">
                 <SidebarBase {...this.props} />
             </div>
         );
