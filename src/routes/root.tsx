@@ -37,10 +37,10 @@ export default function Root() {
                         <div className="flex flex-col flex-1">
                             <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths}/>
 
-                            <div className="flex-1 flex flex-col ml-64 md:ml-20 lg:ml-64">
+                            <div className="flex-1 flex flex-col ml-64 md:ml-20 lg:ml-40">
                                 <SessionBar/>
                                 <main
-                                    className="mx-auto h-screen pt-14">
+                                    className=" h-screen pt-14">
                                     <Outlet/>
                                 </main>
                             </div>
