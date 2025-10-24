@@ -7,6 +7,7 @@ ENVMAP_FILE="$DIST_DIR/runtime.envmap"
 
 echo "🚀 Starting runtime variable replacement..."
 
+# Validaciones iniciales
 if [ ! -f "$ENVMAP_FILE" ]; then
   echo "❌ Envmap file not found at $ENVMAP_FILE"
   exit 1
@@ -23,12 +24,14 @@ JS_FILES=$(find "$ASSETS_DIR" -type f -name "*.js")
 echo "$JS_FILES" | sed 's/^/   • /'
 echo ""
 
-CHANGED_FILES=()
+CHANGED_FILES=""
 
 # Leer todas las líneas válidas del envmap
-while IFS= read -r line; do
+while IFS= read -r line || [ -n "$line" ]; do
   # Saltar comentarios o líneas vacías
-  [[ -z "$line" || "$line" =~ ^# ]] && continue
+  case "$line" in
+    ''|\#*) continue ;;
+  esac
 
   # Extraer campos: NOMBRE_ENV=PLACEHOLDER|DEFAULT
   ENV_NAME=$(echo "$line" | cut -d= -f1)
@@ -37,28 +40,27 @@ while IFS= read -r line; do
   DEFAULT_VALUE=$(echo "$REST" | cut -d'|' -f2-)
 
   # Obtener valor del entorno o usar default
-  VALUE=${!ENV_NAME:-$DEFAULT_VALUE}
+  VALUE=$(eval echo \${$ENV_NAME:-$DEFAULT_VALUE})
 
   echo "🌍 Replacing $PLACEHOLDER -> $VALUE"
 
   # Reemplazar en todos los archivos .js del build
-  while IFS= read -r jsfile; do
+  for jsfile in $JS_FILES; do
     if grep -q "$PLACEHOLDER" "$jsfile"; then
       sed -i "s#${PLACEHOLDER}#${VALUE}#g" "$jsfile"
       echo "   ✅ Modified: $jsfile"
-      CHANGED_FILES+=("$jsfile")
+      CHANGED_FILES="$CHANGED_FILES\n   • $jsfile"
     fi
-  done <<< "$JS_FILES"
-
+  done
 done < "$ENVMAP_FILE"
 
 echo ""
 echo "✅ Environment variable replacement completed."
 
-if [ ${#CHANGED_FILES[@]} -gt 0 ]; then
+if [ -n "$CHANGED_FILES" ]; then
   echo ""
   echo "📝 Files modified:"
-  printf '   • %s\n' "${CHANGED_FILES[@]}"
+  printf "$CHANGED_FILES\n"
 else
   echo "ℹ️  No JavaScript files required replacement."
 fi
