@@ -35,35 +35,35 @@ export default function StatusPanel() {
 
 
                 <CropCard
-                    imageSrc="src/assets/images/lechuga.png"
+                    imageSrc="/lechuga.png"
                     imageAlt="Cultivo"
                     category="El estado del cultivo"
                     title={crop?.status || "Sin estado"}
                     isLoading={isLoading}
                 />
                 <CropCard
-                    imageSrc="src/assets/images/lechuga.png"
+                    imageSrc="/lechuga.png"
                     imageAlt="pH del cultivo"
                     category="El pH del cultivo"
                     title={crop?.status || "Sin estado"}
                     isLoading={isLoading}
                 />
                 <CropCard
-                    imageSrc="src/assets/images/lechuga.png"
+                    imageSrc="/lechuga.png"
                     imageAlt="Humedad del cultivo"
                     category="La humedad del cultivo"
                     title={crop?.status || "Sin estado"}
                     isLoading={isLoading}
                 />
                 <CropCard
-                    imageSrc="src/assets/images/lechuga.png"
+                    imageSrc="/lechuga.png"
                     imageAlt="Cultivo"
                     category="El estado del cultivo"
                     title={crop?.status || "Sin estado"}
                     isLoading={isLoading}
                 />
                 <CropCard
-                    imageSrc="src/assets/images/lechuga.png"
+                    imageSrc="/lechuga.png"
                     imageAlt="Cultivo"
                     category="El estado del cultivo"
                     title={crop?.status || "Sin estado"}
