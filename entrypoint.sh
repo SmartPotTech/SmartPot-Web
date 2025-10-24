@@ -17,6 +17,14 @@ if [ ! -d "$ASSETS_DIR" ]; then
   exit 1
 fi
 
+echo ""
+echo "📂 Listing .js files in $ASSETS_DIR ..."
+JS_FILES=$(find "$ASSETS_DIR" -type f -name "*.js")
+echo "$JS_FILES" | sed 's/^/   • /'
+echo ""
+
+CHANGED_FILES=()
+
 # Leer todas las líneas válidas del envmap
 while IFS= read -r line; do
   # Saltar comentarios o líneas vacías
@@ -34,13 +42,27 @@ while IFS= read -r line; do
   echo "🌍 Replacing $PLACEHOLDER -> $VALUE"
 
   # Reemplazar en todos los archivos .js del build
-  find "$ASSETS_DIR" -type f -name "*.js" | while read -r jsfile; do
-    sed -i "s#${PLACEHOLDER}#${VALUE}#g" "$jsfile"
-  done
+  while IFS= read -r jsfile; do
+    if grep -q "$PLACEHOLDER" "$jsfile"; then
+      sed -i "s#${PLACEHOLDER}#${VALUE}#g" "$jsfile"
+      echo "   ✅ Modified: $jsfile"
+      CHANGED_FILES+=("$jsfile")
+    fi
+  done <<< "$JS_FILES"
 
 done < "$ENVMAP_FILE"
 
+echo ""
 echo "✅ Environment variable replacement completed."
 
+if [ ${#CHANGED_FILES[@]} -gt 0 ]; then
+  echo ""
+  echo "📝 Files modified:"
+  printf '   • %s\n' "${CHANGED_FILES[@]}"
+else
+  echo "ℹ️  No JavaScript files required replacement."
+fi
+
+echo ""
 # Ejecutar el comando principal del contenedor
 exec "$@"
