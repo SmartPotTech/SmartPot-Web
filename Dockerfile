@@ -54,8 +54,5 @@ RUN chmod +x /entrypoint.sh
 # Exponer el puerto
 EXPOSE 5173
 
-# Variable por defecto (puede ser sobrescrita)
-ENV VITE_API_BASE_URL="http://localhost:8091"
-
 # Usar el entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
