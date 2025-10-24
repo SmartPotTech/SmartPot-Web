@@ -42,6 +42,3 @@ while IFS='=' read -r ENV_NAME PLACEHOLDER DEFAULT_VALUE; do
   done
 
 done < "$ENVMAP_FILE"
-
-echo "🚀 Starting frontend server..."
-exec serve -s dist -l 5173

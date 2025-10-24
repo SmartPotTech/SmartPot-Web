@@ -56,3 +56,5 @@ EXPOSE 5173
 
 # Usar el entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["serve", "-s", "dist", "-l", "5173"]
