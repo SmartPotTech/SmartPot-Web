@@ -67,8 +67,8 @@ importers:
         specifier: ^7.4.3
         version: 7.4.3
       '@types/plotly.js':
-        specifier: ^3.0.6
-        version: 3.0.7
+        specifier: ^3.0.8
+        version: 3.0.8
       '@types/react':
         specifier: ^19.1.13
         version: 19.2.2
@@ -1108,8 +1108,8 @@ packages:
   '@types/pbf@3.0.5':
     resolution: {integrity: sha512-j3pOPiEcWZ34R6a6mN07mUkM4o4Lwf6hPNt8eilOeZhTFbxFXmKhvXl9Y28jotFPaI1bpPDJsbCprUoNke6OrA==}
 
-  '@types/plotly.js@3.0.7':
-    resolution: {integrity: sha512-oFgNQsBpVOuQ2jYl3qRO9uyuixT+jbeMXGbbAHTV7AM9Bi6N9B2ZFYxO64hBwXu65Khb7w8a6d4EJnrLC30Vlw==}
+  '@types/plotly.js@3.0.8':
+    resolution: {integrity: sha512-FjmSFaLmHVgBIBL6H0yX5k/AB3a7FQzjKBlRUF8YT6HiXMArE+hbXYIZXZ/42SBrdL05LWEog0zPqEaIDNsAiw==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -4248,7 +4248,7 @@ snapshots:
 
   '@types/pbf@3.0.5': {}
 
-  '@types/plotly.js@3.0.7': {}
+  '@types/plotly.js@3.0.8': {}
 
   '@types/prop-types@15.7.15': {}
 
@@ -4263,7 +4263,7 @@ snapshots:
 
   '@types/react-plotly.js@2.6.3':
     dependencies:
-      '@types/plotly.js': 3.0.7
+      '@types/plotly.js': 3.0.8
       '@types/react': 19.2.2
 
   '@types/react-transition-group@4.4.12(@types/react@19.2.2)':
