@@ -43,7 +43,7 @@ export default function ForgotPassword() {
         <>
             {}
             <div id="loginCard"
-                 className="bg-white rounded-2xl p-8 shadow flex min-h-full flex-1 flex-col justify-center px-6 sm:px-10 lg:px-16">
+                 className="bg-white rounded-2xl p-8 shadow-xl/20 flex min-h-full flex-1 flex-col justify-center px-6 sm:px-10 lg:px-16">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                     <img
                         alt="smartpot"

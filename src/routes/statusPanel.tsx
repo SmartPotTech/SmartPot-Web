@@ -31,8 +31,14 @@ export default function StatusPanel() {
 
     return (
         <>
+            <aside className="estado-cultivo mb-6 p-4 rounded-lg bg-green-100 text-green-800 flex items-center">
+                <div className="icono">
+                </div>
+                <p className="mensaje-estado">
+                    El estado del cultivo de 🌱 es <strong>óptimo</strong>.
+                </p>
+            </aside>
             <div className="sensors inline-grid grid-cols-3 gap-4">
-
 
                 <CropCard
                     imageSrc="/lechuga.png"
@@ -41,12 +47,12 @@ export default function StatusPanel() {
                     title={crop?.status || "Sin estado"}
                     isLoading={isLoading}
                 /><CropCard
-                    imageSrc="/lechuga.png"
-                    imageAlt="Cultivo"
-                    category="El estado del cultivo"
-                    title={crop?.status || "Sin estado"}
-                    isLoading={isLoading}
-                />
+                imageSrc="/lechuga.png"
+                imageAlt="Cultivo"
+                category="El estado del cultivo"
+                title={crop?.status || "Sin estado"}
+                isLoading={isLoading}
+            />
                 <CropCard
                     imageSrc="/lechuga.png"
                     imageAlt="pH del cultivo"

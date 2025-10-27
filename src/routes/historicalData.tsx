@@ -103,8 +103,7 @@ export default function HistoricalData() {
 
     return (
         <>
-            <main className="mainContent"
-                  style={{backgroundColor: "#f9fafb"}}>
+
                 <div className="mb-6 text-center">
                     <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
                 </div>
@@ -205,7 +204,7 @@ export default function HistoricalData() {
                     }
 
                 </div>
-            </main>
+
         </>
 
     );
