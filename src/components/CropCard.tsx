@@ -16,7 +16,7 @@ export const CropCard: React.FC<CropCardProps> = ({
                                                       isLoading = false
                                                   }) => {
     return (
-        <div className="flex bg-white rounded-lg shadow-md overflow-hidden max-w-2xl"
+        <div className="flex bg-white rounded-lg shadow-md overflow-hidden max-w-3/3 h-32"
              style={{padding: "1rem"}}>
             {/* Image container */}
             <div className="w-1/3 relative">

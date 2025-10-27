@@ -31,10 +31,16 @@ export default function StatusPanel() {
 
     return (
         <>
-            <div className="inline-grid grid-cols-3 gap-4">
+            <div className="sensors inline-grid grid-cols-3 gap-4">
 
 
                 <CropCard
+                    imageSrc="/lechuga.png"
+                    imageAlt="Cultivo"
+                    category="El estado del cultivo"
+                    title={crop?.status || "Sin estado"}
+                    isLoading={isLoading}
+                /><CropCard
                     imageSrc="/lechuga.png"
                     imageAlt="Cultivo"
                     category="El estado del cultivo"
