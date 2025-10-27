@@ -67,8 +67,8 @@ importers:
         specifier: ^7.4.3
         version: 7.4.3
       '@types/plotly.js':
-        specifier: ^3.0.6
-        version: 3.0.7
+        specifier: ^3.0.8
+        version: 3.0.8
       '@types/react':
         specifier: ^19.1.13
         version: 19.2.2
@@ -1133,8 +1133,8 @@ packages:
   '@types/pbf@3.0.5':
     resolution: {integrity: sha512-j3pOPiEcWZ34R6a6mN07mUkM4o4Lwf6hPNt8eilOeZhTFbxFXmKhvXl9Y28jotFPaI1bpPDJsbCprUoNke6OrA==}
 
-  '@types/plotly.js@3.0.7':
-    resolution: {integrity: sha512-oFgNQsBpVOuQ2jYl3qRO9uyuixT+jbeMXGbbAHTV7AM9Bi6N9B2ZFYxO64hBwXu65Khb7w8a6d4EJnrLC30Vlw==}
+  '@types/plotly.js@3.0.8':
+    resolution: {integrity: sha512-FjmSFaLmHVgBIBL6H0yX5k/AB3a7FQzjKBlRUF8YT6HiXMArE+hbXYIZXZ/42SBrdL05LWEog0zPqEaIDNsAiw==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -3045,9 +3045,6 @@ packages:
   svg-path-sdf@1.1.3:
     resolution: {integrity: sha512-vJJjVq/R5lSr2KLfVXVAStktfcfa1pNFjFOgyJnzZFXlO/fDZ5DmM8FpnSKKzLPfEYTVeXuVBTHF296TpxuJVg==}
 
-  tailwindcss@4.1.15:
-    resolution: {integrity: sha512-k2WLnWkYFkdpRv+Oby3EBXIyQC8/s1HOFMBUViwtAh6Z5uAozeUSMQlIsn/c6Q2iJzqG6aJT3wdPaRNj70iYxQ==}
-
   tailwindcss@4.1.16:
     resolution: {integrity: sha512-pONL5awpaQX4LN5eiv7moSiSPd/DLDzKVRJz8Q9PgzmAdd1R4307GQS2ZpfiN7ZmekdQrfhZZiSE5jkLR4WNaA==}
 
@@ -4336,7 +4333,7 @@ snapshots:
 
   '@types/pbf@3.0.5': {}
 
-  '@types/plotly.js@3.0.7': {}
+  '@types/plotly.js@3.0.8': {}
 
   '@types/prop-types@15.7.15': {}
 
@@ -4351,7 +4348,7 @@ snapshots:
 
   '@types/react-plotly.js@2.6.3':
     dependencies:
-      '@types/plotly.js': 3.0.7
+      '@types/plotly.js': 3.0.8
       '@types/react': 19.2.2
 
   '@types/react-transition-group@4.4.12(@types/react@19.2.2)':
@@ -6621,8 +6618,6 @@ snapshots:
       is-svg-path: 1.0.2
       parse-svg-path: 0.1.2
       svg-path-bounds: 1.0.2
-
-  tailwindcss@4.1.15: {}
 
   tailwindcss@4.1.16: {}
 
