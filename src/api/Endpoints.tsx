@@ -13,7 +13,7 @@ export const cropHistory = `${BASE_URL}/Records/crop/`;
 export const cropHistoryRange = `${BASE_URL}/Records/crop/between/`;
 
 // Crops
-export const userCrop = `${BASE_URL}/Crops/User/`;
+export const userCrop = `${BASE_URL}/Crops/user/`;
 export const numCrop = `${BASE_URL}/Crops/count/`;
 
 // Notifications
