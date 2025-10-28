@@ -104,25 +104,25 @@ export default function HistoricalData() {
     return (
         <>
 
-                <div className="mb-6 text-center">
-                    <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
+            <div className="mb-6 text-center">
+                <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
+            </div>
+
+            <div className="CropData bg-white p-6 rounded-lg shadow-md mb-8">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-4">Detalles del Cultivo</h3>
+                <div className="space-y-2">
+                    <p className="text-lg font-bold text-green-600">
+                        Crop ID: <span className="text-xl underline">{crop ? crop.id : "Cargando..."}</span>
+                    </p>
+                    <p className="text-lg text-gray-600">
+                        Estado: <span className="font-semibold">{crop ? crop.status : "Cargando..."}</span>
+                    </p>
                 </div>
+            </div>
 
-                <div className="CropData bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4">Detalles del Cultivo</h3>
-                    <div className="space-y-2">
-                        <p className="text-lg font-bold text-green-600">
-                            Crop ID: <span className="text-xl underline">{crop ? crop.id : "Cargando..."}</span>
-                        </p>
-                        <p className="text-lg text-gray-600">
-                            Estado: <span className="font-semibold">{crop ? crop.status : "Cargando..."}</span>
-                        </p>
-                    </div>
-                </div>
+            <div className="overflow-x-auto bg-white shadow-md rounded-lg mb-8">
 
-                <div className="overflow-x-auto bg-white shadow-md rounded-lg mb-8">
-
-                    <div className="flex content-between justify-between">
+                <div className="flex content-between justify-between">
                         <span className="m-4">
                             <Dropdown buttonLabel={rangeText}>
                                 <DateRange
@@ -144,7 +144,7 @@ export default function HistoricalData() {
                                 Filtrar
                             </button>
                         </span>
-                        <span className="m-4">
+                    <span className="m-4">
                             <button
                                 className="inline-flex justify-center rounded-md border border-gray-300 shadow-sm m-2 px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
                                 onClick={() => setToggleTable(!toggleTable)}
@@ -155,55 +155,55 @@ export default function HistoricalData() {
                                     ("Cambiar a tabla")
                             } </button>
                         </span>
-                    </div>
-
-
-                    {
-                        toggleTable ?
-                            (
-                                <table className="min-w-full table-auto border-collapse text-sm">
-                                    <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody className="bg-white">
-                                    {history.map((e, index) => (
-                                        <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
-                                            <td className="px-6 py-4 text-gray-700">{index + 1}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
-                                            <td className="px-6 py-4 text-gray-700">{e.date}</td>
-                                        </tr>
-                                    ))}
-                                    </tbody>
-                                </table>
-
-                            )
-                            :
-                            (
-                                <div className="overflow-auto max-w-full">
-                                    <PlotlyChart history={history} measure="brightness" label="Brillo"/>
-                                    <PlotlyChart history={history} measure="humidity" label="Humedad"/>
-                                    <PlotlyChart history={history} measure="ph" label="pH"/>
-                                    <PlotlyChart history={history} measure="tds" label="TDS"/>
-                                    <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
-                                </div>
-                            )
-                    }
-
                 </div>
+
+
+                {
+                    toggleTable ?
+                        (
+                            <table className="min-w-full table-auto border-collapse text-sm">
+                                <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Brillo</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Humedad</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">PH</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">TDS</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Temperatura</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Fecha</th>
+                                </tr>
+                                </thead>
+                                <tbody className="bg-white">
+                                {history.map((e, index) => (
+                                    <tr key={index} className={`border-t ${index % 2 === 0 ? 'bg-gray-50' : ''}`}>
+                                        <td className="px-6 py-4 text-gray-700">{index + 1}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.measures.atmosphere}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.measures.brightness}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.measures.humidity}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.measures.tds}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.measures.temperature}</td>
+                                        <td className="px-6 py-4 text-gray-700">{e.date}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+
+                        )
+                        :
+                        (
+                            <div className="overflow-auto max-w-full">
+                                <PlotlyChart history={history} measure="brightness" label="Brillo"/>
+                                <PlotlyChart history={history} measure="humidity" label="Humedad"/>
+                                <PlotlyChart history={history} measure="ph" label="pH"/>
+                                <PlotlyChart history={history} measure="tds" label="TDS"/>
+                                <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+                            </div>
+                        )
+                }
+
+            </div>
 
         </>
 

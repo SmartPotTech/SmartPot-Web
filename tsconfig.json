@@ -13,6 +13,7 @@
       "plotly.js"
     ]
   },
+  "include": ["src"],
   "files": [],
   "references": [
     {

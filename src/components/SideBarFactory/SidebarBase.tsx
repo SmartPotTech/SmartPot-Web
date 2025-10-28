@@ -1,5 +1,5 @@
 // SidebarBase.tsx
-import React, { useState } from "react";
+import React, {useState} from "react";
 
 import {Link} from "react-router-dom";
 import {SidebarProps} from "./ISideBar.ts";
@@ -46,7 +46,7 @@ const SidebarBase: React.FC<SidebarProps> = ({title, icons, labels, paths}) => {
                             }
                             `}
                         >
-                            <Icon className="text-xl flex-shrink-0" />
+                            <Icon className="text-xl flex-shrink-0"/>
                             <span className="md:hidden lg:inline font-medium">
                                 {labels[index]}
                             </span>

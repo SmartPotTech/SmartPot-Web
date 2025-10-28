@@ -28,9 +28,6 @@ body {
 /* styles.css */
 
 
-
-
-
 .sidebar.closed {
     transform: translateX(-100%); /* Mueve la sidebar fuera de la vista */
 }

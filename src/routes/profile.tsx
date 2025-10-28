@@ -16,7 +16,7 @@ export default function Profile() {
     const [formData, setFormData] = useState({
         name: user?.name || "",
         lastname: user?.lastname || "",
-        email:  "juan.example@dfmakds.com",
+        email: "juan.example@dfmakds.com",
         phone: "",
         location: "",
         joinDate: "2024-01-15"
@@ -40,7 +40,8 @@ export default function Profile() {
 
                 <div className="relative h-36 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
                     <div className="absolute -bottom-12 left-6">
-                        <div className="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-md flex items-center justify-center">
+                        <div
+                            className="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-md flex items-center justify-center">
                             <UserOutlined className="text-white text-3xl"/>
                         </div>
                     </div>
@@ -75,7 +76,8 @@ export default function Profile() {
                         <h1 className="text-2xl font-bold text-slate-800">
                             {formData.name} {formData.lastname}
                         </h1>
-                        <span className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full">
+                        <span
+                            className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full">
               Usuario Activo
             </span>
                     </div>
@@ -86,7 +88,7 @@ export default function Profile() {
                         {/* Nombre */}
                         <Item
                             label="Nombre"
-                            icon={<UserOutlined className="text-emerald-600" />}
+                            icon={<UserOutlined className="text-emerald-600"/>}
                             isEditing={isEditing}
                             value={formData.name}
                             onChange={v => handleInputChange("name", v)}
@@ -95,7 +97,7 @@ export default function Profile() {
                         {/* Apellido */}
                         <Item
                             label="Apellido"
-                            icon={<UserOutlined className="text-emerald-600" />}
+                            icon={<UserOutlined className="text-emerald-600"/>}
                             isEditing={isEditing}
                             value={formData.lastname}
                             onChange={v => handleInputChange("lastname", v)}
@@ -104,7 +106,7 @@ export default function Profile() {
                         {/* Email */}
                         <Item
                             label="Email"
-                            icon={<MailOutlined className="text-cyan-600" />}
+                            icon={<MailOutlined className="text-cyan-600"/>}
                             isEditing={isEditing}
                             value={formData.email}
                             onChange={v => handleInputChange("email", v)}
@@ -114,7 +116,7 @@ export default function Profile() {
                         {/* Teléfono */}
                         <Item
                             label="Teléfono"
-                            icon={<PhoneOutlined className="text-emerald-600" />}
+                            icon={<PhoneOutlined className="text-emerald-600"/>}
                             isEditing={isEditing}
                             value={formData.phone}
                             onChange={v => handleInputChange("phone", v)}
@@ -124,7 +126,7 @@ export default function Profile() {
                         {/* Ubicación */}
                         <Item
                             label="Ubicación"
-                            icon={<EnvironmentOutlined className="text-cyan-600" />}
+                            icon={<EnvironmentOutlined className="text-cyan-600"/>}
                             isEditing={isEditing}
                             value={formData.location}
                             onChange={v => handleInputChange("location", v)}
@@ -160,7 +162,7 @@ interface ItemProps {
     placeholder?: string;
 }
 
-function Item({ label, value, icon, isEditing, onChange, type = "text", placeholder }: ItemProps) {
+function Item({label, value, icon, isEditing, onChange, type = "text", placeholder}: ItemProps) {
     return (
         <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
             <div className="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-md">
