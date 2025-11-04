@@ -33,8 +33,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       plotly.js:
-        specifier: ^3.1.0
-        version: 3.1.2(mapbox-gl@1.13.3)
+        specifier: ^3.2.0
+        version: 3.2.0(mapbox-gl@1.13.3)
       react:
         specifier: ^19.1.1
         version: 19.2.0
@@ -46,7 +46,7 @@ importers:
         version: 19.2.0(react@19.2.0)
       react-plotly.js:
         specifier: ^2.6.0
-        version: 2.6.0(plotly.js@3.1.2(mapbox-gl@1.13.3))(react@19.2.0)
+        version: 2.6.0(plotly.js@3.2.0(mapbox-gl@1.13.3))(react@19.2.0)
       react-router-dom:
         specifier: ^7.9.5
         version: 7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -2469,8 +2469,8 @@ packages:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
-  plotly.js@3.1.2:
-    resolution: {integrity: sha512-Yk1KQ1QHzZH1t/XYdub3b631Gc4t4kZYHdnf4G7DqnNg4CP3nJ9FP4hsNh3pNVO9LcpchE7NrmjPKJlaGzBJNg==}
+  plotly.js@3.2.0:
+    resolution: {integrity: sha512-VH4FRnWbO35rU3IEPrnZ4pxnjS5NbNz6Jk3Rp06jTIleYdAWCdyRrULSOqQB9UMm9XHRKaIKAZPYBOLqQ1svbA==}
     engines: {node: '>=18.0.0'}
 
   point-in-polygon@1.1.0:
@@ -2865,8 +2865,8 @@ packages:
   resolve@0.6.3:
     resolution: {integrity: sha512-UHBY3viPlJKf85YijDUcikKX6tmF4SokIDp518ZDVT92JNDcG5uKIthaT/owt3Sar0lwtOafsQuwrg22/v2Dwg==}
 
-  resolve@1.22.10:
-    resolution: {integrity: sha512-NPRy+/ncIMeDlTAsuqwKIiferiawhefFJtkNSW0qZJEqMEb+qBt/77B/jGeeek+F0uOeN05CDa6HXbbIgtVX4w==}
+  resolve@1.22.11:
+    resolution: {integrity: sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==}
     engines: {node: '>= 0.4'}
     hasBin: true
 
@@ -2901,8 +2901,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sax@1.4.1:
-    resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
+  sax@1.4.2:
+    resolution: {integrity: sha512-FySGAa0RGcFiN6zfrO9JvK1r7TB59xuzCcTHOBXBNoKgDejlOQCR2KL/FGk3/iDlsqyYg1ELZpOmlg09B01Czw==}
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
@@ -4518,7 +4518,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.4
       cosmiconfig: 7.1.0
-      resolve: 1.22.10
+      resolve: 1.22.11
 
   balanced-match@1.0.2: {}
 
@@ -4748,7 +4748,7 @@ snapshots:
       commander: 2.20.3
       d3-array: 1.2.4
       d3-geo: 1.12.1
-      resolve: 1.22.10
+      resolve: 1.22.11
 
   d3-geo@1.12.1:
     dependencies:
@@ -5296,7 +5296,7 @@ snapshots:
       graceful-fs: 4.2.11
       inherits: 2.0.4
       map-limit: 0.0.1
-      resolve: 1.22.10
+      resolve: 1.22.11
 
   glslify@7.1.1:
     dependencies:
@@ -5310,7 +5310,7 @@ snapshots:
       glslify-bundle: 5.1.1
       glslify-deps: 1.3.2
       minimist: 1.2.8
-      resolve: 1.22.10
+      resolve: 1.22.11
       stack-trace: 0.0.9
       static-eval: 2.1.1
       through2: 2.0.5
@@ -5679,7 +5679,7 @@ snapshots:
     dependencies:
       debug: 3.2.7
       iconv-lite: 0.4.24
-      sax: 1.4.1
+      sax: 1.4.2
     transitivePeerDependencies:
       - supports-color
 
@@ -5788,7 +5788,7 @@ snapshots:
 
   picomatch@4.0.3: {}
 
-  plotly.js@3.1.2(mapbox-gl@1.13.3):
+  plotly.js@3.2.0(mapbox-gl@1.13.3):
     dependencies:
       '@plotly/d3': 3.8.2
       '@plotly/d3-sankey': 0.7.2
@@ -6240,9 +6240,9 @@ snapshots:
     dependencies:
       react: 19.2.0
 
-  react-plotly.js@2.6.0(plotly.js@3.1.2(mapbox-gl@1.13.3))(react@19.2.0):
+  react-plotly.js@2.6.0(plotly.js@3.2.0(mapbox-gl@1.13.3))(react@19.2.0):
     dependencies:
-      plotly.js: 3.1.2(mapbox-gl@1.13.3)
+      plotly.js: 3.2.0(mapbox-gl@1.13.3)
       prop-types: 15.8.1
       react: 19.2.0
 
@@ -6366,7 +6366,7 @@ snapshots:
 
   resolve@0.6.3: {}
 
-  resolve@1.22.10:
+  resolve@1.22.11:
     dependencies:
       is-core-module: 2.16.1
       path-parse: 1.0.7
@@ -6422,7 +6422,7 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sax@1.4.1: {}
+  sax@1.4.2: {}
 
   scheduler@0.27.0: {}
 
