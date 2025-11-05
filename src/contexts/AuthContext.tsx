@@ -19,6 +19,7 @@ export type UserData = {
     id: string;
     name: string;
     lastname: string;
+    email: string;
     role: string;
 };
 
@@ -83,6 +84,7 @@ export function AuthProvider({children}: Props) {
                     id: responseUser.data.id,
                     name: responseUser.data.name,
                     lastname: responseUser.data.lastname,
+                    email: responseUser.data.email,
                     role: responseUser.data.role,
                 });
                 setIsAuthenticated(true);
@@ -116,6 +118,7 @@ export function AuthProvider({children}: Props) {
                 id: responseUser.data.id,
                 name: responseUser.data.name,
                 lastname: responseUser.data.lastname,
+                email: responseUser.data.email,
                 role: responseUser.data.role,
             };
 
@@ -169,6 +172,7 @@ export function AuthProvider({children}: Props) {
                 id: responseUser.data.id,
                 name: responseUser.data.name,
                 lastname: responseUser.data.lastname,
+                email: responseUser.data.email,
                 role: responseUser.data.role,
             };
 

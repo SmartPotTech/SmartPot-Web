@@ -16,7 +16,7 @@ export default function Profile() {
     const [formData, setFormData] = useState({
         name: user?.name || "",
         lastname: user?.lastname || "",
-        email: "juan.example@dfmakds.com",
+        email: user?.email || "juan.example@dfmakds.com",
         phone: "",
         location: "",
         joinDate: "2024-01-15"
