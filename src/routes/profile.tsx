@@ -36,13 +36,13 @@ export default function Profile() {
 
     return (
         <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden w-4xl">
 
-                <div className="relative h-36 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
+                <div className="relative h-48 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
                     <div className="absolute -bottom-12 left-6">
                         <div
-                            className="w-24 h-24 rounded-full border-4 border-white bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-md flex items-center justify-center">
-                            <UserOutlined className="text-white text-3xl"/>
+                            className="w-24 h-24 rounded-full border-4 text-white border-white bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-md flex items-center justify-center">
+                            <UserOutlined className="text-3xl"/>
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ export default function Profile() {
                         {!isEditing ? (
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors font-medium"
+                                className="flex items-center gap-2 px-3 py-2  text-emerald-600 hover:text-emerald-700 hover:bg-emerald-100 rounded-lg transition-colors font-medium"
                             >
                                 <EditOutlined/>
                                 Editar
@@ -72,12 +72,12 @@ export default function Profile() {
                     </div>
 
                     {/* Nombre + Estado */}
-                    <div className="mb-4">
+                    <div className="mb-6">
                         <h1 className="text-2xl font-bold text-slate-800">
                             {formData.name} {formData.lastname}
                         </h1>
                         <span
-                            className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full">
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
               Usuario Activo
             </span>
                     </div>
