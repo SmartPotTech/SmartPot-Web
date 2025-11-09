@@ -1,8 +1,9 @@
-import logo from "../../public/lechuga.png";
 import React, {FormEvent, useEffect, useState} from "react";
 import {useAuthContext} from "../contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import Loading from "../components/Loading.tsx"
+
+const logo = "/lechuga.png";
 
 export default function ForgotPassword() {
     const {register, isAuthenticated, error, loading} = useAuthContext();
