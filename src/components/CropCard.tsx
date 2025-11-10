@@ -29,15 +29,15 @@ export const CropCard: React.FC<CropCardProps> = ({
 
             {/* Content container */}
             <div className="w-2/3 p-6">
-                {/* Category */}
+
+                <h2 className="mt-2 text-xl font-bold text-gray-900">
+                    {isLoading ? "Cargando..." : title}
+                </h2>
+
                 <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">
                     {category}
                 </p>
 
-                {/* Title */}
-                <h2 className="mt-2 text-xl font-bold text-gray-900">
-                    {isLoading ? "Cargando..." : title}
-                </h2>
             </div>
         </div>
     );

@@ -59,6 +59,8 @@ export default function HistoricalData() {
                         }
                     );
                     setHistory(fetchedHistory);
+
+
                 }
             } catch (error) {
                 console.error("Error fetching crop or history data: ", error);
