@@ -43,7 +43,7 @@ export default function StatusPanel() {
                 <div className="icono">
                 </div>
                 <p className="mensaje-estado">
-                    El estado del cultivo de 🌱 es <strong>óptimo</strong>.
+                    El estado del cultivo de 🌱 es {crop?.status || "(No hay estados)"} <strong>óptimo</strong>.
                 </p>
             </aside>
             <div className="sensors inline-grid grid-cols-5 gap-4">
