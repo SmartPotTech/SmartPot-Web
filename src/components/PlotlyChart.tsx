@@ -2,6 +2,7 @@ import React from "react";
 import Plot from "react-plotly.js";
 import {Layout, PlotData} from "plotly.js";
 import {History} from "../types/ApiResponses";
+import Card from "./Card";
 
 interface PlotlyChartProps {
     history: History[];
@@ -44,27 +45,37 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({history, measure, label}) => {
     };
 
     const layout: Partial<Layout> = {
-        title: {text: label},
+        title: {text: label, font: {size: 16}},
         xaxis: {
-            title: {text: "Fecha"},
+            title: {text: "Fecha", font: {size: 12}},
             type: "date"
         },
         yaxis: {
-            title: {text: measure.charAt(0).toUpperCase() + measure.slice(1)},
+            title: {text: measure.charAt(0).toUpperCase() + measure.slice(1), font: {size: 12}},
             rangemode: "tozero"
         },
         hovermode: "closest",
-        margin: {t: 20, r: 30, b: 60, l: 40}
+        margin: {t: 70, r: 20, b: 50, l: 60},
+        autosize: true,
+        height: 420,
+        
     };
 
     return (
-        <div className="chart-container overflow-auto max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md mb-8">
+        <Card padding="md" shadow="md" className="chart-container mb-5">
             <Plot
                 data={[traceArea, traceLine]}
                 layout={layout}
-                config={{responsive: true}}
+                config={{
+                    responsive: true, 
+                    displayModeBar: true,
+                    modeBarButtonsToRemove: ['lasso2d', 'select2d'],
+                    displaylogo: false
+                }}
+                style={{width: '100%', height: '420px', minWidth: 0}}
+                useResizeHandler={true}
             />
-        </div>
+        </Card>
     );
 };
 

@@ -195,7 +195,7 @@ export default function HistoricalData() {
                         )
                         :
                         (
-                            <div className="overflow-auto max-w-full">
+                            <div className="p-4 w-full">
                                 <PlotlyChart history={history} measure="brightness" label="Brillo"/>
                                 <PlotlyChart history={history} measure="humidity" label="Humedad"/>
                                 <PlotlyChart history={history} measure="ph" label="pH"/>

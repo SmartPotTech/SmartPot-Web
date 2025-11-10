@@ -38,15 +38,15 @@ export default function StatusPanel() {
     const measures = lastHistory?.measures;
 
     return (
-        <>
-            <aside className="estado-cultivo mb-6 p-4 rounded-lg bg-green-100 text-green-800 flex items-center">
+        <div className="w-full max-w-full  px-4">
+            <aside className="estado-cultivo mb-6 p-4 rounded-lg bg-green-100 text-green-800 flex items-center ">
                 <div className="icono">
                 </div>
                 <p className="mensaje-estado">
                     El estado del cultivo de 🌱 es  <strong>{crop?.status || "(No hay estados)"}</strong>.
                 </p>
             </aside>
-            <div className="sensors inline-grid grid-cols-5 gap-4">
+            <div className="sensors grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full mb-6">
                 <CropCard
                     imageSrc="/gotas.png"
                     imageAlt="Humedad del cultivo"
@@ -86,14 +86,13 @@ export default function StatusPanel() {
                 />
 
             </div>
-            <div className="mt-4 inline-grid grid-cols-2  max-w-full">
+            <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
                 <PlotlyChart history={history} measure="brightness" label="Brillo"/>
                 <PlotlyChart history={history} measure="humidity" label="Humedad"/>
                 <PlotlyChart history={history} measure="ph" label="pH"/>
                 <PlotlyChart history={history} measure="tds" label="TDS"/>
                 <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
             </div>
-
-        </>
+        </div>
     );
 }
