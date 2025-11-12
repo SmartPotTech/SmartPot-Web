@@ -104,7 +104,7 @@ export default function HistoricalData() {
     }
 
     return (
-        <>
+        <div className="w-full max-w-full">
 
             <div className="mb-6 text-center">
                 <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
@@ -122,7 +122,7 @@ export default function HistoricalData() {
                 </div>
             </div>
 
-            <div className="overflow-x-auto bg-white shadow-md rounded-lg mb-8">
+            <div className="bg-white shadow-md rounded-lg mb-8 p-4">
 
                 <div className="flex content-between justify-between">
                         <span className="m-4">
@@ -163,8 +163,9 @@ export default function HistoricalData() {
                 {
                     toggleTable ?
                         (
-                            <table className="min-w-full table-auto border-collapse text-sm">
-                                <thead className="bg-gray-100">
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full table-auto border-collapse text-sm">
+                                    <thead className="bg-gray-100">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">#</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Atmosfera</th>
@@ -191,23 +192,26 @@ export default function HistoricalData() {
                                 ))}
                                 </tbody>
                             </table>
+                            </div>
 
                         )
                         :
-                        (
-                            <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-2  w-screen">
-                                <PlotlyChart history={history} measure="brightness" label="Brillo"/>
-                                <PlotlyChart history={history} measure="humidity" label="Humedad"/>
-                                <PlotlyChart history={history} measure="ph" label="pH"/>
-                                <PlotlyChart history={history} measure="tds" label="TDS"/>
-                                <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
-                            </div>
-                        )
+                        null
                 }
 
             </div>
 
-        </>
+            {!toggleTable && (
+                <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                    <PlotlyChart history={history} measure="brightness" label="Brillo"/>
+                    <PlotlyChart history={history} measure="humidity" label="Humedad"/>
+                    <PlotlyChart history={history} measure="ph" label="pH"/>
+                    <PlotlyChart history={history} measure="tds" label="TDS"/>
+                    <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+                </div>
+            )}
+
+        </div>
 
     );
 
