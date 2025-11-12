@@ -10,7 +10,7 @@ export default function StatusPanel() {
     const [history, setHistory] = useState<History[]>([]);
     const [crop, setCrop] = useState<Crop | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    
+
     const fetchCrop = useCallback(async () => {
         if (user) {
             try {
@@ -19,7 +19,7 @@ export default function StatusPanel() {
                 setCrop(fetchedCrop);
                 const fetchedHistory = await getHistoryFromCrop(user, fetchedCrop);
                 setHistory(fetchedHistory);
-                
+
             } catch (error) {
                 console.error("Error fetching crop or history data: ", error);
             } finally {
@@ -43,7 +43,7 @@ export default function StatusPanel() {
                 <div className="icono">
                 </div>
                 <p className="mensaje-estado">
-                    El estado del cultivo de 🌱 es  <strong>{crop?.status || "(No hay estados)"}</strong>.
+                    El estado del cultivo de 🌱 es <strong>{crop?.status || "(No hay estados)"}</strong>.
                 </p>
             </aside>
             <div className="sensors grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full mb-6">
@@ -51,7 +51,7 @@ export default function StatusPanel() {
                     imageSrc="/gotas.png"
                     imageAlt="Humedad del cultivo"
                     category="Humedad"
-                    title={measures?.humidity?.toString() +"%" || "Sin datos"}
+                    title={measures?.humidity?.toString() + "%" || "Sin datos"}
                     isLoading={isLoading}
                 />
 
@@ -66,7 +66,7 @@ export default function StatusPanel() {
                     imageSrc="/temperature.png"
                     imageAlt="Cultivo"
                     category="Temperatura"
-                    title={measures?.temperature?.toString() +"Cº"|| "Sin datos"}
+                    title={measures?.temperature?.toString() + "Cº" || "Sin datos"}
                     isLoading={isLoading}
                 />
 
@@ -74,14 +74,14 @@ export default function StatusPanel() {
                     imageSrc="/brillo.png"
                     imageAlt="Cultivo"
                     category="Brillo"
-                    title={measures?.brightness?.toString() +" LUX"|| "Sin datos"}
+                    title={measures?.brightness?.toString() + " LUX" || "Sin datos"}
                     isLoading={isLoading}
                 />
                 <CropCard
                     imageSrc="/tds.png"
                     imageAlt="Cultivo"
                     category="TDS"
-                    title={measures?.tds?.toString()+" ppm" || "Sin datos"}
+                    title={measures?.tds?.toString() + " ppm" || "Sin datos"}
                     isLoading={isLoading}
                 />
 

@@ -57,7 +57,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({history, measure, label}) => {
         margin: {t: 70, r: 20, b: 50, l: 60},
         autosize: true,
         height: 420,
-        
+
     };
 
     return (
@@ -66,7 +66,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({history, measure, label}) => {
                 data={[traceArea, traceLine]}
                 layout={layout}
                 config={{
-                    responsive: true, 
+                    responsive: true,
                     displayModeBar: true,
                     modeBarButtonsToRemove: ['lasso2d', 'select2d'],
                     displaylogo: false
