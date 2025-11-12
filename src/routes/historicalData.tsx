@@ -104,7 +104,7 @@ export default function HistoricalData() {
     }
 
     return (
-        <div className="w-full max-w-full">
+        <div className="max-w-full w-screen">
 
             <div className="mb-6 text-center">
                 <h1 className="text-4xl font-bold text-gray-900">Datos Históricos</h1>
@@ -122,9 +122,9 @@ export default function HistoricalData() {
                 </div>
             </div>
 
-            <div className="bg-white shadow-md rounded-lg mb-8 p-4">
+            <div className="bg-white shadow-md rounded-lg mb-8 p-4 ">
 
-                <div className="flex content-between justify-between">
+                <div className="flex content-between justify-between max-w-full">
                         <span className="m-4">
                             <Dropdown buttonLabel={rangeText}>
                                 <DateRange
@@ -202,13 +202,17 @@ export default function HistoricalData() {
             </div>
 
             {!toggleTable && (
-                <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-                    <PlotlyChart history={history} measure="brightness" label="Brillo"/>
-                    <PlotlyChart history={history} measure="humidity" label="Humedad"/>
-                    <PlotlyChart history={history} measure="ph" label="pH"/>
-                    <PlotlyChart history={history} measure="tds" label="TDS"/>
-                    <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
-                </div>
+                <>
+                    <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-1 w-full">
+                        <PlotlyChart history={history} measure="brightness" label="Brillo"/>
+                        <PlotlyChart history={history} measure="humidity" label="Humedad"/>
+                        <PlotlyChart history={history} measure="ph" label="pH"/>
+                        <PlotlyChart history={history} measure="tds" label="TDS"/>
+                    </div>
+                    <div className="mt-4 w-full">
+                        <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+                    </div>
+                </>
             )}
 
         </div>

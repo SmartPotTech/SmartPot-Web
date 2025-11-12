@@ -55,7 +55,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({history, measure, label}) => {
             rangemode: "tozero"
         },
         hovermode: "closest",
-        margin: {t: 70, r: 20, b: 50, l: 60},
+        margin: {t: 50, r: 20, b: 50, l: 60},
         autosize: true,
         height: 420,
 
@@ -72,7 +72,7 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({history, measure, label}) => {
                     modeBarButtonsToRemove: ['lasso2d', 'select2d'],
                     displaylogo: false
                 }}
-                style={{width: '100%', height: '420px', minWidth: 0}}
+                style={{width: '100%', height: '420px'}}
                 useResizeHandler={true}
             />
         </Card>
