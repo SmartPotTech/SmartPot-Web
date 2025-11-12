@@ -38,7 +38,7 @@ export default function StatusPanel() {
     const measures = lastHistory?.measures;
 
     return (
-        <div className="w-full max-w-full  px-4">
+        <div className="w-full max-w-full">
             <aside className="estado-cultivo mb-6 p-4 rounded-lg bg-green-100 text-green-800 flex items-center ">
                 <div className="icono">
                 </div>

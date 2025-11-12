@@ -16,28 +16,25 @@ export const CropCard: React.FC<CropCardProps> = ({
                                                       isLoading = false
                                                   }) => {
     return (
-        <div className="flex bg-white rounded-lg shadow-md overflow-hidden max-w-3/3 h-32"
-             style={{padding: "1rem"}}>
+        <div className="flex items-center bg-white rounded-lg shadow-md p-3 gap-3 hover:shadow-lg transition-shadow duration-200">
             {/* Image container */}
-            <div className="w-1/3 relative">
+            <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
                 <img
                     src={imageSrc}
                     alt={imageAlt}
-                    className="h-full w-full object-cover"
+                    className="w-full h-full object-contain"
                 />
             </div>
 
             {/* Content container */}
-            <div className="w-2/3 p-6">
-
-                <h2 className="mt-2 text-xl font-bold text-gray-900">
+            <div className="flex flex-col justify-center flex-1 min-w-0">
+                <h2 className="text-xl font-bold text-gray-900 truncate">
                     {isLoading ? "Cargando..." : title}
                 </h2>
 
-                <p className="text-gray-500 text-sm font-semibold uppercase tracking-wide">
+                <p className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
                     {category}
                 </p>
-
             </div>
         </div>
     );
