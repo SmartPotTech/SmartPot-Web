@@ -203,7 +203,7 @@ export default function HistoricalData() {
 
             {!toggleTable && (
                 <>
-                    <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-1 w-full">
+                    <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
                         <PlotlyChart history={history} measure="brightness" label="Brillo"/>
                         <PlotlyChart history={history} measure="humidity" label="Humedad"/>
                         <PlotlyChart history={history} measure="ph" label="pH"/>
