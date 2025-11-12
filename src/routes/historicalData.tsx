@@ -195,7 +195,7 @@ export default function HistoricalData() {
                         )
                         :
                         (
-                            <div className="p-4 w-full">
+                            <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-2  w-screen">
                                 <PlotlyChart history={history} measure="brightness" label="Brillo"/>
                                 <PlotlyChart history={history} measure="humidity" label="Humedad"/>
                                 <PlotlyChart history={history} measure="ph" label="pH"/>
