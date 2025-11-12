@@ -2,7 +2,6 @@ import React from "react";
 import Plot from "react-plotly.js";
 import {Layout, PlotData} from "plotly.js";
 import {History} from "../types/ApiResponses";
-import Card from "./Card";
 
 interface PlotlyChartProps {
     history: History[];
