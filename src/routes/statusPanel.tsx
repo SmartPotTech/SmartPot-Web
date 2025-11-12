@@ -91,8 +91,9 @@ export default function StatusPanel() {
                 <PlotlyChart history={history} measure="humidity" label="Humedad"/>
                 <PlotlyChart history={history} measure="ph" label="pH"/>
                 <PlotlyChart history={history} measure="tds" label="TDS"/>
-                <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+
             </div>
+            <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
         </div>
     );
 }
