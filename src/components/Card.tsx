@@ -36,7 +36,7 @@ const Card: React.FC<CardProps> = ({
     const baseClasses = "bg-white rounded-lg w-full";
     const paddingClass = paddingClasses[padding];
     const shadowClass = shadowClasses[shadow];
-    const hoverClass = hover ? "transition-shadow duration-300 hover:shadow-xl cursor-pointer" : "";
+    const hoverClass = hover ? " hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer" : "";
     const clickableClass = onClick ? "cursor-pointer" : "";
 
     return (

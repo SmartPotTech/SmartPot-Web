@@ -4,6 +4,8 @@ import {Crop, History} from "../types/ApiResponses.tsx";
 import {useCallback, useEffect, useState} from "react";
 import {CropCard} from "../components/CropCard.tsx";
 import PlotlyChart from "../components/PlotlyChart.tsx";
+import Card from "../components/Card.tsx";
+import {FileSearchOutlined, ThunderboltFilled} from "@ant-design/icons";
 
 export default function StatusPanel() {
     const {user} = useAuthContext();
@@ -84,6 +86,34 @@ export default function StatusPanel() {
                     title={measures?.tds?.toString() + " ppm" || "Sin datos"}
                     isLoading={isLoading}
                 />
+
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8 p-5">
+                <button className="max-w-full max-h-full">
+
+
+                <Card padding="lg" shadow="sm" hover={true} className="flex items-center gap-5 cursor-pointer">
+                    <div className="w-15 h-15 rounded-full bg-gradient-to-br from-[#00B074ff] to-[#29BD8A] flex items-center justify-center flex-shrink-0">
+                        <ThunderboltFilled className="text-2xl text-white"/>
+                    </div>
+                    <div className="ml-[10%] mr-[15%] ">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">Regar cultivo</h3>
+                        <p className="text-sm text-gray-600">Activar sistema de riego automático</p>
+                    </div>
+                </Card>
+                </button>
+                <button className="max-w-full max-h-full">
+                <Card padding="lg" shadow="sm" hover={true} className="flex items-center gap-5 cursor-pointer">
+                    <div className="w-15 h-15 rounded-full bg-gradient-to-br from-[#00B074ff] to-[#29BD8A] flex items-center justify-center flex-shrink-0">
+                        <FileSearchOutlined className="text-2xl text-white" />
+                    </div>
+                    <div className="ml-[15%] mr-[15%] ">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">Tomar lecturas</h3>
+                        <p className="text-sm text-gray-600">Registrar mediciones actuales</p>
+                    </div>
+                </Card>
+                </button>
 
             </div>
             <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
