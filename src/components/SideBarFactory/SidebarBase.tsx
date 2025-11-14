@@ -56,7 +56,7 @@ const SidebarBase: React.FC<SidebarProps> = ({title, icons, labels, paths}) => {
             </nav>
             <button
                 type="button"
-                className="logout left-2 absolute bottom-5 bg-white text-red-800"
+                className="logout left-2 absolute bottom-5 bg-white text-red-800 hover:bg-red-100"
                 onClick={logout}
             >
                 <LogoutOutlined />
