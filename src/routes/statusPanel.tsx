@@ -87,13 +87,15 @@ export default function StatusPanel() {
 
             </div>
             <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-                <PlotlyChart history={history} measure="brightness" label="Brillo"/>
+
                 <PlotlyChart history={history} measure="humidity" label="Humedad"/>
                 <PlotlyChart history={history} measure="ph" label="pH"/>
-                <PlotlyChart history={history} measure="tds" label="TDS"/>
+                <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+                <PlotlyChart history={history} measure="brightness" label="Brillo"/>
 
             </div>
-            <PlotlyChart history={history} measure="temperature" label="Temperatura"/>
+            <PlotlyChart history={history} measure="tds" label="TDS"/>
+
         </div>
     );
 }
