@@ -54,7 +54,14 @@ const SidebarBase: React.FC<SidebarProps> = ({title, icons, labels, paths}) => {
                     );
                 })}
             </nav>
-            <button className="logout left-3 absolute bottom-0 bg-white" onClick={logout}><LogoutOutlined/></button>
+            <button
+                type="button"
+                className="logout left-2 absolute bottom-5 bg-white text-red-800"
+                onClick={logout}
+            >
+                <LogoutOutlined />
+                <span className="ml-2">Cerrar sesión</span>
+            </button>
         </div>
     );
 };
