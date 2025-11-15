@@ -10,6 +10,8 @@ on:
 jobs:
   noir-security:
     name: Run OWASP Noir (Frontend)
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
