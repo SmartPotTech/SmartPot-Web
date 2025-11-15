@@ -1,13 +1,13 @@
 import {Outlet, useNavigate} from "react-router-dom";
-import "../assets/styles/root.css"
-import SessionBar from "../components/SessionBar";
+import "../shared/styles/root.css"
+import SessionBar from "../shared/components/layout/SessionBar.tsx";
 import {useEffect} from "react";
-import {useAuthContext} from "../contexts/AuthContext.tsx";
-import Login from "./login.tsx";
-import Loading from "../components/Loading.tsx";
-import "../assets/styles/MainContainer.css"
+import {useAuthContext} from "../features/auth/contexts/AuthContext.tsx";
+import Login from "../features/auth/pages/login.tsx";
+import Loading from "../shared/components/ui/Loading.tsx";
+import "../shared/styles/MainContainer.css"
 import {BarChartOutlined, HomeOutlined, UserOutlined} from "@ant-design/icons";
-import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
+import {SidebarFactory} from "../shared/components/layout/SideBarFactory/SidebarFactory.tsx";
 
 
 export default function Root() {
