@@ -10,15 +10,12 @@ on:
 jobs:
   noir-security:
     name: Run OWASP Noir (Frontend)
-    permissions:
-      contents: read
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # --- 1) SAST (código fuente) ---
       - name: OWASP Noir - Source Code Scan
         uses: owasp-noir/noir@v0.25.0
         with:
@@ -26,15 +23,11 @@ jobs:
           include_path: |
             src
             public
-            package.json
-            vite.config.ts
-            tailwind.config.js
           format: "json"
           output_file: "noir-source.json"
           passive_scan: true
           passive_scan_severity: high
 
-      # --- 2) DAST (live site) ---
       - name: OWASP Noir - Live App Scan
         uses: owasp-noir/noir@v0.25.0
         with:
