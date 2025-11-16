@@ -2,7 +2,7 @@ import {BellOutlined} from "@ant-design/icons";
 import {Notifications} from "../types";
 import {getNotifications} from "../api";
 import {useEffect, useState} from "react";
-import {useAuthContext} from "../../auth/contexts/AuthContext.tsx";
+import {useAuthContext} from "../../auth";
 
 const NotificationBell: React.FC = () => {
     const {user} = useAuthContext();
