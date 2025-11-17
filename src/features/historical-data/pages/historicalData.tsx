@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {useAuthContext} from "../../auth";
 import { getHistoryFromCrop, getHistoryFromDateRange} from "../api";
-import {Crop} from "../../dashboard";
+import {Crop, getCrop} from "../../dashboard";
 import {History} from "../types";
 import PlotlyChart from "../../../shared/components/PlotlyChart.tsx";
 import "../../../shared/styles/MainContainer.css";
