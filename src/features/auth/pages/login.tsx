@@ -3,7 +3,7 @@ import { useAuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 import Loading from "../../../shared/components/ui/Loading.tsx";
-import "../assets/styles/login.css";
+import "../../../shared/styles/login.css";
 const logo = "/lechuga.png";
 
 export default function Login() {

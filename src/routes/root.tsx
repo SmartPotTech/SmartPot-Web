@@ -1,11 +1,11 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import "../assets/styles/root.css";
+import "../shared/styles/root.css";
 import SessionBar from "../shared/components/layout/SessionBar.tsx";
 import { useEffect } from "react";
 import {useAuthContext} from "../features/auth/contexts/AuthContext.tsx";
 import Login from "../features/auth/pages/login.tsx";
 import Loading from "../shared/components/ui/Loading.tsx";
-import "../assets/styles/MainContainer.css";
+import "../shared/styles/MainContainer.css";
 import {
   BarChartOutlined,
   HomeOutlined,

@@ -14,8 +14,6 @@ import Profile from "../features/profile/pages/profile.tsx";
 import Sensors from "../routes/sensors.tsx";
 import Config from "../routes/Config.tsx";
 
-
-
 function App() {
 
     const router = createBrowserRouter([

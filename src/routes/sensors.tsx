@@ -1,8 +1,9 @@
-import { useAuthContext } from "../contexts/AuthContext.tsx";
-import { getCrop, getHistoryFromCrop } from "../api/Api.tsx";
-import { History } from "../types/ApiResponses.tsx";
+import {useAuthContext} from "../features/auth/contexts/AuthContext.tsx";
+import {getCrop} from "../features/dashboard/api/cropApi.ts";
+import {getHistoryFromCrop} from "../features/historical-data/api/index.ts";
+import {History} from "../features/historical-data/types";
 import { useCallback, useEffect, useState } from "react";
-import { CropCard } from "../components/CropCard.tsx";
+import { CropCard } from "../features/dashboard/components/CropCard.tsx";
 export default function SensorsPanel() {
   const { user } = useAuthContext();
   const [history, setHistory] = useState<History[]>([]);
