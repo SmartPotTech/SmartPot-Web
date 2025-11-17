@@ -1,17 +1,19 @@
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import Root from '../routes/root.tsx'
 
-import '../assets/styles/app.css'
+import '../shared/styles/app.css'
 import ErrorPage from '../routes/errorPage.tsx'
-import StatusPanel from '../routes/statusPanel.tsx';
-import HistoricalData from '../routes/historicalData.tsx';
-import {AuthProvider} from '../contexts/AuthContext.tsx';
-import Login from '../routes/login.tsx';
-import Register from '../routes/register.tsx';
-import ForgotPassword from "../routes/forgotPassword.tsx";
-import Profile from "../routes/profile.tsx";
+
+import StatusPanel from '../features/dashboard/pages/statusPanel.tsx';
+import HistoricalData from '../features/historical-data/pages/historicalData.tsx';
+import {AuthProvider} from '../features/auth/contexts/AuthContext.tsx';
+import Login from '../features/auth/pages/login.tsx';
+import Register from '../features/auth/pages/register.tsx';
+import ForgotPassword from "../features/auth/pages/forgotPassword.tsx";
+import Profile from "../features/profile/pages/profile.tsx";
 import Sensors from "../routes/sensors.tsx";
 import Config from "../routes/Config.tsx";
+
 
 
 function App() {
