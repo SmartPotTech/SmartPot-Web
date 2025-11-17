@@ -10,6 +10,8 @@ import Login from '../routes/login.tsx';
 import Register from '../routes/register.tsx';
 import ForgotPassword from "../routes/forgotPassword.tsx";
 import Profile from "../routes/profile.tsx";
+import Sensors from "../routes/sensors.tsx";
+import Config from "../routes/Config.tsx";
 
 
 function App() {
@@ -48,6 +50,14 @@ function App() {
                 {
                     path: "/perfil",
                     element: <Profile/>
+                },
+                {
+                    path: "/sensores",
+                    element: <Sensors/>
+                },
+                {
+                    path: "/config",
+                    element: <Config/>
                 }
 
 

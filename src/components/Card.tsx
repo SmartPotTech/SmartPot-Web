@@ -33,7 +33,7 @@ const Card: React.FC<CardProps> = ({
     hover = false,
     onClick
 }) => {
-    const baseClasses = "bg-white rounded-lg w-full";
+    const baseClasses = "bg-white rounded-4xl w-full";
     const paddingClass = paddingClasses[padding];
     const shadowClass = shadowClasses[shadow];
     const hoverClass = hover ? " hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer" : "";

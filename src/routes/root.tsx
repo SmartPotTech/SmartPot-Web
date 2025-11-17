@@ -1,59 +1,69 @@
-import {Outlet, useNavigate} from "react-router-dom";
-import "../assets/styles/root.css"
+import { Outlet, useNavigate } from "react-router-dom";
+import "../assets/styles/root.css";
 import SessionBar from "../components/SessionBar";
-import {useEffect} from "react";
-import {useAuthContext} from "../contexts/AuthContext.tsx";
+import { useEffect } from "react";
+import { useAuthContext } from "../contexts/AuthContext.tsx";
 import Login from "./login.tsx";
 import Loading from "../components/Loading.tsx";
-import "../assets/styles/MainContainer.css"
-import {BarChartOutlined, HomeOutlined, UserOutlined} from "@ant-design/icons";
-import {SidebarFactory} from "../components/SideBarFactory/SidebarFactory.tsx";
-
+import "../assets/styles/MainContainer.css";
+import {
+  BarChartOutlined,
+  HomeOutlined,
+  UserOutlined,
+  NodeIndexOutlined,
+  ToolOutlined,
+} from "@ant-design/icons";
+import { SidebarFactory } from "../components/SideBarFactory/SidebarFactory.tsx";
 
 export default function Root() {
+  const { isAuthenticated, loading } = useAuthContext();
+  const navigate = useNavigate();
 
-    const {isAuthenticated, loading} = useAuthContext();
-    const navigate = useNavigate();
+  const icons = [
+    HomeOutlined,
+    BarChartOutlined,
+    NodeIndexOutlined,
+    ToolOutlined,
+    UserOutlined,
+  ];
+  const labels = [
+    "Panel de inicio",
+    "Datos Históricos",
+    "Sensores",
+    "Configuración",
+    "Perfil",
+  ];
+  const paths = ["/panel", "/historial", "/sensores", "/config", "/perfil"];
 
-    const icons = [HomeOutlined, BarChartOutlined, UserOutlined];
-    const labels = ["Panel de inicio", "Datos Históricos", "Perfil"];
-    const paths = ["/panel", "/historial", "/perfil"];
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate("/auth/login");
+    }
+  }, [loading, isAuthenticated, navigate]);
 
+  if (loading) return <Loading />;
 
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            navigate("/auth/login");
-        }
-    }, [loading, isAuthenticated, navigate]);
+  return (
+    <>
+      {isAuthenticated ? (
+        <div className="flex flex-col flex-1">
+          <SidebarFactory
+            title={"SmartPot 🥬"}
+            icons={icons}
+            labels={labels}
+            paths={paths}
+          />
 
-
-    if (loading) return (<Loading/>);
-
-    return (
-        <>
-            {
-                isAuthenticated ?
-                    (
-                        <div className="flex flex-col flex-1">
-                            <SidebarFactory title={"SmartPot 🥬"} icons={icons} labels={labels} paths={paths}/>
-
-                            <div className="flex-1 flex flex-col ml-32 md:ml-20 lg:ml-32 w-full">
-                                <SessionBar/>
-                                <main
-                                    className="h-screen pt-14 pl-2 mr-4 md:pl-4 md:pr-2 lg:pl-6 lg:pr-2">
-                                    <Outlet/>
-                                </main>
-                            </div>
-
-
-                        </div>
-                    )
-                    :
-                    (
-                        <Login/>
-                    )
-            }
-
-        </>
-    );
+          <div className="flex-1 flex flex-col ml-32 md:ml-20 lg:ml-32 w-full">
+            <SessionBar />
+            <main className="h-screen pt-14 pl-2 mr-4 md:pl-4 md:pr-2 lg:pl-6 lg:pr-2">
+              <Outlet />
+            </main>
+          </div>
+        </div>
+      ) : (
+        <Login />
+      )}
+    </>
+  );
 }
