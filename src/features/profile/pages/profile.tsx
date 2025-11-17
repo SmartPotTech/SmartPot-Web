@@ -1,4 +1,4 @@
-import {useAuthContext} from "../../auth/contexts/AuthContext.tsx";
+import {useAuthContext} from "../../auth";
 import { useState } from "react";
 import {
   CalendarOutlined,

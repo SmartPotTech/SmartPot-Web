@@ -2,7 +2,7 @@ import {useAuthContext} from "../../auth/contexts/AuthContext.tsx";
 import {getCrop} from "../api";
 import {getHistoryFromCrop} from "../../historical-data/api";
 import {Crop} from "../types";
-import {History} from "../../historical-data/types";
+import {History} from "../../historical-data";
 
 import { useCallback, useEffect, useState } from "react";
 import { CropCard } from "../components/CropCard.tsx";
