@@ -1,4 +1,6 @@
 name: OWASP Noir Security Scan (Frontend)
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
