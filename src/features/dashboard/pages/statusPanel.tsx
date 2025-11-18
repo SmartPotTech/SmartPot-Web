@@ -134,10 +134,10 @@ export default function StatusPanel() {
             </div>
             <div className="ml-[15%] mr-[15%] ">
               <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                Tomar lecturas
+                Estimular cultivo
               </h3>
               <p className="text-base font-bold tracking-tight text-gray-500">
-                Registrar mediciones actuales
+                Activar luz ultravioleta
               </p>
             </div>
           </Card>
