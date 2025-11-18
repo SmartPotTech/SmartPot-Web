@@ -28,7 +28,7 @@ export const CropCard: React.FC<CropCardProps> = ({
 
             {/* Content container */}
             <div className="flex flex-col justify-center flex-1 min-w-0">
-                <h2 className="text-xl font-bold text-gray-900 truncate">
+                <h2 className="text-lg font-bold text-gray-900 truncate">
                     {isLoading ? "Cargando..." : title}
                 </h2>
 
