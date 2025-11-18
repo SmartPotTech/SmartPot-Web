@@ -17,7 +17,7 @@ const Dropdown: React.FC<DropdownProps> = ({children, buttonLabel}) => {
         <div className="relative inline-block text-left z-10">
             <button
                 type="button"
-                className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"
+                className="inline-flex justify-center w-full rounded-md border bg-gray-100 text-gray-700 border-gray-300 outline-1 outline-offset-0 outline-gray-300 shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none"
                 onClick={() => setIsOpen(!isOpen)}
             >
                 {buttonLabel}

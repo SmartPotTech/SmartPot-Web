@@ -19,7 +19,7 @@
 
 .Divider {
     height: 30px;
-    border-left: 2px solid #cfcdd6;
+    border-left: 3px solid #cfcdd6;
     margin-left: 30px;
     margin-right: 10px;
 }
@@ -35,8 +35,9 @@
 
 .perfil {
     padding-right: 15px;
-    font-size: 24px;
+    font-size: 27px;
     color: #00B074ff;
+    border-radius: 100%;
     margin-left: 10px;
     margin-right: 10px;
     vertical-align: middle;

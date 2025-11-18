@@ -1,9 +1,10 @@
-import {useAuthContext} from "../features/auth/contexts/AuthContext.tsx";
-import {getCrop} from "../features/dashboard/api/cropApi.ts";
-import {getHistoryFromCrop} from "../features/historical-data/api/index.ts";
-import {History} from "../features/historical-data/types";
+import { useAuthContext } from "../features/auth/contexts/AuthContext.tsx";
+import { getCrop } from "../features/dashboard/api/cropApi.ts";
+import { getHistoryFromCrop } from "../features/historical-data/api/index.ts";
+import { History } from "../features/historical-data/types";
 import { useCallback, useEffect, useState } from "react";
 import { CropCard } from "../features/dashboard/components/CropCard.tsx";
+import { SyncOutlined, DragOutlined } from "@ant-design/icons";
 export default function SensorsPanel() {
   const { user } = useAuthContext();
   const [history, setHistory] = useState<History[]>([]);
@@ -57,16 +58,18 @@ export default function SensorsPanel() {
           {}
           <div className="mt-4 md:mt-0 flex gap-3 w-full md:w-auto">
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
               onClick={fetchCrop}
             >
+              <DragOutlined />
               Calibrar
             </button>
 
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-3 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               onClick={fetchCrop}
             >
+              <SyncOutlined />
               Actualizar medida
             </button>
           </div>
@@ -85,16 +88,16 @@ export default function SensorsPanel() {
           {}
           <div className="mt-4 md:mt-0 flex gap-3 w-full md:w-auto">
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><DragOutlined />
               Calibrar
             </button>
 
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><SyncOutlined />
               Actualizar medida
             </button>
           </div>
@@ -113,16 +116,16 @@ export default function SensorsPanel() {
           {}
           <div className="mt-4 md:mt-0 flex gap-3 w-full md:w-auto">
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><DragOutlined />
               Calibrar
             </button>
 
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><SyncOutlined />
               Actualizar medida
             </button>
           </div>
@@ -141,16 +144,16 @@ export default function SensorsPanel() {
           {}
           <div className="mt-4 md:mt-0 flex gap-3 w-full md:w-auto">
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><DragOutlined />
               Calibrar
             </button>
 
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><SyncOutlined />
               Actualizar medida
             </button>
           </div>
@@ -169,16 +172,16 @@ export default function SensorsPanel() {
           {}
           <div className="mt-4 md:mt-0 flex gap-3 w-full md:w-auto">
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-sky-700 text-white rounded-lg hover:bg-sky-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><DragOutlined />
               Calibrar
             </button>
 
             <button
-              className="flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               onClick={fetchCrop}
-            >
+            ><SyncOutlined />
               Actualizar medida
             </button>
           </div>

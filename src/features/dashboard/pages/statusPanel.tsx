@@ -132,7 +132,7 @@ export default function StatusPanel() {
                         className="flex items-center gap-5 cursor-pointer"
                     >
                         <div
-                            className="bg-green-800 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                            className="bg-green-900 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
                             <img src={riego} className="w-11 h-11 object-contain"/>
                         </div>
                         <div className="ml-[10%] mr-[15%] ">
@@ -153,7 +153,7 @@ export default function StatusPanel() {
                         className="flex items-center gap-5 cursor-pointer"
                     >
                         <div
-                            className="bg-green-800 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
+                            className="bg-green-900 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
                             <img src={ultravioleta} className="w-11 h-11 object-contain"/>
                         </div>
                         <div className="ml-[15%] mr-[15%] ">

@@ -39,7 +39,7 @@ export default function HistoricalData() {
       key: "selection",
     },
   ]);
-  const [rangeText, setRangeText] = useState("Sin rango selecionado");
+  const [rangeText, setRangeText] = useState("Seleccione un rango");
 
   const handleDateSelect = (ranges: RangeKeyDict) => {
     const startDate = ranges.selection.startDate;
@@ -168,7 +168,7 @@ export default function HistoricalData() {
       </div>
 
       <div className="bg-white shadow-md rounded-lg mb-8 p-4 ">
-        <div className="flex content-between justify-between max-w-full">
+        <div className="flex content-between justify-between max-w-full ">
           <span className="m-4">
             <Dropdown buttonLabel={rangeText}>
               <DateRange
@@ -184,7 +184,7 @@ export default function HistoricalData() {
               />
             </Dropdown>
             <button
-              className="inline-flex ml-5 font-bold items-center gap-2 px-3 py-2  bg-sky-100 text-sky-700 hover:text-sky-100 hover:bg-sky-700 rounded-lg transition-colors font-medium"
+              className="inline-flex ml-5 font-bold items-center gap-2 px-3 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-800 rounded-lg transition-colors font-medium"
               onClick={fetchCropAndHistoryByRange}
             >
               Filtrar
@@ -192,7 +192,7 @@ export default function HistoricalData() {
           </span>
           <span className="m-4">
             <button
-                className="inline-flex font-bold items-center gap-2 px-3 py-2  bg-emerald-100 text-emerald-700 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
+                className="inline-flex font-bold items-center gap-2 px-3 py-2 bg-emerald-100 text-emerald-700 outline-2 outline-offset-0 outline-emerald-600 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
               onClick={() => setToggleTable(!toggleTable)}
             >
               {" "}

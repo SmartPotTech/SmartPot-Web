@@ -17,10 +17,8 @@ export default function SessionBar() {
 
                 <NotificationBell></NotificationBell>
                 <Divider className="Divider" type='vertical'></Divider>
-
                 <span className="sessionBarItem font-semibold ">👋 ¡Hola {user?.name}!</span>
-                <a href="/panel"><UserOutlined className="sessionBarItem perfil"/></a>
-
+                <a href="/perfil"><UserOutlined className="sessionBarItem perfil"/></a>
             </header>
 
         </>

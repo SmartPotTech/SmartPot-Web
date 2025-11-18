@@ -71,14 +71,14 @@ export default function Configuration() {
           {!isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-3 py-2  bg-emerald-100 text-emerald-700 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
             >
               <EditOutlined /> Editar
             </button>
           ) : (
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-3 py-2  bg-emerald-100 text-emerald-700 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
+              className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
             >
               <SaveOutlined /> Guardar{" "}
             </button>

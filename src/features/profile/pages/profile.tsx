@@ -57,7 +57,7 @@ export default function Profile() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-3 py-2  bg-emerald-100 text-emerald-700 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
+                className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               >
                 <EditOutlined />
                 Editar
@@ -65,7 +65,7 @@ export default function Profile() {
             ) : (
               <button
                 onClick={handleSave}
-                className="flex items-center gap-2 px-3 py-2  bg-emerald-100 text-emerald-700 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
+                className="flex items-center gap-2 flex-1 md:flex-none px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-500 font-semibold"
               >
                 <SaveOutlined />
                 Guardar
@@ -78,7 +78,7 @@ export default function Profile() {
             <h1 className="text-2xl font-bold text-slate-800">
               {formData.name} {formData.lastname}
             </h1>
-            <span className="font-bold inline-flex mt-3 items-center px-5 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
+            <span className="font-bold inline-flex mt-3 items-center px-5 py-1 rounded-full text-sm font-medium bg-emerald-100 border-2 border-emerald-700 text-emerald-800">
               Usuario Activo
             </span>
           </div>
