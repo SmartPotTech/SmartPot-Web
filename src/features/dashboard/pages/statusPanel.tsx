@@ -1,6 +1,6 @@
-import {useAuthContext} from "../../auth/contexts/AuthContext.tsx";
-import {getCrop} from "../api";
-import {getHistoryFromCrop} from "../../historical-data/api";
+import {useAuthContext} from "../../auth";
+import {getCrop, activateUVLight} from "../api";
+import {getHistoryFromCrop} from "../../historical-data";
 import {Crop} from "../types";
 import {History} from "../../historical-data";
 
@@ -33,6 +33,22 @@ export default function StatusPanel() {
             }
         }
     }, [user]);
+
+    const handleActivateUV = async () => {
+        if (!user || !crop) {
+            alert("No se pudo obtener información del usuario o cultivo");
+            return;
+        }
+
+        try {
+            const command = await activateUVLight(user, crop.id);
+            console.log('Comando UV creado:', command);
+            alert('Luz UV activada correctamente');
+        } catch (error) {
+            console.error('Error al activar luz UV:', error);
+            alert(`Error al activar la luz UV: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+        }
+    };
 
     useEffect(() => {
         fetchCrop();
@@ -129,7 +145,7 @@ export default function StatusPanel() {
                         </div>
                     </Card>
                 </button>
-                <button className="max-w-full max-h-full rounded-full">
+                <button className="max-w-full max-h-full rounded-full" onClick={handleActivateUV}>
                     <Card
                         padding="lg"
                         shadow="sm"

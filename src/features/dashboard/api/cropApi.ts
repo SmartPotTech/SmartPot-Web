@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UserData } from "../../auth/types";
+import { UserData } from "../../auth";
 import { Crop } from "../types";
 import { userCrop, numCrop } from "./endpoints";
 import { getAuthHeaders } from "../../../shared/utils/api";

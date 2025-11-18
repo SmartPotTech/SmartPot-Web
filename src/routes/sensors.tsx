@@ -78,7 +78,7 @@ export default function SensorsPanel() {
               imageSrc="/ph.png"
               imageAlt="PH del cultivo"
               category="Sensor del PH"
-              title={measures?.ph?.toString() + "%" || "Sin datos"}
+              title={measures?.ph?.toString() || "Sin datos"}
               isLoading={isLoading}
             />
           </div>
@@ -106,7 +106,7 @@ export default function SensorsPanel() {
               imageSrc="/temperature.png"
               imageAlt="Temperatura del cultivo"
               category="Sensor de temperatura"
-              title={measures?.temperature?.toString() + "%" || "Sin datos"}
+              title={measures?.temperature?.toString() + " Cº" || "Sin datos"}
               isLoading={isLoading}
             />
           </div>
@@ -134,7 +134,7 @@ export default function SensorsPanel() {
               imageSrc="/brillo.png"
               imageAlt="Nivel de luz del cultivo"
               category="Sensor de nivel de luz"
-              title={measures?.brightness?.toString() + "%" || "Sin datos"}
+              title={measures?.brightness?.toString() + " LUX" || "Sin datos"}
               isLoading={isLoading}
             />
           </div>
@@ -162,7 +162,7 @@ export default function SensorsPanel() {
               imageSrc="/tds.png"
               imageAlt="Nivel de nutrientes del cultivo"
               category="Sensor de nivel de nutrientes"
-              title={measures?.tds?.toString() + "%" || "Sin datos"}
+              title={measures?.tds?.toString() + " ppm" || "Sin datos"}
               isLoading={isLoading}
             />
           </div>
