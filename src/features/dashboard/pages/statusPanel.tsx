@@ -9,7 +9,7 @@ import { CropCard } from "../components/CropCard.tsx";
 import PlotlyChart from "../../../shared/components/PlotlyChart.tsx";
 import Card from "../../../shared/components/Card.tsx";
 const cultivo = "/cultivo.png";
-const captura = "/captura.png";
+const ultravioleta = "/ultravioleta.png";
 const riego = "/riego.png";
 export default function StatusPanel() {
   const { user } = useAuthContext();
@@ -130,7 +130,7 @@ export default function StatusPanel() {
             className="flex items-center gap-5 cursor-pointer"
           >
             <div className="bg-green-800 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
-              <img src={captura} className="w-11 h-11 object-contain" />
+              <img src={ultravioleta} className="w-11 h-11 object-contain" />
             </div>
             <div className="ml-[15%] mr-[15%] ">
               <h3 className="text-xl font-semibold text-gray-900 mb-1">
