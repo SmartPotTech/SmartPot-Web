@@ -7,7 +7,7 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Habilitar pnpm
-RUN corepack enable && corepack prepare pnpm@10.12.4 --activate
+RUN corepack enable && corepack prepare pnpm@10.29.3 --activate
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
