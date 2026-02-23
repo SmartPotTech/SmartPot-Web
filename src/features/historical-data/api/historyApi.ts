@@ -1,10 +1,10 @@
 import axios from "axios";
-import { UserData } from "../../auth/types";
-import { Crop } from "../../dashboard/types";
-import { History, Measures } from "../types";
-import { cropHistory, cropHistoryRange } from "./endpoints";
-import { FlyweightFactory } from "../../../shared/patterns/Flyweight/FlyweightFactory";
-import { getAuthHeaders } from "../../../shared/utils/api";
+import {UserData} from "../../auth/types";
+import {Crop} from "../../dashboard/types";
+import {History, Measures} from "../types";
+import {cropHistory, cropHistoryRange} from "./endpoints";
+import {FlyweightFactory} from "../../../shared/patterns/Flyweight/FlyweightFactory";
+import {getAuthHeaders} from "../../../shared/utils/api";
 
 const measureFactory = new FlyweightFactory<Measures>()
 

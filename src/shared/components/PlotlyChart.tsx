@@ -45,13 +45,13 @@ const PlotlyChart: React.FC<PlotlyChartProps> = ({history, measure, label}) => {
     };
 
     const layout: Partial<Layout> = {
-        title: {text: label, font: {size: 18,weight: 'bold'}},
+        title: {text: label, font: {size: 18, weight: 'bold'}},
         xaxis: {
-            title: {text: "Fecha", font: {size: 14,weight: 'bold'}},
+            title: {text: "Fecha", font: {size: 14, weight: 'bold'}},
             type: "date"
         },
         yaxis: {
-            title: {text: measure.charAt(0).toUpperCase() + measure.slice(1), font: {size: 14,weight: 'bold'}},
+            title: {text: measure.charAt(0).toUpperCase() + measure.slice(1), font: {size: 14, weight: 'bold'}},
             rangemode: "tozero"
         },
         hovermode: "closest",

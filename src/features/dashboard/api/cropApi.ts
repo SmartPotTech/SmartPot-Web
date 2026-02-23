@@ -1,8 +1,8 @@
 import axios from "axios";
-import { UserData } from "../../auth";
-import { Crop } from "../types";
-import { userCrop, numCrop } from "./endpoints";
-import { getAuthHeaders } from "../../../shared/utils/api";
+import {UserData} from "../../auth";
+import {Crop} from "../types";
+import {numCrop, userCrop} from "./endpoints";
+import {getAuthHeaders} from "../../../shared/utils/api";
 
 // TODO: Este metodo deberia devolver solo un cultivo, mas sin embargo la solicitud devuelve varios
 export async function getCrop(user: UserData): Promise<Crop> {

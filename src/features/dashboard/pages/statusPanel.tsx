@@ -1,8 +1,7 @@
 import {useAuthContext} from "../../auth";
-import {getCrop, activateUVLight} from "../api";
-import {getHistoryFromCrop} from "../../historical-data";
+import {activateUVLight, getCrop} from "../api";
+import {getHistoryFromCrop, History} from "../../historical-data";
 import {Crop} from "../types";
-import {History} from "../../historical-data";
 
 import {useCallback, useEffect, useState} from "react";
 import {CropCard} from "../components/CropCard.tsx";

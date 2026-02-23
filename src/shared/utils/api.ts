@@ -1,4 +1,4 @@
-import type { UserData } from "../../features/auth/types";
+import type {UserData} from "../../features/auth/types";
 
 /**
  * Genera los headers de autenticación para las peticiones HTTP

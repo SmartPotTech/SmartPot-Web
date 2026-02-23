@@ -1,8 +1,8 @@
 import axios from "axios";
-import { UserData } from "../../auth/types";
-import { Notifications } from "../types";
-import { userNotifications } from "./endpoints";
-import { getAuthHeaders } from "../../../shared/utils/api";
+import {UserData} from "../../auth/types";
+import {Notifications} from "../types";
+import {userNotifications} from "./endpoints";
+import {getAuthHeaders} from "../../../shared/utils/api";
 
 export async function getNotifications(user: UserData): Promise<Notifications[]> {
     let notifications: Notifications[] = [];

@@ -4,7 +4,7 @@ import {auth, authRegister, verifyToken} from "../api/endpoints";
 import {userUpdate} from "../../profile/api/endpoints";
 import {authContextType, UserData, userDTO} from "../types";
 
-export type { authContextType, UserData, userDTO };
+export type {authContextType, UserData, userDTO};
 
 const defaultValues: authContextType = {
     user: null,

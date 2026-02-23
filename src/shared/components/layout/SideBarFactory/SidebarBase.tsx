@@ -59,7 +59,7 @@ const SidebarBase: React.FC<SidebarProps> = ({title, icons, labels, paths}) => {
                 className="logout left-2 absolute bottom-5 bg-white text-red-800 hover:bg-red-100"
                 onClick={logout}
             >
-                <LogoutOutlined />
+                <LogoutOutlined/>
                 <span className="ml-2">Cerrar sesión</span>
             </button>
         </div>

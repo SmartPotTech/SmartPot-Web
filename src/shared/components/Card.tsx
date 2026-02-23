@@ -26,13 +26,13 @@ const shadowClasses = {
 };
 
 const Card: React.FC<CardProps> = ({
-    children,
-    className = "",
-    padding = "md",
-    shadow = "md",
-    hover = false,
-    onClick
-}) => {
+                                       children,
+                                       className = "",
+                                       padding = "md",
+                                       shadow = "md",
+                                       hover = false,
+                                       onClick
+                                   }) => {
     const baseClasses = "bg-white rounded-4xl w-full";
     const paddingClass = paddingClasses[padding];
     const shadowClass = shadowClasses[shadow];
