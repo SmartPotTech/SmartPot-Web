@@ -4,7 +4,6 @@ import {getHistoryFromCrop, getHistoryFromDateRange} from "../api";
 import {Crop, getCrop} from "../../dashboard";
 import {History} from "../types";
 import PlotlyChart from "../../../shared/components/PlotlyChart.tsx";
-import "../../../shared/styles/MainContainer.css";
 import Loading from "../../../shared/components/ui/Loading.tsx";
 import Card from "../../../shared/components/Card.tsx";
 import "react-date-range/dist/styles.css";
