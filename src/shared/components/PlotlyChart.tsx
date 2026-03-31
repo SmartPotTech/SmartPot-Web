@@ -1,8 +1,22 @@
 import React from "react";
-import Plot from "react-plotly.js";
+import factoryModule from "react-plotly.js/factory.js";
+import Plotly from "plotly.js-dist-min";
 import {Layout, PlotData} from "plotly.js";
 import {History} from "../../features/historical-data";
 import Card from "./Card.tsx";
+
+const factoryExport = factoryModule as any;
+const createPlotlyComponent =
+    (typeof factoryExport === "function" && factoryExport) ||
+    (typeof factoryExport?.default === "function" && factoryExport.default) ||
+    (typeof factoryExport?.default?.default === "function" && factoryExport.default.default) ||
+    (typeof factoryExport?.createPlotlyComponent === "function" && factoryExport.createPlotlyComponent);
+
+if (typeof createPlotlyComponent !== "function") {
+    throw new Error("Invalid react-plotly.js factory export");
+}
+
+const Plot = createPlotlyComponent(Plotly);
 
 interface PlotlyChartProps {
     history: History[];

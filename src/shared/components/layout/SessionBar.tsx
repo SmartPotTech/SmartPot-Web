@@ -16,7 +16,7 @@ export default function SessionBar() {
             md:left-20 lg:left-64 bg-[#F3F2F7ff]">
 
                 <NotificationBell></NotificationBell>
-                <Divider className="Divider" type='vertical'></Divider>
+                <Divider className="Divider" orientation='vertical'></Divider>
                 <span className="sessionBarItem font-semibold ">👋 ¡Hola {user?.name}!</span>
                 <a href="/perfil"><UserOutlined className="sessionBarItem perfil"/></a>
             </header>
