@@ -5,7 +5,6 @@ import {useEffect} from "react";
 import {useAuthContext} from "../features/auth/contexts/AuthContext.tsx";
 import Login from "../features/auth/pages/login.tsx";
 import Loading from "../shared/components/ui/Loading.tsx";
-import "../shared/styles/MainContainer.css";
 import {BarChartOutlined, HomeOutlined, NodeIndexOutlined, ToolOutlined, UserOutlined,} from "@ant-design/icons";
 import {SidebarFactory} from "../shared/components/layout/SideBarFactory/SidebarFactory.tsx";
 
@@ -41,7 +40,7 @@ export default function Root() {
     return (
         <>
             {isAuthenticated ? (
-                <div className="flex flex-col flex-1">
+                <div className="flex min-h-screen">
                     <SidebarFactory
                         title={"SmartPot 🥬"}
                         icons={icons}
@@ -49,9 +48,13 @@ export default function Root() {
                         paths={paths}
                     />
 
-                    <div className="flex-1 flex flex-col ml-32 md:ml-20 lg:ml-32 w-full">
+                    {/* Content area: offset by sidebar width at each breakpoint */}
+                    <div className="flex-1 flex flex-col
+                        ml-0 max-[799px]:pb-16
+                        min-[800px]:ml-[80px]
+                        min-[1025px]:ml-[15rem]">
                         <SessionBar/>
-                        <main className="h-screen pt-14 pl-2 mr-4 md:pl-4 md:pr-2 lg:pl-6 lg:pr-2">
+                        <main className="pt-20 px-4 md:px-6 lg:px-8">
                             <Outlet/>
                         </main>
                     </div>
