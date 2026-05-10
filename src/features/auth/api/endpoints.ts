@@ -5,3 +5,4 @@ const BASE_URL = import.meta.env?.VITE_API_BASE_URL || "__VITE_API_BASE_URL__";
 export const auth = `${BASE_URL}/auth/login`;
 export const verifyToken = `${BASE_URL}/auth/verify`;
 export const authRegister = `${BASE_URL}/auth/register`;
+export const forgotPassword = `${BASE_URL}/auth/forgot-password`;

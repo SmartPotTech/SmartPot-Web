@@ -60,7 +60,7 @@ export default function Configuration() {
     const measures = lastHistory?.measures;
 
     return (
-        <div className="max-w-full w-screen">
+        <div className="w-full max-w-full">
             <div>
                 <h2 className="mt-2 text-left text-2xl/9 font-bold tracking-tight text-gray-900">
                     Configuración del cultivo
@@ -87,7 +87,7 @@ export default function Configuration() {
                 </div>
             </div>
             <div className="flex flex-col gap-3 w-full mt-5">
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full max-w-3xl">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full">
                     {}
                     <div className="md:flex-1">
                         <CropCard
@@ -116,7 +116,7 @@ export default function Configuration() {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full max-w-3xl">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full">
                     {}
                     <div className="md:flex-1">
                         <CropCard
@@ -145,7 +145,7 @@ export default function Configuration() {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full max-w-3xl">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full">
                     {}
                     <div className="md:flex-1">
                         <CropCard
@@ -174,7 +174,7 @@ export default function Configuration() {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full max-w-3xl">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full">
                     {}
                     <div className="md:flex-1">
                         <CropCard
@@ -203,7 +203,7 @@ export default function Configuration() {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full max-w-3xl">
+                <div className="flex flex-col md:flex-row md:items-center md:gap-6 p-5 w-full">
                     {}
                     <div className="md:flex-1">
                         <CropCard

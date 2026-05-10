@@ -113,7 +113,7 @@ export default function HistoricalData() {
     }
 
     return (
-        <div className="max-w-full w-screen">
+        <div className="w-full max-w-full">
             <div className="mb-6 text-center">
                 <h2 className="mt-2 text-left text-2xl/9 font-bold tracking-tight text-gray-900">
                     Datos históricos
@@ -167,9 +167,9 @@ export default function HistoricalData() {
                 </Card>
             </div>
 
-            <div className="bg-white shadow-md rounded-lg mb-8 p-4 ">
-                <div className="flex content-between justify-between max-w-full ">
-          <span className="m-4">
+            <div className="bg-white shadow-md rounded-lg mb-8 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-w-full">
+          <div className="m-1 sm:m-4 flex flex-wrap items-center gap-3">
             <Dropdown buttonLabel={rangeText}>
               <DateRange
                   onChange={handleDateSelect}
@@ -184,13 +184,13 @@ export default function HistoricalData() {
               />
             </Dropdown>
             <button
-                className="inline-flex ml-5 font-bold items-center gap-2 px-3 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-800 rounded-lg transition-colors font-medium"
+                className="inline-flex font-bold items-center gap-2 px-3 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-800 transition-colors font-medium"
                 onClick={fetchCropAndHistoryByRange}
             >
               Filtrar
             </button>
-          </span>
-                    <span className="m-4">
+          </div>
+                    <div className="m-1 sm:m-4">
             <button
                 className="inline-flex font-bold items-center gap-2 px-3 py-2 bg-emerald-100 text-emerald-700 outline-2 outline-offset-0 outline-emerald-600 hover:text-emerald-100 hover:bg-emerald-700 rounded-lg transition-colors font-medium"
                 onClick={() => setToggleTable(!toggleTable)}
@@ -198,12 +198,12 @@ export default function HistoricalData() {
               {" "}
                 {toggleTable ? "Vista de gráficas" : "Vista de tabla"}{" "}
             </button>
-          </span>
+          </div>
                 </div>
 
                 {toggleTable ? (
-                    <div className="overflow-x-auto rounded-2x1">
-                        <table className="min-w-full table-auto border-collapse text-sm rounded-2x1">
+                    <div className="w-full max-w-full overflow-x-auto rounded-2x1">
+                        <table className="min-w-max sm:min-w-full table-auto border-collapse text-sm rounded-2x1">
                             <thead className="bg-green-800">
                             <tr>
                                 <th className="px-6 py-4 text-center text-base font-semibold text-white">

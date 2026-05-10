@@ -1,12 +1,11 @@
 import {Outlet, useNavigate} from "react-router-dom";
-import "../shared/styles/root.css";
 import SessionBar from "../shared/components/layout/SessionBar.tsx";
 import {useEffect} from "react";
 import {useAuthContext} from "../features/auth/contexts/AuthContext.tsx";
 import Login from "../features/auth/pages/login.tsx";
 import Loading from "../shared/components/ui/Loading.tsx";
 import {BarChartOutlined, HomeOutlined, NodeIndexOutlined, ToolOutlined, UserOutlined,} from "@ant-design/icons";
-import {SidebarFactory} from "../shared/components/layout/SideBarFactory/SidebarFactory.tsx";
+import Sidebar from "../shared/components/layout/Sidebar.tsx";
 
 
 export default function Root() {
@@ -41,18 +40,16 @@ export default function Root() {
         <>
             {isAuthenticated ? (
                 <div className="flex min-h-screen">
-                    <SidebarFactory
+                    <Sidebar
                         title={"SmartPot 🥬"}
                         icons={icons}
                         labels={labels}
                         paths={paths}
                     />
 
-                    {/* Content area: offset by sidebar width at each breakpoint */}
                     <div className="flex-1 flex flex-col
-                        ml-0 max-[799px]:pb-16
-                        min-[800px]:ml-[80px]
-                        min-[1025px]:ml-[15rem]">
+                        ml-[var(--sidebar-width)]
+                        pb-[var(--bottom-nav-height)] md:pb-0">
                         <SessionBar/>
                         <main className="pt-20 px-4 md:px-6 lg:px-8">
                             <Outlet/>
