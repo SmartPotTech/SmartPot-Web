@@ -7,8 +7,8 @@ export default function SessionBar() {
     const {user} = useAuthContext();
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 flex h-16 items-center justify-end px-4
-            bg-page-background  border-gray-200">
+        <header className="fixed top-0 left-[var(--sidebar-width)] right-0 z-50 flex h-16 items-center justify-end px-4
+            bg-[var(--page-background)]">
             <NotificationBell/>
 
             <div className="h-8 border-l-2 border-gray-300 mx-4"/>
