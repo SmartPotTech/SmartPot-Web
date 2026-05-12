@@ -9,7 +9,8 @@ WORKDIR /app
 # Habilitar pnpm
 RUN corepack enable && corepack prepare pnpm@11.0.9 --activate
 ENV PNPM_HOME="/root/.local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+RUN mkdir -p $PNPM_HOME/bin
+ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
 # Copiar dependencias
 COPY package.json pnpm-lock.yaml ./
@@ -33,13 +34,14 @@ WORKDIR /app
 
 # Definir entorno para PNPM global
 ENV PNPM_HOME="/root/.local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 
 # Instalar corepack y pnpm
 RUN corepack enable && corepack prepare pnpm@11.0.9 --activate
 
 # Crear el directorio global si no existe (previene error)
-RUN mkdir -p $PNPM_HOME && chmod -R 777 $PNPM_HOME
+RUN mkdir -p $PNPM_HOME/bin
+
+ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
 # Instalar `serve` globalmente
 RUN pnpm add -g serve
