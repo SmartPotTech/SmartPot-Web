@@ -18,13 +18,15 @@ jobs:
 
       # Paso 2: Configuración de Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
       # Paso 3: Instalación de pnpm
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
 
       # Paso 4: Instalación de dependencias con pnpm
       - name: Install dependencies with pnpm

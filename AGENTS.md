@@ -83,7 +83,7 @@ src/
 ## CI
 
 - All workflows run on `push`/`PR` to `main`.
-- CI installs **pnpm 10**; local dev uses **pnpm 11** (locked in `packageManager`). This mismatch exists — use the local lockfile version.
+- CI installs **pnpm 11** (matching the `packageManager` field).
 - `node.js.yml` matrix: Node 20/22/24.
 - Lint step has `continue-on-error: true` — passing build is the hard gate.
 

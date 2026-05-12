@@ -69,6 +69,7 @@ export default function HistoricalData() {
                             endDate: date[0].endDate.toISOString(),
                         }
                     );
+                    fetchedHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                     setHistory(fetchedHistory);
                 }
             } catch (error) {
@@ -89,6 +90,7 @@ export default function HistoricalData() {
                     setCrop(fetchedCrop);
 
                     const fetchedHistory = await getHistoryFromCrop(user, fetchedCrop);
+                    fetchedHistory.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
                     setHistory(fetchedHistory);
                 } catch (error) {
                     console.error("Error fetching crop or history data: ", error);
@@ -202,64 +204,76 @@ export default function HistoricalData() {
                 </div>
 
                 {toggleTable ? (
-                    <div className="w-full max-w-full overflow-x-auto rounded-2x1">
-                        <table className="min-w-max sm:min-w-full table-auto border-collapse text-sm rounded-2x1">
-                            <thead className="bg-green-800">
-                            <tr>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    #
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    Atmósfera
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    Brillo
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    Humedad
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    PH
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    TDS
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    Temperatura
-                                </th>
-                                <th className="px-6 py-4 text-center text-base font-semibold text-white">
-                                    Fecha
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody className="bg-white">
-                            {history.map((e, index) => (
-                                <tr
-                                    key={index}
-                                    className={`border-t ${
-                                        index % 2 === 0 ? "bg-gray-50" : ""
-                                    }`}
-                                >
-                                    <td className="px-6 py-4 text-gray-700">{index + 1}</td>
-                                    <td className="px-6 py-4 text-gray-700">
-                                        {e.measures.atmosphere}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">
-                                        {e.measures.brightness}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">
-                                        {e.measures.humidity}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">{e.measures.ph}</td>
-                                    <td className="px-6 py-4 text-gray-700">
-                                        {e.measures.tds}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">
-                                        {e.measures.temperature}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-700">{e.date}</td>
+                    <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                        <table className="w-full min-w-[48rem] text-sm">
+                            <thead className="sticky top-0 z-10 bg-[#00B074] text-white">
+                                <tr>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        Fecha
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        Atmósfera
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        Brillo
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        Humedad
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        PH
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        TDS
+                                    </th>
+                                    <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider">
+                                        Temperatura
+                                    </th>
                                 </tr>
-                            ))}
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 bg-white">
+                                {history.map((e, index) => (
+                                    <tr
+                                        key={e.id ?? index}
+                                        className={`hover:bg-gray-50 ${
+                                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                        }`}
+                                    >
+                                        <td className="px-4 py-3 text-center text-gray-900 whitespace-nowrap">
+                                            <div className="font-medium">
+                                                {new Date(e.date).toLocaleDateString("es-ES", {
+                                                    day: "2-digit",
+                                                    month: "2-digit",
+                                                    year: "numeric",
+                                                })}
+                                            </div>
+                                            <div className="text-xs text-gray-500">
+                                                {new Date(e.date).toLocaleTimeString("es-ES", {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-gray-700">
+                                            {e.measures.atmosphere}
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-gray-700">
+                                            {e.measures.brightness}
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-gray-700">
+                                            {e.measures.humidity}
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-gray-700">
+                                            {e.measures.ph}
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-gray-700">
+                                            {e.measures.tds}
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-gray-700 whitespace-nowrap">
+                                            {e.measures.temperature} °C
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
