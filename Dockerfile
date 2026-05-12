@@ -1,7 +1,7 @@
 # ===============================
 # Stage 1: Build de la app
 # ===============================
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 # Directorio de trabajo
 WORKDIR /app
@@ -27,7 +27,7 @@ RUN pnpm run build
 # ===============================
 # Stage 2: Imagen final (serve)
 # ===============================
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
