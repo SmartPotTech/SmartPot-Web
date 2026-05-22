@@ -12,8 +12,8 @@ ENV PNPM_HOME="/root/.local/share/pnpm"
 RUN mkdir -p $PNPM_HOME/bin
 ENV PATH="$PNPM_HOME/bin:$PNPM_HOME:$PATH"
 
-# Copiar dependencias
-COPY package.json pnpm-lock.yaml ./
+# Copiar archivos de configuración de pnpm primero
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Instalar dependencias
 RUN pnpm install --frozen-lockfile
