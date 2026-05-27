@@ -37,7 +37,7 @@ export default function Profile() {
 
     return (
         <div className="w-full">
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden w-4xl">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden w-full max-w-4xl mx-auto">
                 <div className="relative h-40">
                     <img
                         alt="smartpot"

@@ -23,6 +23,13 @@ export default function HistoricalData() {
     const [toggleTable, setToggleTable] = useState<boolean>(true);
 
     const {user, loading} = useAuthContext();
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const [date, setDate] = useState<
         [
@@ -34,8 +41,8 @@ export default function HistoricalData() {
         ]
     >([
         {
-            startDate: new Date(),
-            endDate: subDays(new Date(), 7),
+            startDate: subDays(new Date(), 7),
+            endDate: new Date(),
             key: "selection",
         },
     ]);
@@ -105,9 +112,8 @@ export default function HistoricalData() {
         }
     }, [user]); // Dependemos solo de `user` porque es lo que determina si se puede hacer la solicitud
 
-    // Estado de carga de datos o login
-    if (loading || loadingLogin || loadingData) {
-        return <Loading/>; // Muestra un mensaje de carga mientras el proceso está en marcha
+    if (loading || loadingLogin) {
+        return <Loading/>;
     }
 
     if (!user?.id) {
@@ -134,12 +140,11 @@ export default function HistoricalData() {
                     <div className="bg-green-800 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
                         <img src={cultivo} className="w-11 h-11 object-contain"/>
                     </div>
-                    <div className="ml-[10%] mr-[15%] ">
+                    <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold text-green-600">
-                            {" "}
-                            <span className="text-xl underline">
-                {crop ? crop.id : "Cargando..."}
-              </span>
+                            <span className="text-xl underline break-all">
+                                {crop ? crop.id : "Cargando..."}
+                            </span>
                         </h3>
                         <p className="text-base font-bold tracking-tight text-gray-500">
                             Crop ID
@@ -155,12 +160,11 @@ export default function HistoricalData() {
                     <div className="bg-green-800 rounded-full w-16 h-16 flex-shrink-0 flex items-center justify-center">
                         <img src={estado} className="w-11 h-11 object-contain"/>
                     </div>
-                    <div className="ml-[10%] mr-[15%] ">
+                    <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-bold text-green-600">
-                            {" "}
                             <span className="font-semibold">
-                {crop ? crop.status : "Cargando..."}
-              </span>
+                                {crop ? crop.status : "Cargando..."}
+                            </span>
                         </h3>
                         <p className="text-base font-bold tracking-tight text-gray-500">
                             Estado
@@ -176,10 +180,10 @@ export default function HistoricalData() {
               <DateRange
                   onChange={handleDateSelect}
                   ranges={date}
-                  direction="horizontal"
+                  direction={isMobile ? "vertical" : "horizontal"}
                   showPreview={true}
                   moveRangeOnFirstSelection={true}
-                  months={2}
+                  months={isMobile ? 1 : 2}
                   shownDate={subMonths(new Date(), 1)}
                   initialFocusedRange={[0, 1]}
                   maxDate={new Date()}
@@ -203,7 +207,11 @@ export default function HistoricalData() {
           </div>
                 </div>
 
-                {toggleTable ? (
+                {loadingData ? (
+                    <div className="flex items-center justify-center py-16">
+                        <div className="w-14 h-14 border-8 rounded-full border-t-green-400 animate-spin"/>
+                    </div>
+                ) : toggleTable ? (
                     <div className="w-full overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table className="w-full min-w-[48rem] text-sm">
                             <thead className="sticky top-0 z-10 bg-[#00B074] text-white">
@@ -280,7 +288,7 @@ export default function HistoricalData() {
                 ) : null}
             </div>
 
-            {!toggleTable && (
+            {!toggleTable && !loadingData && (
                 <>
                     <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-3 w-full">
                         <PlotlyChart

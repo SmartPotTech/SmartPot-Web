@@ -47,11 +47,11 @@ export default function Root() {
                         paths={paths}
                     />
 
-                    <div className="flex-1 flex flex-col
+                    <div className="flex-1 min-w-0 flex flex-col
                         ml-[var(--sidebar-width)]
                         pb-[var(--bottom-nav-height)] md:pb-0">
                         <SessionBar/>
-                        <main className="pt-20 px-4 md:px-6 lg:px-8">
+                        <main className="pt-20 px-4 md:px-6 lg:px-8 overflow-x-hidden">
                             <Outlet/>
                         </main>
                     </div>
