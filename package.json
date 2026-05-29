@@ -15,7 +15,7 @@
     "@mui/material": "^9.0.0",
     "antd": "^6.3.5",
     "assert": "^2.1.0",
-    "axios": "^1.15.0",
+    "axios": "^1.16.0",
     "buffer": "^6.0.3",
     "date-fns": "^4.1.0",
     "plotly.js": "^3.5.0",
