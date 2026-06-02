@@ -19,11 +19,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. Configuración de pnpm (se recomienda ponerlo antes de Node para habilitar la caché)
+      # 1. Configuración de pnpm (usa la versión de tu package.json automáticamente)
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9 # Puedes omitir esta línea si defines el packageManager en tu package.json
 
       # 2. Configuración de Node.js con caché para pnpm
       - name: Set up Node.js
