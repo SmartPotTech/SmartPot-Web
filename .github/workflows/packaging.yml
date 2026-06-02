@@ -1,0 +1,67 @@
+name: Publish Package
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-publish:
+    name: Build and Push Web Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 1. Configuración de pnpm (se recomienda ponerlo antes de Node para habilitar la caché)
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # Puedes omitir esta línea si defines el packageManager en tu package.json
+
+      # 2. Configuración de Node.js con caché para pnpm
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      # 3. Instalación de dependencias
+      - name: Install dependencies
+        run: pnpm install
+
+      # 4. Construcción del proyecto (Vite)
+      - name: Build with Vite
+        run: pnpm run build
+
+      # 5. Normalizar el nombre del repositorio para Docker (requiere minúsculas)
+      - name: Normalize repository name
+        run: |
+          echo "REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      # 6. Configuración de Docker Buildx (útil para builds multiplataforma y caché)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 7. Autenticación en GHCR (usando el token automático de GitHub)
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 8. Construcción y push de la imagen Docker a GHCR
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/${{ env.REPO_LOWER }}:latest
