@@ -1,0 +1,41 @@
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Spinner } from "./Spinner";
+
+type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Size = "sm" | "md" | "lg";
+
+const VARIANTS: Record<Variant, string> = {
+  primary: "bg-leaf-700 text-white hover:bg-leaf-800 disabled:bg-leaf-700/50",
+  secondary: "border border-line bg-white text-ink hover:border-leaf-500 hover:text-leaf-800",
+  ghost: "text-leaf-800 hover:bg-leaf-50",
+  danger: "bg-danger-500 text-white hover:bg-danger-600 disabled:bg-danger-500/50",
+};
+
+const SIZES: Record<Size, string> = {
+  sm: "h-9 px-3 text-sm",
+  md: "h-11 px-4 text-sm",
+  lg: "h-12 px-6 text-base",
+};
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: Variant;
+  size?: Size;
+  loading?: boolean;
+  icon?: ReactNode;
+}
+
+export function Button({ variant = "primary", size = "md", loading = false, icon, className = "", children,
+  disabled, type = "button", ...props }: ButtonProps) {
+  return (
+    <button
+      type={type}
+      disabled={disabled || loading}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors
+        disabled:cursor-not-allowed ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+      {...props}
+    >
+      {loading ? <Spinner size={16} /> : icon}
+      {children}
+    </button>
+  );
+}
