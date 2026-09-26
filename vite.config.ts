@@ -1,18 +1,17 @@
-import {defineConfig} from 'vite';
-import react from '@vitejs/plugin-react';
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-    plugins: [react()],
-
-    resolve: {
-        alias: {
-            buffer: 'buffer/',
-            stream: 'stream-browserify',
-            assert: 'assert',
-        },
-    },
-    define: {
-        'process.env': {},
-        'global': 'window',
-    }
+  plugins: [react(), tailwindcss()],
+  build: {
+    target: "es2022",
+    sourcemap: false,
+  },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./src/test/setup.ts"],
+    css: false,
+  },
 });
