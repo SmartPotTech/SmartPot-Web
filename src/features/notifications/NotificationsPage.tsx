@@ -40,7 +40,7 @@ export function NotificationsPage() {
       {notifications.error && <Alert tone="danger">{notifications.error}</Alert>}
       {notifications.loading && !notifications.data ? <PageLoader /> : list.length === 0 ? (
         <EmptyState icon={<Bell size={26} />} title="Sin alertas">
-          Aquí verás los avisos de tus cultivos, de las macetas y del asistente de IA.
+          Aquí verás los avisos de tus cultivos, de sus dispositivos y del asistente de IA.
         </EmptyState>
       ) : (
         <ul className="space-y-2">

@@ -11,7 +11,7 @@ import type { ChannelLink, ChannelOption, LinkCode, NotificationType } from "../
 
 const EVENT_LABELS: Record<NotificationType, string> = {
   ALERT: "Alertas del cultivo",
-  DEVICE: "Maceta desconectada",
+  DEVICE: "Cultivo desconectado",
   AI: "Acciones del asistente",
   COMMAND: "Comandos que fallan o vencen",
   INFO: "Novedades de la cuenta",
