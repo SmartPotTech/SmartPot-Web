@@ -17,6 +17,7 @@ import { InsightPanel } from "./components/InsightPanel";
 import { MetricTile } from "./components/MetricTile";
 import { ReadingsChart } from "./components/ReadingsChart";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { VirtualPotPanel } from "./components/VirtualPotPanel";
 import { useCropProfiles } from "./useCropProfiles";
 
 const TABS = [
@@ -25,6 +26,7 @@ const TABS = [
   { id: "control", label: "Control" },
   { id: "history", label: "Historial" },
   { id: "device", label: "Dispositivo" },
+  { id: "virtual", label: "Maceta virtual" },
   { id: "settings", label: "Ajustes" },
 ] as const;
 
@@ -194,6 +196,7 @@ export default function CropDetailPage() {
       )}
 
       {tab === "device" && <DevicePanel crop={current} />}
+      {tab === "virtual" && <VirtualPotPanel cropId={cropId} profile={profile} />}
       {tab === "settings" && <SettingsPanel crop={current} onSaved={(updated) => crop.setData(updated)} />}
     </div>
   );
