@@ -1,9 +1,9 @@
-import { BrainCircuit, CircleHelp, Play, RefreshCw, Sparkles } from "lucide-react";
+import { BrainCircuit, CircleHelp, Minus, Play, RefreshCw, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { Alert, Badge } from "../../../components/ui/Feedback";
-import { ACTUATORS, METRICS } from "../../../lib/catalog";
-import { formatMetric, timeAgo } from "../../../lib/format";
+import { METRICS } from "../../../lib/catalog";
+import { describeAction, formatHoursAhead, formatMetric, timeAgo } from "../../../lib/format";
 import type { Actuator, Insight } from "../../../lib/api/types";
 import { HealthGauge } from "./HealthGauge";
 
@@ -58,8 +58,7 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
                 <li key={key} className="flex flex-wrap items-center justify-between gap-3 py-3">
                   <div>
                     <p className="font-medium">
-                      {action.action === "ACTIVATE" ? "Encender" : "Apagar"} {ACTUATORS[action.actuator].label.toLowerCase()}
-                      {action.durationSeconds ? ` por ${action.durationSeconds} s` : ""}
+                      {describeAction(action.actuator, action.action, action.durationSeconds)}
                     </p>
                     <p className="text-sm text-muted">{action.reason}</p>
                   </div>
@@ -82,6 +81,8 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
           </ul>
         </section>
       )}
+
+      <Outlook insight={insight} />
 
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="card p-5">
@@ -150,6 +151,77 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
           <p><strong className="text-ink">Agente:</strong> con el modo automático activo ejecuta estas acciones por su cuenta, con una pausa de 10 minutos entre acciones del mismo actuador.</p>
         </div>
       </details>
+    </div>
+  );
+}
+
+const TREND = {
+  RISING: { icon: TrendingUp, label: "Sube" },
+  FALLING: { icon: TrendingDown, label: "Baja" },
+  STABLE: { icon: Minus, label: "Estable" },
+} as const;
+
+/** Pronóstico de las próximas horas y de qué variables depende el índice de salud. */
+function Outlook({ insight }: { insight: Insight }) {
+  const forecasts = insight.forecasts ?? [];
+  const factors = Object.entries(insight.health.byParameter ?? {})
+    .sort(([, a], [, b]) => (a ?? 0) - (b ?? 0)) as [keyof typeof METRICS, number][];
+  if (forecasts.length === 0 && factors.length === 0) return null;
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-2">
+      {forecasts.length > 0 && (
+        <section className="card p-5">
+          <h3 className="font-semibold">Pronóstico de las próximas horas</h3>
+          <p className="text-sm text-muted">Tendencia de cada variable según las últimas lecturas.</p>
+          <ul className="mt-3 space-y-2">
+            {forecasts.map((forecast) => {
+              const trend = TREND[forecast.trend];
+              const urgent = forecast.hoursToLimit !== null && forecast.hoursToLimit <= 3;
+              return (
+                <li key={forecast.parameter} className={`flex gap-3 rounded-xl p-3 ${urgent ? "bg-sun-100" : "bg-surface"}`}>
+                  <trend.icon size={18} className={`mt-0.5 shrink-0 ${urgent ? "text-clay-600" : "text-leaf-700"}`}
+                    aria-label={trend.label} />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold">
+                      {METRICS[forecast.parameter]?.label ?? forecast.parameter}
+                      <span className="ml-2 font-normal text-muted">
+                        en 3 h ≈ {formatMetric(forecast.parameter, forecast.expectedIn3h)}
+                      </span>
+                    </p>
+                    <p className="text-sm text-muted">{forecast.message}</p>
+                    {forecast.hoursToLimit !== null && (
+                      <p className="mt-0.5 text-xs font-semibold text-clay-600">
+                        Saldrá del rango ideal en {formatHoursAhead(forecast.hoursToLimit)}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+      {factors.length > 0 && (
+        <section className="card p-5">
+          <h3 className="font-semibold">De qué depende el índice</h3>
+          <p className="text-sm text-muted">Salud de cada variable; las más bajas son las que restan.</p>
+          <ul className="mt-3 space-y-2.5">
+            {factors.map(([parameter, score]) => (
+              <li key={parameter}>
+                <div className="flex justify-between text-sm">
+                  <span>{METRICS[parameter]?.label ?? parameter}</span>
+                  <span className="font-semibold">{Math.round(score)}</span>
+                </div>
+                <div className="mt-1 h-2 overflow-hidden rounded-full bg-surface">
+                  <div className="h-full rounded-full" style={{ width: `${score}%`,
+                    backgroundColor: score >= 85 ? "#009A64" : score >= 50 ? "#C98D12" : "#D64545" }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

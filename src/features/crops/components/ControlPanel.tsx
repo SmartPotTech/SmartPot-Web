@@ -7,7 +7,7 @@ import { Switch } from "../../../components/ui/Switch";
 import { ApiError } from "../../../lib/api/client";
 import { actuatorApi, commandApi } from "../../../lib/api/services";
 import { ACTUATORS, COMMAND_STATUS } from "../../../lib/catalog";
-import { formatDateTime, timeAgo } from "../../../lib/format";
+import { describeAction, formatDateTime, timeAgo } from "../../../lib/format";
 import type { Actuator, ActuatorType, Command, Crop } from "../../../lib/api/types";
 
 interface ControlPanelProps {
@@ -126,8 +126,7 @@ export function ControlPanel({ crop, actuators, commands, onAutomation, onChange
             <li key={command.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5">
               <div>
                 <p className="font-medium">
-                  {command.action === "ACTIVATE" ? "Encender" : "Apagar"} {ACTUATORS[command.actuatorType].label.toLowerCase()}
-                  {command.durationSeconds ? ` (${command.durationSeconds} s)` : ""}
+                  {describeAction(command.actuatorType, command.action, command.durationSeconds)}
                 </p>
                 <p className="text-xs text-muted">
                   {command.source === "AGENT" ? "Agente de IA" : "Tú"} · {formatDateTime(command.createdAt)}
