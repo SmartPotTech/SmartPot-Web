@@ -1,4 +1,4 @@
-import { Bell, Download, LogOut, Sprout, UserRound, WifiOff } from "lucide-react";
+import { Bell, Download, LayoutDashboard, ListChecks, LogOut, SlidersHorizontal, Sprout, UserRound, WifiOff } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useInstallPrompt } from "../../features/pwa/pwa";
@@ -8,10 +8,16 @@ import { notificationApi } from "../../lib/api/services";
 import { Logo } from "../brand/Logo";
 
 const NAV = [
-  { to: "/app", label: "Cultivos", icon: Sprout, end: true },
+  { to: "/app", label: "Panel", icon: LayoutDashboard, end: true },
+  { to: "/app/crops", label: "Cultivos", icon: Sprout, end: false },
+  { to: "/app/control", label: "Control", icon: SlidersHorizontal, end: false },
+  { to: "/app/actions", label: "Acciones", icon: ListChecks, end: false },
   { to: "/app/notifications", label: "Alertas", icon: Bell, end: false },
-  { to: "/app/profile", label: "Perfil", icon: UserRound, end: false },
 ];
+
+function initials(name?: string, lastName?: string): string {
+  return `${name?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase() || "SP";
+}
 
 export function AppShell() {
   const { user, signOut } = useAuth();
@@ -21,51 +27,58 @@ export function AppShell() {
   const count = unread.data?.unread ?? 0;
 
   return (
-    <div className="min-h-dvh md:grid md:grid-cols-[15rem_1fr]">
-      <aside className="sticky top-0 hidden h-dvh flex-col border-r border-line bg-white px-4 py-5 md:flex">
-        <Link to="/app" aria-label="Mis cultivos"><Logo size={32} /></Link>
-        <nav className="mt-8 flex flex-1 flex-col gap-1" aria-label="Aplicación">
+    <div className="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
+      <aside className="sticky top-0 hidden h-dvh flex-col bg-leaf-900 px-4 py-5 text-leaf-100 md:flex">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-leaf-950/80 to-transparent" />
+        <Link to="/app" aria-label="Panel general" className="relative px-1"><Logo size={34} inverse /></Link>
+        <nav className="relative mt-9 flex flex-1 flex-col gap-1" aria-label="Aplicación">
           {NAV.map(({ to, label, icon: Icon, end }) => (
             <NavLink key={to} to={to} end={end}
-              className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold
-                ${isActive ? "bg-leaf-50 text-leaf-800" : "text-muted hover:bg-surface hover:text-ink"}`}>
+              className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors
+                ${isActive ? "bg-leaf-700 text-white shadow-[inset_3px_0_0_var(--color-leaf-300)]"
+                  : "text-leaf-100/80 hover:bg-leaf-800 hover:text-white"}`}>
               <Icon size={18} />
               {label}
               {to === "/app/notifications" && count > 0 && (
-                <span className="ml-auto rounded-full bg-danger-500 px-2 text-xs text-white">{count}</span>
+                <span className="ml-auto rounded-full bg-sun-500 px-2 text-xs font-bold text-leaf-950">{count}</span>
               )}
             </NavLink>
           ))}
         </nav>
         {available && (
           <button type="button" onClick={() => void install()}
-            className="mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-leaf-800 hover:bg-leaf-50">
+            className="relative mb-2 flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-leaf-300 hover:bg-leaf-800">
             <Download size={18} /> Instalar app
           </button>
         )}
-        <div className="border-t border-line pt-4">
-          <p className="truncate text-sm font-semibold">{user?.name} {user?.lastName}</p>
-          <p className="truncate text-xs text-muted">{user?.email}</p>
+        <div className="relative border-t border-leaf-800 pt-4">
+          <NavLink to="/app/profile" className={({ isActive }) => `flex items-center gap-3 rounded-xl p-2 transition-colors
+            ${isActive ? "bg-leaf-800" : "hover:bg-leaf-800"}`}>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-leaf-500 text-sm font-bold text-leaf-950">
+              {initials(user?.name, user?.lastName)}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold text-white">{user?.name} {user?.lastName}</span>
+              <span className="block truncate text-xs text-leaf-300">{user?.email}</span>
+            </span>
+          </NavLink>
           <button type="button" onClick={() => signOut()}
-            className="mt-3 flex items-center gap-2 text-sm font-semibold text-muted hover:text-danger-600">
+            className="mt-2 flex items-center gap-2 px-2 text-sm font-semibold text-leaf-300 hover:text-white">
             <LogOut size={16} /> Cerrar sesión
           </button>
         </div>
       </aside>
 
-      <div className="flex min-h-dvh flex-col pb-20 md:pb-0">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-line bg-white/90
-          px-4 backdrop-blur md:hidden">
-          <Link to="/app" aria-label="Mis cultivos"><Logo size={28} /></Link>
+      <div className="flex min-h-dvh flex-col bg-linear-to-b from-leaf-50 to-page to-40% pb-20 md:pb-0">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between bg-leaf-900 px-4 text-white md:hidden">
+          <Link to="/app" aria-label="Panel general"><Logo size={28} inverse /></Link>
           <div className="flex items-center gap-1">
             {available && (
               <button type="button" onClick={() => void install()} aria-label="Instalar app"
-                className="rounded-lg p-2 text-leaf-800 hover:bg-leaf-50"><Download size={20} /></button>
+                className="rounded-lg p-2 text-leaf-300 hover:bg-leaf-800"><Download size={20} /></button>
             )}
-            <Link to="/app/notifications" aria-label={`Alertas, ${count} sin leer`}
-              className="relative rounded-lg p-2 text-muted hover:bg-surface">
-              <Bell size={20} />
-              {count > 0 && <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-danger-500" />}
+            <Link to="/app/profile" aria-label="Mi perfil" className="rounded-lg p-2 text-leaf-100 hover:bg-leaf-800">
+              <UserRound size={20} />
             </Link>
           </div>
         </header>
@@ -79,14 +92,24 @@ export function AppShell() {
         </main>
       </div>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-line bg-white pb-[env(safe-area-inset-bottom)]
-        md:hidden" aria-label="Aplicación">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 bg-leaf-900 pb-[env(safe-area-inset-bottom)] md:hidden"
+        aria-label="Aplicación">
         {NAV.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end}
-            className={({ isActive }) => `flex flex-col items-center gap-0.5 py-2 text-xs font-semibold
-              ${isActive ? "text-leaf-700" : "text-muted"}`}>
-            <Icon size={20} />
-            {label}
+            className={({ isActive }) => `relative flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold
+              ${isActive ? "text-white" : "text-leaf-300/80"}`}>
+            {({ isActive }) => (
+              <>
+                <span className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors
+                  ${isActive ? "bg-leaf-700" : ""}`}>
+                  <Icon size={19} />
+                </span>
+                {label}
+                {to === "/app/notifications" && count > 0 && (
+                  <span className="absolute right-[26%] top-1.5 h-2.5 w-2.5 rounded-full bg-sun-500 ring-2 ring-leaf-900" />
+                )}
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
