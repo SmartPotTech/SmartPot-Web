@@ -13,7 +13,7 @@ import { passwordStrength, validateEmail, validateName, validatePassword } from 
 type Fields = "name" | "lastName" | "email" | "password";
 
 export function RegisterPage() {
-  usePageMeta("Crear cuenta", { index: true, description: "Crea tu cuenta gratis de SmartPot y conecta tu primera maceta." });
+  usePageMeta("Crear cuenta", { index: true, description: "Crea tu cuenta gratis de SmartPot y crea tu primer cultivo, real o virtual." });
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState<Record<Fields, string>>({ name: "", lastName: "", email: "", password: "" });

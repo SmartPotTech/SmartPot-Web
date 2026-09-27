@@ -10,7 +10,7 @@ import { FAQ } from "./faq";
 
 const FEATURES = [
   { icon: Radio, title: "Monitoreo en tiempo real",
-    text: "Temperatura, humedad del aire y del sustrato, luz, pH y nutrientes llegan desde tu maceta cada 30 segundos por MQTT." },
+    text: "Temperatura, humedad del aire y del sustrato, luz, pH y nutrientes llegan desde tu ESP32 cada 30 segundos por MQTT, o de un cultivo virtual que SmartPot simula." },
   { icon: BrainCircuit, title: "Asistente de inteligencia artificial",
     text: "Un sistema experto, lógica difusa y modelos de aprendizaje automático diagnostican tu cultivo y te dicen qué hacer." },
   { icon: Bot, title: "Automatización con un agente",
@@ -20,12 +20,12 @@ const FEATURES = [
   { icon: FileDown, title: "Historial y exportación",
     text: "Gráficas con el rango ideal de cada especie y descarga de tus lecturas en CSV para analizarlas." },
   { icon: ShieldCheck, title: "Seguro por diseño",
-    text: "Conexión cifrada con TLS, una clave distinta por maceta y aislamiento: nadie puede leer ni controlar tus cultivos." },
+    text: "Conexión cifrada con TLS, una clave distinta por cultivo y aislamiento: nadie puede leer ni controlar tus cultivos." },
 ];
 
 const STEPS = [
-  { title: "Crea tu cultivo", text: "Elige la especie y SmartPot carga sus rangos ideales de temperatura, pH, nutrientes y luz." },
-  { title: "Conecta tu maceta", text: "Configura el ESP32 (o la simulación en Wokwi) con el id del cultivo y su clave de dispositivo." },
+  { title: "Crea tu cultivo", text: "Elige si es real o virtual, la especie y su forma: maceta, tubos NFT, torre o balsa. SmartPot carga sus rangos ideales." },
+  { title: "Conéctalo y míralo en vivo", text: "Configura el ESP32 (o su simulación en Wokwi) con la guía y la clave del cultivo, o deja que SmartPot lo simule. Lo verás crecer con cada actuador." },
   { title: "Cuida con datos", text: "Sigue las lecturas, recibe alertas y deja que el asistente te recomiende o actúe por ti." },
 ];
 
@@ -214,7 +214,7 @@ export function LandingPage() {
       <section className="bg-leaf-900 text-white">
         <div className="mx-auto flex max-w-6xl flex-col items-center px-4 py-16 text-center">
           <h2 className="text-3xl font-bold">Empieza hoy, es gratis</h2>
-          <p className="mt-3 max-w-xl text-leaf-100/80">Crea tu cuenta, agrega tu primer cultivo y conecta tu maceta en minutos.</p>
+          <p className="mt-3 max-w-xl text-leaf-100/80">Crea tu cuenta y tu primer cultivo, real o virtual, en minutos.</p>
           <Link to="/register" className="mt-6 inline-flex h-12 items-center gap-2 rounded-xl bg-leaf-500 px-6 font-semibold
             text-leaf-950 hover:bg-leaf-300">
             Crear cuenta gratis <ArrowRight size={18} />
