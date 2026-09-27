@@ -11,8 +11,13 @@ import type {
   CropProfile,
   CropType,
   DeviceCredentials,
+  BulkCommandResult,
+  Fleet,
   Insight,
   Measures,
+  MetricKey,
+  MetricSeries,
+  Overview,
   Reading,
   ReadingSummary,
   User,
@@ -48,6 +53,9 @@ export const cropApi = {
   remove: (id: string) => request<void>(`${V1}/crops/${id}`, { method: "DELETE" }),
   setAutomation: (id: string, enabled: boolean) =>
     request<Crop>(`${V1}/crops/${id}/automation`, { method: "PUT", body: { enabled } }),
+  /** Sin ids, se aplica a todos los cultivos de la cuenta. */
+  setAutomationBulk: (enabled: boolean, cropIds?: string[]) =>
+    request<Crop[]>(`${V1}/crops/automation`, { method: "PUT", body: { enabled, cropIds: cropIds ?? null } }),
   device: (id: string) => request<DeviceCredentials>(`${V1}/crops/${id}/device`),
   rotateKey: (id: string) => request<DeviceCredentials>(`${V1}/crops/${id}/device/key`, { method: "POST" }),
   profiles: () => request<CropProfile[]>(`${V1}/crop-profiles`, { auth: false }),
@@ -84,6 +92,19 @@ export const commandApi = {
       method: "POST",
       body: { actuatorId, action, durationSeconds: durationSeconds ?? null },
     }),
+  listAll: (limit = 50) => request<Command[]>(`${V1}/commands?limit=${limit}`),
+  bulk: (body: { actuatorType: ActuatorType; action: CommandAction; durationSeconds?: number | null; cropIds?: string[] }) =>
+    request<BulkCommandResult>(`${V1}/commands/bulk`, {
+      method: "POST",
+      body: { ...body, durationSeconds: body.durationSeconds ?? null, cropIds: body.cropIds ?? null },
+    }),
+};
+
+export const overviewApi = {
+  get: () => request<Overview>(`${V1}/overview`),
+  series: (metric: MetricKey, hours: number) =>
+    request<MetricSeries>(`${V1}/overview/series?metric=${metric}&hours=${hours}`),
+  fleet: () => request<Fleet>(`${V1}/overview/fleet`),
 };
 
 export const insightApi = {
