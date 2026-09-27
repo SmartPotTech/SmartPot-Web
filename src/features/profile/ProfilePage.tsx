@@ -125,7 +125,7 @@ export function ProfilePage() {
           <Button variant="secondary" onClick={() => setConfirmDelete(false)}>Cancelar</Button>
           <Button variant="danger" loading={busy === "delete"} onClick={() => void deleteAccount()}>Sí, eliminar todo</Button>
         </>}>
-        <p className="text-sm text-muted">Tus macetas quedarán desconectadas y perderás todo el historial.</p>
+        <p className="text-sm text-muted">Tus cultivos quedarán desconectados y perderás todo el historial.</p>
       </Dialog>
     </div>
   );
