@@ -1,4 +1,8 @@
 export type CropType = "TOMATO" | "LETTUCE" | "STRAWBERRY" | "BASIL" | "SPINACH" | "PEPPER";
+/** Real: un dispositivo con el firmware (ESP32 físico o Wokwi). Virtual: lo simula SmartPot. No cambia tras crearlo. */
+export type CropKind = "REAL" | "VIRTUAL";
+/** Forma del sistema hidropónico: maceta, tubos NFT, torre vertical o balsa flotante. */
+export type CropForm = "POT" | "NFT" | "TOWER" | "RAFT";
 export type ActuatorType = "WATER_PUMP" | "UV_LIGHT" | "FAN" | "HUMIDIFIER" | "NUTRIENT_DOSER" | "PH_DOSER";
 export type CommandAction = "ACTIVATE" | "DEACTIVATE";
 export type CommandStatus = "PENDING" | "SENT" | "EXECUTED" | "FAILED" | "EXPIRED";
@@ -41,6 +45,8 @@ export interface Crop {
   id: string;
   name: string;
   type: CropType;
+  kind: CropKind;
+  form: CropForm;
   automationEnabled: boolean;
   device: { online: boolean; lastSeenAt: string | null; keyRotatedAt: string | null };
   health: CropHealth | null;
@@ -61,7 +67,17 @@ export interface DeviceCredentials {
 
 export interface CropCreated {
   crop: Crop;
-  device: DeviceCredentials;
+  /** Solo en los cultivos reales: la clave se muestra esta única vez. */
+  device?: DeviceCredentials | null;
+}
+
+export interface CropCreateRequest {
+  name: string;
+  type: CropType;
+  kind: CropKind;
+  form: CropForm;
+  /** Solo para los virtuales: cómo arranca la simulación. */
+  virtual?: VirtualDeviceRequest;
 }
 
 export interface Actuator {
