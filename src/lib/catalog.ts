@@ -1,4 +1,4 @@
-import type { ActuatorType, CommandAction, CommandStatus, CropType, HealthLevel, MetricKey } from "./api/types";
+import type { ActuatorType, CommandAction, CommandStatus, CropForm, CropKind, CropType, HealthLevel, MetricKey } from "./api/types";
 
 export const CROP_TYPES: Record<CropType, { label: string; hint: string }> = {
   LETTUCE: { label: "Lechuga", hint: "Hoja de clima fresco, ideal para empezar." },
@@ -7,6 +7,19 @@ export const CROP_TYPES: Record<CropType, { label: string; hint: string }> = {
   BASIL: { label: "Albahaca", hint: "Aromática de clima cálido." },
   SPINACH: { label: "Espinaca", hint: "Hoja de clima fresco con mucho nitrógeno." },
   PEPPER: { label: "Pimentón", hint: "Fruto de clima cálido y luz intensa." },
+};
+
+export const CROP_KINDS: Record<CropKind, { label: string; hint: string }> = {
+  REAL: { label: "Real", hint: "Un ESP32 con el firmware de SmartPot, físico o simulado en Wokwi, con sus sensores y actuadores." },
+  VIRTUAL: { label: "Virtual", hint: "SmartPot lo simula por ti, siempre encendido: clima real, día y noche o valores a mano." },
+};
+
+/** phrase completa frases como «Lechuga en tubos NFT». */
+export const CROP_FORMS: Record<CropForm, { label: string; phrase: string; hint: string }> = {
+  POT: { label: "Maceta", phrase: "en maceta", hint: "Una planta en su maceta con depósito y riego por goteo." },
+  NFT: { label: "Tubos NFT", phrase: "en tubos NFT", hint: "Tubos horizontales por los que corre una película de solución nutritiva." },
+  TOWER: { label: "Torre vertical", phrase: "en torre vertical", hint: "Bolsillos escalonados; la bomba sube la solución y baja por gravedad." },
+  RAFT: { label: "Balsa flotante", phrase: "en balsa flotante", hint: "Plantas sobre una balsa que flota en un estanque de solución aireada." },
 };
 
 export const ACTUATORS: Record<ActuatorType, { label: string; defaultSeconds: number | null }> = {
