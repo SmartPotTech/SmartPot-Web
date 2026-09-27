@@ -12,7 +12,7 @@ export interface PickedLocation {
   longitude: number;
 }
 
-/** Elige el lugar cuyo clima copiará la maceta: búsqueda por nombre o la ubicación del dispositivo. */
+/** Elige el lugar cuyo clima seguirá el cultivo virtual: búsqueda por nombre o la ubicación del dispositivo. */
 export function LocationPicker({ value, onChange }: { value: PickedLocation | null; onChange: (place: PickedLocation) => void }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Place[] | null>(null);
