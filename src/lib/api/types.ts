@@ -131,8 +131,9 @@ export interface Forecast {
   slopePerHour: number;
   expectedIn3h: number;
   trend: "RISING" | "FALLING" | "STABLE";
-  hoursToLimit: number | null;
-  limit: "MIN" | "MAX" | null;
+  /** La API omite los campos vacíos: sin límite próximo llega ausente. */
+  hoursToLimit?: number | null;
+  limit?: "MIN" | "MAX" | null;
   confidence: number;
   message: string;
 }

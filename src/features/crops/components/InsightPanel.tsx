@@ -177,7 +177,7 @@ function Outlook({ insight }: { insight: Insight }) {
           <ul className="mt-3 space-y-2">
             {forecasts.map((forecast) => {
               const trend = TREND[forecast.trend];
-              const urgent = forecast.hoursToLimit !== null && forecast.hoursToLimit <= 3;
+              const urgent = forecast.hoursToLimit != null && forecast.hoursToLimit <= 3;
               return (
                 <li key={forecast.parameter} className={`flex gap-3 rounded-xl p-3 ${urgent ? "bg-sun-100" : "bg-surface"}`}>
                   <trend.icon size={18} className={`mt-0.5 shrink-0 ${urgent ? "text-clay-600" : "text-leaf-700"}`}
@@ -190,7 +190,7 @@ function Outlook({ insight }: { insight: Insight }) {
                       </span>
                     </p>
                     <p className="text-sm text-muted">{forecast.message}</p>
-                    {forecast.hoursToLimit !== null && (
+                    {forecast.hoursToLimit != null && (
                       <p className="mt-0.5 text-xs font-semibold text-clay-600">
                         Saldrá del rango ideal en {formatHoursAhead(forecast.hoursToLimit)}
                       </p>
