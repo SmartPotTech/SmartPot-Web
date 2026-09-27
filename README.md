@@ -129,6 +129,8 @@ docker run --rm -p 5173:8080 -e API_URL=http://localhost:8091 \
 
 `API_URL` se inyecta al arrancar en `/config.js` y en la CSP, así la misma imagen sirve para cualquier entorno. Imagen publicada: `ghcr.io/smartpottech/smartpot-web:latest`.
 
+Cada cambio en `main` pasa por el CI, publica la imagen en GHCR (y en Docker Hub como réplica cuando el repositorio tiene credenciales) y pide el despliegue al workflow central de [SmartPotTech/.github](https://github.com/SmartPotTech/.github), que actualiza producción de a uno y verifica `/health`.
+
 ### Íconos
 
 Tras cambiar los SVG de `public/icons` o `public/og-image.svg`:
@@ -136,6 +138,14 @@ Tras cambiar los SVG de `public/icons` o `public/og-image.svg`:
 ```bash
 pnpm icons
 ```
+
+## Documentación
+
+La PWA es la cara de la plataforma: todo lo que muestra viene de la API. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los superdiagramas muestran la plataforma completa en una sola imagen ampliable:
+
+- [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/images/superdiagrams/SmartPot_Super_07_User_Journey.svg): cada pantalla, las rutas de la API que llama y el servicio que responde
+- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/images/superdiagrams/SmartPot_Super_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA a la maceta
+- [Arquitectura completa](https://github.com/SmartPotTech/.github/blob/main/docs/images/superdiagrams/SmartPot_Super_01_Architecture.svg): dónde vive la PWA dentro de la plataforma
 
 ## Licencia
 
