@@ -11,7 +11,7 @@ import { useComparedCrops } from "./useComparedCrops";
 
 function crop(id: string, name: string, index: number | null): Crop {
   return {
-    id, name, type: "LETTUCE", automationEnabled: false, createdAt: "2026-09-26T00:00:00Z", latestReading: null,
+    id, name, type: "LETTUCE", kind: "REAL", form: "POT", automationEnabled: false, createdAt: "2026-09-26T00:00:00Z", latestReading: null,
     device: { online: true, lastSeenAt: null, keyRotatedAt: null },
     health: index === null ? null : { index, level: index >= 85 ? "EXCELLENT" : "POOR", label: index >= 85 ? "Excelente" : "En riesgo",
       evaluatedAt: "2026-09-26T00:00:00Z" },

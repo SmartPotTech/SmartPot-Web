@@ -31,7 +31,7 @@ export default function OverviewPage() {
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             <HeaderStat label="Salud promedio" value={totals.averageHealth == null ? "—" : Math.round(totals.averageHealth)}
               hint="de 100" />
-            <HeaderStat label="Macetas en línea" value={`${totals.online}/${totals.crops}`}
+            <HeaderStat label="Cultivos en línea" value={`${totals.online}/${totals.crops}`}
               hint={`${totals.automated} en modo automático`} />
             <HeaderStat label="Necesitan atención" value={totals.needsAttention} hint={`${totals.unreadAlerts} alertas sin leer`} />
             <HeaderStat label="Comandos en 24 h" value={totals.commandsLast24h} />
