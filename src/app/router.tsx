@@ -5,11 +5,14 @@ import { LoginPage } from "../features/auth/LoginPage";
 import { ForgotPasswordPage, ResetPasswordPage } from "../features/auth/PasswordRecoveryPages";
 import { RegisterPage } from "../features/auth/RegisterPage";
 import { RedirectIfAuthenticated, RequireAuth } from "../features/auth/RequireAuth";
-import { DashboardPage } from "../features/crops/DashboardPage";
+import { ActionsPage } from "../features/actions/ActionsPage";
+import { ControlPage } from "../features/control/ControlPage";
+import { CropsPage } from "../features/crops/CropsPage";
 import { LandingPage } from "../features/landing/LandingPage";
 import { NotificationsPage } from "../features/notifications/NotificationsPage";
 import { ProfilePage } from "../features/profile/ProfilePage";
 import { LazyCropDetailPage } from "./LazyCropDetailPage";
+import { LazyOverviewPage } from "./LazyOverviewPage";
 import { NotFoundPage } from "./NotFoundPage";
 
 export const router = createBrowserRouter([
@@ -28,11 +31,11 @@ export const router = createBrowserRouter([
     path: "app",
     element: <RequireAuth><AppShell /></RequireAuth>,
     children: [
-      { index: true, element: <DashboardPage /> },
-      {
-        path: "crops/:cropId",
-        element: <LazyCropDetailPage />,
-      },
+      { index: true, element: <LazyOverviewPage /> },
+      { path: "crops", element: <CropsPage /> },
+      { path: "crops/:cropId", element: <LazyCropDetailPage /> },
+      { path: "control", element: <ControlPage /> },
+      { path: "actions", element: <ActionsPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "profile", element: <ProfilePage /> },
     ],

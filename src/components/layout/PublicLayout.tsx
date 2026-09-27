@@ -15,7 +15,7 @@ export function PublicLayout() {
             <a href="/#ia" className="hidden rounded-lg px-3 py-2 text-muted hover:text-leaf-800 md:block">Inteligencia artificial</a>
             <a href="/#preguntas" className="hidden rounded-lg px-3 py-2 text-muted hover:text-leaf-800 md:block">Preguntas</a>
             {token ? (
-              <Link to="/app" className="rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">Ir a mis cultivos</Link>
+              <Link to="/app" className="rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">Ir a mi panel</Link>
             ) : (
               <>
                 <Link to="/login" className="rounded-xl px-3 py-2 text-leaf-800 hover:bg-leaf-50">Ingresar</Link>
