@@ -1,7 +1,7 @@
 import { Bot, ChevronRight, Sprout } from "lucide-react";
 import { Link } from "react-router";
 import { Badge } from "../../../components/ui/Feedback";
-import { CROP_TYPES, HEALTH } from "../../../lib/catalog";
+import { CROP_FORMS, CROP_TYPES, HEALTH } from "../../../lib/catalog";
 import { formatMetric, timeAgo } from "../../../lib/format";
 import type { Crop } from "../../../lib/api/types";
 
@@ -19,12 +19,12 @@ export function CropCard({ crop }: { crop: Crop }) {
           </span>
           <div className="min-w-0">
             <h3 className="truncate text-lg font-semibold">{crop.name}</h3>
-            <p className="text-sm text-leaf-700">{CROP_TYPES[crop.type].label}</p>
+            <p className="text-sm text-leaf-700">{CROP_TYPES[crop.type].label} · {CROP_FORMS[crop.form]?.label ?? "Maceta"}</p>
           </div>
         </div>
         <span className={`mt-1 flex items-center gap-1.5 text-xs font-semibold ${crop.device.online ? "text-leaf-700" : "text-muted"}`}>
           <span className={`h-2 w-2 rounded-full ${crop.device.online ? "animate-pulse bg-leaf-500" : "bg-line"}`} />
-          {crop.device.online ? "En línea" : "Desconectada"}
+          {crop.device.online ? "En línea" : "Desconectado"}
         </span>
       </div>
       <div className="flex flex-1 flex-col px-5 pb-5">
@@ -44,6 +44,7 @@ export function CropCard({ crop }: { crop: Crop }) {
         </div>
         <div className="mt-3 flex items-center justify-between gap-2">
           <div className="flex flex-wrap gap-1.5">
+            <Badge tone={crop.kind === "VIRTUAL" ? "info" : "success"}>{crop.kind === "VIRTUAL" ? "Virtual" : "Real"}</Badge>
             {health ? <Badge tone={HEALTH[health.level]?.tone ?? "neutral"}>Salud {Math.round(health.index)} · {health.label}</Badge>
               : <Badge>Sin evaluar</Badge>}
             {crop.automationEnabled && <Badge tone="info"><Bot size={12} /> Automático</Badge>}

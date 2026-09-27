@@ -7,13 +7,14 @@ import { Alert } from "../../../components/ui/Feedback";
 import { Dialog } from "../../../components/ui/Dialog";
 import { ApiError } from "../../../lib/api/client";
 import { cropApi } from "../../../lib/api/services";
-import { CROP_TYPES } from "../../../lib/catalog";
-import type { Crop, CropType } from "../../../lib/api/types";
+import { CROP_FORMS, CROP_KINDS, CROP_TYPES } from "../../../lib/catalog";
+import type { Crop, CropForm, CropType } from "../../../lib/api/types";
 
 export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: Crop) => void }) {
   const navigate = useNavigate();
   const [name, setName] = useState(crop.name);
   const [type, setType] = useState<CropType>(crop.type);
+  const [form, setForm] = useState<CropForm>(crop.form);
   const [message, setMessage] = useState<{ tone: "success" | "danger"; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -28,7 +29,7 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
     }
     setSaving(true);
     try {
-      onSaved(await cropApi.update(crop.id, { name: name.trim(), type }));
+      onSaved(await cropApi.update(crop.id, { name: name.trim(), type, form }));
       setMessage({ tone: "success", text: "Cambios guardados" });
     } catch (caught) {
       setMessage({ tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo guardar" });
@@ -59,12 +60,20 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
           hint="Cambiar la especie cambia los rangos ideales que usa el asistente.">
           {Object.entries(CROP_TYPES).map(([value, info]) => <option key={value} value={value}>{info.label}</option>)}
         </SelectField>
+        <SelectField label="Forma del cultivo" value={form} onChange={(event) => setForm(event.target.value as CropForm)}
+          hint={`${CROP_FORMS[form].hint} Cambia cómo se ilustra en Cultivo en vivo.`}>
+          {Object.entries(CROP_FORMS).map(([value, info]) => <option key={value} value={value}>{info.label}</option>)}
+        </SelectField>
+        <div className="rounded-xl bg-surface px-3 py-2 text-sm">
+          <p><span className="font-semibold">Tipo: {CROP_KINDS[crop.kind].label}.</span> {CROP_KINDS[crop.kind].hint}</p>
+          <p className="mt-0.5 text-xs text-muted">No se puede cambiar: para pasar de real a virtual, o al revés, crea otro cultivo.</p>
+        </div>
         <Button type="submit" icon={<Save size={16} />} loading={saving}>Guardar cambios</Button>
       </form>
 
       <section className="card border-danger-500/30 p-5">
         <h3 className="font-semibold text-danger-600">Eliminar cultivo</h3>
-        <p className="mt-1 text-sm text-muted">Se borran sus lecturas, comandos y actuadores, y la clave de la maceta deja de funcionar.</p>
+        <p className="mt-1 text-sm text-muted">Se borran sus lecturas, comandos y actuadores; la clave del dispositivo deja de funcionar y, si es virtual, se apaga su simulación.</p>
         <Button variant="danger" className="mt-4" icon={<Trash2 size={16} />} onClick={() => setOpen(true)}>Eliminar</Button>
       </section>
 
