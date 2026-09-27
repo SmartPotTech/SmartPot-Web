@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMetric, greeting, rangeStatus, timeAgo } from "./format";
+import { describeAction, formatDuration, formatHoursAhead, formatMetric, greeting, rangeStatus, timeAgo } from "./format";
 
 describe("formatMetric", () => {
   it("usa la unidad y los decimales de cada variable", () => {
@@ -37,5 +37,20 @@ describe("timeAgo y greeting", () => {
     expect(greeting(new Date(2026, 0, 1, 8))).toBe("Buenos días");
     expect(greeting(new Date(2026, 0, 1, 15))).toBe("Buenas tardes");
     expect(greeting(new Date(2026, 0, 1, 21))).toBe("Buenas noches");
+  });
+});
+
+describe("acciones y duraciones", () => {
+  it("describe las órdenes en lenguaje natural", () => {
+    expect(describeAction("WATER_PUMP", "ACTIVATE", 15)).toBe("Encender bomba de agua por 15 s");
+    expect(describeAction("UV_LIGHT", "ACTIVATE", 900)).toBe("Encender luz de cultivo por 15 min");
+    expect(describeAction("FAN", "DEACTIVATE", 600)).toBe("Apagar ventilador");
+  });
+
+  it("redondea las horas que faltan para salir del rango", () => {
+    expect(formatDuration(5400)).toBe("1,5 h");
+    expect(formatHoursAhead(0.66)).toBe("unos 40 min");
+    expect(formatHoursAhead(1.2)).toBe("alrededor de 1 h");
+    expect(formatHoursAhead(3.4)).toBe("unas 3 h");
   });
 });

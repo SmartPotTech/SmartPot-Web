@@ -1,5 +1,5 @@
-import { METRICS } from "./catalog";
-import type { MetricKey, ProfileRange } from "./api/types";
+import { ACTUATORS, METRICS } from "./catalog";
+import type { ActuatorType, CommandAction, MetricKey, ProfileRange } from "./api/types";
 
 const dateTime = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short" });
 const time = new Intl.DateTimeFormat("es-CO", { hour: "2-digit", minute: "2-digit" });
@@ -40,6 +40,26 @@ export function rangeStatus(value: number | null | undefined, range: ProfileRang
   if (value < range.min) return "low";
   if (value > range.max) return "high";
   return "ok";
+}
+
+export function formatDuration(seconds: number | null | undefined): string {
+  if (!seconds) return "";
+  if (seconds < 60) return `${seconds} s`;
+  if (seconds < 3600) return `${Math.round(seconds / 60)} min`;
+  return `${(seconds / 3600).toLocaleString("es-CO", { maximumFractionDigits: 1 })} h`;
+}
+
+/** «Encender bomba de agua por 15 s», «Apagar luz de cultivo». */
+export function describeAction(actuator: ActuatorType, action: CommandAction, durationSeconds?: number | null): string {
+  const verb = action === "ACTIVATE" ? "Encender" : "Apagar";
+  const duration = action === "ACTIVATE" && durationSeconds ? ` por ${formatDuration(durationSeconds)}` : "";
+  return `${verb} ${ACTUATORS[actuator].label.toLowerCase()}${duration}`;
+}
+
+/** Horas hasta un límite en lenguaje natural: «unos 40 min», «unas 3 h». */
+export function formatHoursAhead(hours: number): string {
+  if (hours < 1) return `unos ${Math.max(5, Math.round((hours * 60) / 5) * 5)} min`;
+  return hours < 1.5 ? "alrededor de 1 h" : `unas ${Math.round(hours)} h`;
 }
 
 export function greeting(date: Date = new Date()): string {
