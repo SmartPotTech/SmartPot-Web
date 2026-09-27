@@ -1,10 +1,9 @@
-import { Check, Copy, Download } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { Alert } from "../../../components/ui/Feedback";
 import type { DeviceCredentials } from "../../../lib/api/types";
-import { firmwareConfig } from "../firmware";
 
-function CopyRow({ label, value, secret = false }: { label: string; value: string; secret?: boolean }) {
+export function CopyRow({ label, value, secret = false }: { label: string; value: string; secret?: boolean }) {
   const [copied, setCopied] = useState(false);
   return (
     <div>
@@ -24,7 +23,7 @@ function CopyRow({ label, value, secret = false }: { label: string; value: strin
   );
 }
 
-/** Datos de conexión de la maceta. La clave solo llega al crear el cultivo o al rotarla. */
+/** Datos de conexión del dispositivo. La clave solo llega al crear el cultivo o al rotarla. */
 export function CredentialsView({ credentials }: { credentials: DeviceCredentials }) {
   return (
     <div className="space-y-4">
@@ -39,15 +38,6 @@ export function CredentialsView({ credentials }: { credentials: DeviceCredential
       </div>
       {credentials.key && <CopyRow label="Clave del dispositivo" value={credentials.key} secret />}
       <CopyRow label="Tópico de telemetría" value={credentials.topics.telemetry} />
-      <details className="rounded-xl border border-line p-3 text-sm">
-        <summary className="cursor-pointer font-semibold">Configuración para el firmware (config.py)</summary>
-        <pre className="mt-2 overflow-x-auto rounded-lg bg-leaf-950 p-3 text-xs text-leaf-100">{firmwareConfig(credentials)}</pre>
-        {credentials.tls && (
-          <a href="/ca.crt" download className="mt-2 inline-flex items-center gap-1.5 font-semibold text-leaf-700">
-            <Download size={14} /> Descargar ca.crt (certificado del broker)
-          </a>
-        )}
-      </details>
     </div>
   );
 }
