@@ -29,7 +29,7 @@ export default function OverviewPage() {
           bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20"><Sprout size={18} /> Ver cultivos</Link>}>
         {totals && totals.crops > 0 && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <HeaderStat label="Salud promedio" value={totals.averageHealth === null ? "—" : Math.round(totals.averageHealth)}
+            <HeaderStat label="Salud promedio" value={totals.averageHealth == null ? "—" : Math.round(totals.averageHealth)}
               hint="de 100" />
             <HeaderStat label="Macetas en línea" value={`${totals.online}/${totals.crops}`}
               hint={`${totals.automated} en modo automático`} />

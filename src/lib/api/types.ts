@@ -177,7 +177,8 @@ export interface Overview {
     crops: number;
     online: number;
     automated: number;
-    averageHealth: number | null;
+    /** Ausente si ningún cultivo tiene evaluación: la API omite los campos vacíos. */
+    averageHealth?: number | null;
     needsAttention: number;
     unreadAlerts: number;
     commandsLast24h: number;
@@ -197,8 +198,8 @@ export interface FleetAction extends SuggestedAction {
 }
 
 export interface Fleet {
-  averageHealth: number | null;
-  crops: { id: string; name: string; cropType: CropType; rank: number | null; health: InsightHealth | null;
+  averageHealth?: number | null;
+  crops: { id: string; name: string; cropType: CropType; rank?: number | null; health?: InsightHealth | null;
     issues: string[] }[];
   sharedIssues: { parameter: MetricKey; status: "LOW" | "HIGH"; cropIds: string[]; share: number; message: string }[];
   groups: { label: string; cropIds: string[]; description: string }[];
