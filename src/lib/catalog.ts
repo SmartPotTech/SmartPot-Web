@@ -1,4 +1,4 @@
-import type { ActuatorType, CommandStatus, CropType, HealthLevel, MetricKey } from "./api/types";
+import type { ActuatorType, CommandAction, CommandStatus, CropType, HealthLevel, MetricKey } from "./api/types";
 
 export const CROP_TYPES: Record<CropType, { label: string; hint: string }> = {
   LETTUCE: { label: "Lechuga", hint: "Hoja de clima fresco, ideal para empezar." },
@@ -36,6 +36,25 @@ export const METRICS: Record<MetricKey, MetricInfo> = {
 };
 
 export const PRIMARY_METRICS: MetricKey[] = ["temperature", "humidity", "soilMoisture", "brightness", "ph", "tds"];
+
+/**
+ * Un color por cultivo en las comparativas, en orden fijo y nunca reciclado. Tonos de la marca más un
+ * violeta solo para gráficos; el orden está validado para daltonismo (protan, deutan) y contraste entre vecinos.
+ */
+export const CROP_COLORS = ["#009A64", "#2D9CDB", "#D9734E", "#1F6FA0", "#C98D12", "#067A52", "#7A5AC8", "#B85A38"];
+
+/** Máximo de cultivos en un mismo gráfico comparativo: uno por color de la paleta. */
+export const MAX_COMPARED = CROP_COLORS.length;
+
+/** Órdenes frecuentes para aplicar a varios cultivos a la vez. */
+export const QUICK_ACTIONS: { label: string; actuatorType: ActuatorType; action: CommandAction;
+  durationSeconds: number | null }[] = [
+  { label: "Regar 15 s", actuatorType: "WATER_PUMP", action: "ACTIVATE", durationSeconds: 15 },
+  { label: "Ventilar 10 min", actuatorType: "FAN", action: "ACTIVATE", durationSeconds: 600 },
+  { label: "Luz 15 min", actuatorType: "UV_LIGHT", action: "ACTIVATE", durationSeconds: 900 },
+  { label: "Apagar luces", actuatorType: "UV_LIGHT", action: "DEACTIVATE", durationSeconds: null },
+  { label: "Apagar ventiladores", actuatorType: "FAN", action: "DEACTIVATE", durationSeconds: null },
+];
 
 export const COMMAND_STATUS: Record<CommandStatus, { label: string; tone: Tone }> = {
   PENDING: { label: "Pendiente", tone: "neutral" },
