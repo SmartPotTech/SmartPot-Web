@@ -141,11 +141,11 @@ pnpm icons
 
 ## Documentación
 
-La PWA es la cara de la plataforma: todo lo que muestra viene de la API. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los superdiagramas muestran la plataforma completa en una sola imagen ampliable:
+La PWA es la cara de la plataforma: todo lo que muestra viene de la API. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma completa en una sola imagen ampliable:
 
-- [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/images/superdiagrams/SmartPot_Super_07_User_Journey.svg): cada pantalla, las rutas de la API que llama y el servicio que responde
-- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/images/superdiagrams/SmartPot_Super_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA a la maceta
-- [Arquitectura completa](https://github.com/SmartPotTech/.github/blob/main/docs/images/superdiagrams/SmartPot_Super_01_Architecture.svg): dónde vive la PWA dentro de la plataforma
+- [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_07_User_Journey.svg): cada pantalla, las rutas de la API que llama y el servicio que responde
+- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA a la maceta
+- [Arquitectura completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_01_Architecture.svg): dónde vive la PWA dentro de la plataforma
 
 ## Licencia
 
