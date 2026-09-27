@@ -2,11 +2,11 @@
 export const FAQ = [
   {
     question: "¿Qué es SmartPot?",
-    answer: "Es una plataforma abierta para monitorear y automatizar cultivos hidropónicos. Una maceta con ESP32 envía sus lecturas por MQTT y la aplicación las muestra, las analiza con inteligencia artificial y puede controlar la bomba, la luz y el ventilador.",
+    answer: "Es una plataforma abierta para monitorear y automatizar cultivos hidropónicos: en maceta, tubos NFT, torre vertical o balsa flotante. Un ESP32 envía sus lecturas por MQTT, o SmartPot las simula en un cultivo virtual, y la aplicación las muestra en vivo, las analiza con inteligencia artificial y controla la bomba, la luz, el ventilador, el humidificador y los dosificadores.",
   },
   {
-    question: "¿Necesito una maceta física?",
-    answer: "No. Puedes usar la simulación de Wokwi con el mismo firmware, o conectar una placa ESP32 con sensores reales. En ambos casos basta con el id del cultivo y la clave del dispositivo.",
+    question: "¿Necesito hardware?",
+    answer: "No. Puedes crear un cultivo virtual que SmartPot simula por ti, o uno real con el mismo firmware simulado en Wokwi o grabado en una placa ESP32 con sensores. Al crearlo eliges real o virtual, y eso no cambia después.",
   },
   {
     question: "¿Qué cultivos soporta?",
@@ -17,8 +17,8 @@ export const FAQ = [
     answer: "Combina un sistema experto con reglas de agronomía, lógica difusa para calcular un índice de salud, modelos de aprendizaje automático y un agente reactivo. Cada recomendación muestra las reglas y la certeza que la respaldan.",
   },
   {
-    question: "¿Es seguro conectar mi maceta?",
-    answer: "Sí. La conexión va cifrada con TLS, cada maceta tiene su propia clave y el servidor solo le permite publicar y recibir mensajes de su propio cultivo.",
+    question: "¿Es seguro conectar mi dispositivo?",
+    answer: "Sí. La conexión va cifrada con TLS, cada cultivo tiene su propia clave de dispositivo y el servidor solo le permite publicar y recibir mensajes de su propio cultivo.",
   },
   {
     question: "¿Cuánto cuesta?",
