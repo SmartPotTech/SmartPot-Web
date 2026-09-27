@@ -21,7 +21,9 @@
     { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Mis cultivos", "url": "/app", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Panel general", "url": "/app", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Mis cultivos", "url": "/app/crops", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Control general", "url": "/app/control", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
     { "name": "Alertas", "url": "/app/notifications", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }
