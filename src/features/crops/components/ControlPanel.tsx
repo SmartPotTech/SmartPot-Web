@@ -45,7 +45,7 @@ export function ControlPanel({ crop, actuators, commands, onAutomation, onChange
           <div>
             <h3 className="font-semibold">Modo automático</h3>
             <p className="text-sm text-muted">
-              El agente de IA ejecuta sus recomendaciones sobre los actuadores de esta maceta, con una pausa de 10 minutos
+              El agente de IA ejecuta sus recomendaciones sobre los actuadores de este cultivo, con una pausa de 10 minutos
               entre acciones del mismo actuador.
             </p>
           </div>
@@ -56,8 +56,8 @@ export function ControlPanel({ crop, actuators, commands, onAutomation, onChange
 
       {error && <Alert tone="danger">{error}</Alert>}
       {!crop.device.online && (
-        <Alert tone="warning" title="La maceta está desconectada">
-          Los comandos se envían, pero no se ejecutarán hasta que la maceta vuelva a conectarse.
+        <Alert tone="warning" title="El cultivo está desconectado">
+          Los comandos se envían, pero no se ejecutarán hasta que {crop.kind === "VIRTUAL" ? "la simulación" : "el dispositivo"} vuelva a conectarse.
         </Alert>
       )}
 

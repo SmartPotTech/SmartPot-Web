@@ -8,6 +8,7 @@ import { ApiError } from "../../../lib/api/client";
 import { cropApi } from "../../../lib/api/services";
 import { formatDateTime, timeAgo } from "../../../lib/format";
 import type { Crop, DeviceCredentials } from "../../../lib/api/types";
+import { ConnectionGuide } from "./ConnectionGuide";
 import { CredentialsView } from "./CredentialsView";
 
 export function DevicePanel({ crop }: { crop: Crop }) {
@@ -39,16 +40,19 @@ export function DevicePanel({ crop }: { crop: Crop }) {
           {crop.device.online ? <Wifi size={22} /> : <WifiOff size={22} />}
         </div>
         <div>
-          <p className="font-semibold">{crop.device.online ? "Maceta en línea" : "Maceta desconectada"}</p>
+          <p className="font-semibold">{crop.device.online ? "Dispositivo en línea" : "Dispositivo desconectado"}</p>
           <p className="text-sm text-muted">Última señal {timeAgo(crop.device.lastSeenAt)}</p>
         </div>
       </section>
 
       <section className="card p-5">
-        <h3 className="font-semibold">Conexión MQTT</h3>
-        <p className="mt-1 text-sm text-muted">Usa estos datos en el firmware de la maceta o en el simulador.</p>
+        <h3 className="font-semibold">Cómo conectarlo</h3>
+        <p className="mt-1 text-sm text-muted">
+          Un cultivo real recibe sus lecturas de un ESP32 con el firmware de SmartPot, físico o simulado en Wokwi. Los
+          dos usan estos datos; la clave solo se muestra al crear el cultivo o al generar una nueva.
+        </p>
         <div className="mt-4">
-          {device.data ? <CredentialsView credentials={device.data} />
+          {device.data ? <ConnectionGuide credentials={device.data} />
             : device.error ? <Alert tone="danger">{device.error}</Alert>
               : <p className="text-sm text-muted">Cargando…</p>}
         </div>
@@ -69,7 +73,7 @@ export function DevicePanel({ crop }: { crop: Crop }) {
         </>}>
         {error && <div className="mb-3"><Alert tone="danger">{error}</Alert></div>}
         <p className="text-sm text-muted">
-          La clave actual deja de funcionar y la maceta se desconecta hasta que la configures con la nueva.
+          La clave actual deja de funcionar y el dispositivo se desconecta hasta que lo configures con la nueva.
         </p>
       </Dialog>
 
