@@ -10,6 +10,7 @@ import { userApi } from "../../lib/api/services";
 import { formatDateTime } from "../../lib/format";
 import { useAuth } from "../auth/AuthContext";
 import { validateName, validatePassword } from "../auth/validation";
+import { NotificationChannels } from "./NotificationChannels";
 
 type Message = { tone: "success" | "danger"; text: string } | null;
 
@@ -90,6 +91,8 @@ export function ProfilePage() {
         </div>
         <Button type="submit" icon={<Save size={16} />} loading={busy === "profile"}>Guardar</Button>
       </form>
+
+      <NotificationChannels />
 
       <form onSubmit={changePassword} className="card space-y-4 p-5" noValidate>
         <h2 className="text-lg font-semibold">Cambiar contraseña</h2>
