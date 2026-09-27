@@ -4,6 +4,8 @@ import type {
   ActuatorType,
   AppNotification,
   AuthResponse,
+  ChannelLink,
+  ChannelOption,
   Command,
   CommandAction,
   Crop,
@@ -14,13 +16,19 @@ import type {
   BulkCommandResult,
   Fleet,
   Insight,
+  LearningStatus,
+  LinkCode,
   Measures,
   MetricKey,
   MetricSeries,
+  NotificationType,
   Overview,
+  Place,
   Reading,
   ReadingSummary,
   User,
+  VirtualDevice,
+  VirtualDeviceRequest,
 } from "./types";
 
 const V1 = "/api/v1";
@@ -109,6 +117,24 @@ export const overviewApi = {
 
 export const insightApi = {
   get: (cropId: string) => request<Insight>(`${V1}/crops/${cropId}/insights`),
+  learning: () => request<LearningStatus>(`${V1}/ai/learning`),
+};
+
+export const channelApi = {
+  list: () => request<ChannelOption[]>(`${V1}/channels`),
+  link: (type: "telegram") => request<LinkCode>(`${V1}/channels/${type}/link`, { method: "POST" }),
+  update: (linkId: string, body: { enabled?: boolean; events?: NotificationType[] }) =>
+    request<ChannelLink>(`${V1}/channels/links/${linkId}`, { method: "PUT", body }),
+  test: (linkId: string) => request<void>(`${V1}/channels/links/${linkId}/test`, { method: "POST" }),
+  unlink: (linkId: string) => request<void>(`${V1}/channels/links/${linkId}`, { method: "DELETE" }),
+};
+
+export const virtualDeviceApi = {
+  get: (cropId: string) => request<VirtualDevice>(`${V1}/crops/${cropId}/virtual-device`),
+  configure: (cropId: string, body: VirtualDeviceRequest) =>
+    request<VirtualDevice>(`${V1}/crops/${cropId}/virtual-device`, { method: "PUT", body }),
+  stop: (cropId: string) => request<void>(`${V1}/crops/${cropId}/virtual-device`, { method: "DELETE" }),
+  places: (query: string) => request<Place[]>(`${V1}/virtual-devices/places?q=${encodeURIComponent(query)}`),
 };
 
 export const notificationApi = {
