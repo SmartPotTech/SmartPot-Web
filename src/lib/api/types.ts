@@ -125,9 +125,36 @@ export interface CropProfile {
   ranges: Partial<Record<MetricKey, ProfileRange>>;
 }
 
+export interface Forecast {
+  parameter: MetricKey;
+  current: number;
+  slopePerHour: number;
+  expectedIn3h: number;
+  trend: "RISING" | "FALLING" | "STABLE";
+  hoursToLimit: number | null;
+  limit: "MIN" | "MAX" | null;
+  confidence: number;
+  message: string;
+}
+
+export interface InsightHealth {
+  index: number;
+  level: HealthLevel;
+  label: string;
+  /** Salud de 0 a 100 de cada variable: explica de dónde sale el índice. */
+  byParameter?: Partial<Record<MetricKey, number>>;
+}
+
+export interface SuggestedAction {
+  actuator: ActuatorType;
+  action: CommandAction;
+  durationSeconds: number | null;
+  reason: string;
+}
+
 export interface Insight {
   cropType: CropType;
-  health: { index: number; level: HealthLevel; label: string };
+  health: InsightHealth;
   diagnosis: {
     parameter: MetricKey;
     value: number;
@@ -138,7 +165,50 @@ export interface Insight {
   }[];
   conclusions: { rule: string; title: string; message: string; certainty: number }[];
   predictions: { name: string; label: string; probability: number; model: string }[];
-  actions: { actuator: ActuatorType; action: CommandAction; durationSeconds: number | null; reason: string }[];
+  actions: SuggestedAction[];
+  forecasts?: Forecast[];
   summary: string;
   evaluatedAt: string;
+}
+
+export interface Overview {
+  totals: {
+    crops: number;
+    online: number;
+    automated: number;
+    averageHealth: number | null;
+    needsAttention: number;
+    unreadAlerts: number;
+    commandsLast24h: number;
+  };
+  crops: Crop[];
+}
+
+export interface MetricSeries {
+  metric: MetricKey;
+  hours: number;
+  bucketMinutes: number;
+  series: { cropId: string; name: string; type: CropType; points: { time: string; value: number }[] }[];
+}
+
+export interface FleetAction extends SuggestedAction {
+  cropIds: string[];
+}
+
+export interface Fleet {
+  averageHealth: number | null;
+  crops: { id: string; name: string; cropType: CropType; rank: number | null; health: InsightHealth | null;
+    issues: string[] }[];
+  sharedIssues: { parameter: MetricKey; status: "LOW" | "HIGH"; cropIds: string[]; share: number; message: string }[];
+  groups: { label: string; cropIds: string[]; description: string }[];
+  actions: FleetAction[];
+  summary: string;
+}
+
+export interface BulkCommandResult {
+  sent: number;
+  skipped: number;
+  failed: number;
+  results: { cropId: string; cropName: string; status: "SENT" | "FAILED" | "SKIPPED"; commandId: string | null;
+    message: string | null }[];
 }
