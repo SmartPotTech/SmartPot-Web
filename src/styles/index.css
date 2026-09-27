@@ -74,14 +74,31 @@
   }
 }
 
-/* Escena del clima de la maceta virtual: movimiento suave, apagado si se prefiere menos movimiento. */
-.weather-scene .scene-rain {
+/* Escena del cultivo: agua, aire, bruma, gotas y luz en movimiento suave; quieta si se prefiere menos movimiento. */
+.crop-scene .scene-rain {
   animation: scene-fall 1.4s linear infinite;
 }
-.weather-scene .scene-fan {
+.crop-scene .scene-spin {
   transform-box: fill-box;
   transform-origin: center;
-  animation: scene-spin 1s linear infinite;
+  animation: scene-spin 0.8s linear infinite;
+}
+.crop-scene .scene-flow {
+  animation: scene-flow 0.9s linear infinite;
+}
+.crop-scene .scene-drop {
+  animation: scene-drop 1s ease-in infinite;
+}
+.crop-scene .scene-bubble {
+  animation: scene-bubble 1.6s ease-out infinite;
+}
+.crop-scene .scene-mist {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: scene-mist 1.8s ease-out infinite;
+}
+.crop-scene .scene-glow {
+  animation: scene-glow 2.4s ease-in-out infinite;
 }
 @keyframes scene-fall {
   from { transform: translateY(-6px); opacity: 0.2; }
@@ -91,9 +108,26 @@
 @keyframes scene-spin {
   to { transform: rotate(360deg); }
 }
+@keyframes scene-flow {
+  to { stroke-dashoffset: -22; }
+}
+@keyframes scene-drop {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(12px); opacity: 0; }
+}
+@keyframes scene-bubble {
+  from { transform: translateY(0); opacity: 0.9; }
+  to { transform: translateY(-38px); opacity: 0; }
+}
+@keyframes scene-mist {
+  from { transform: translateY(0) scale(0.7); opacity: 0.9; }
+  to { transform: translateY(-30px) scale(1.4); opacity: 0; }
+}
+@keyframes scene-glow {
+  50% { opacity: 0.75; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .weather-scene .scene-rain,
-  .weather-scene .scene-fan {
+  .crop-scene [class^="scene-"] {
     animation: none;
   }
 }
