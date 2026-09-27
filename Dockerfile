@@ -12,7 +12,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 
-FROM nginxinc/nginx-unprivileged:1.30.5-alpine
+FROM nginxinc/nginx-unprivileged:1.31.6-alpine
 
 LABEL org.opencontainers.image.title="SmartPot Web" \
       org.opencontainers.image.description="PWA de SmartPot servida con nginx sin privilegios" \
