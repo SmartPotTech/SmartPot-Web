@@ -14,7 +14,7 @@ export function LearningCard({ learning }: { learning: Learning }) {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h3 id="learning-title" className="flex items-center gap-2 font-semibold">
-            <GraduationCap size={18} className="text-leaf-700" /> Aprendido de macetas reales
+            <GraduationCap size={18} className="text-leaf-700" /> Aprendido de cultivos reales
           </h3>
           <p className="text-sm text-muted">{learning.message}</p>
         </div>

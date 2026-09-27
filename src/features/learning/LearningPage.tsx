@@ -59,7 +59,7 @@ export function LearningPage() {
       {status.error && <Alert tone="info" title="El asistente no está disponible">{status.error}</Alert>}
       {status.loading && !data ? <PageLoader /> : data && data.cropTypes.length === 0 ? (
         <EmptyState icon={<Database size={24} />} title="Aún no hay lecturas reales">
-          Conecta una maceta, física o virtual, y el asistente empezará a aprender de sus lecturas.
+          Conecta un cultivo real y el asistente empezará a aprender de sus lecturas.
         </EmptyState>
       ) : (
         data?.cropTypes.map((item) => <SpeciesLearning key={item.cropType} item={item} />)
@@ -75,7 +75,7 @@ function SpeciesLearning({ item }: { item: CropTypeLearning }) {
         <div>
           <h2 id={`species-${item.cropType}`} className="text-lg font-semibold">{item.name}</h2>
           <p className="text-sm text-muted">
-            {plural(item.readings, "lectura", "lecturas")} de {plural(item.crops, "maceta", "macetas")}
+            {plural(item.readings, "lectura", "lecturas")} de {plural(item.crops, "cultivo", "cultivos")}
             {item.trainedAt
               ? ` · entrenado ${timeAgo(item.trainedAt)} · ${plural(item.newSinceTraining, "lectura nueva", "lecturas nuevas")} desde entonces`
               : " · aún sin entrenar"}
@@ -128,7 +128,7 @@ function SpeciesLearning({ item }: { item: CropTypeLearning }) {
               <h3 className="font-semibold">Lecturas poco habituales</h3>
               <p className="mt-1 text-muted">
                 Un Isolation Forest entrenado con {item.anomaly.samples.toLocaleString("es-CO")} lecturas reales marca como poco
-                habitual el {Math.round(item.anomaly.contamination * 100)} % más raro. Si una maceta cae ahí sin que nada cambie,
+                habitual el {Math.round(item.anomaly.contamination * 100)} % más raro. Si un cultivo cae ahí sin que nada cambie,
                 conviene revisar los sensores.
               </p>
             </div>
