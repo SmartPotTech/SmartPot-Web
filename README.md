@@ -4,15 +4,18 @@
 
 [![Node.js CI](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/node.js.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/node.js.yml)
 [![CodeQL Advanced](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/codeql.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/codeql.yml)
-[![Publish Package to GHCR](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/packaging.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/packaging.yml)
+[![Publish Docker Images](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/packaging.yml/badge.svg)](https://github.com/SmartPotTech/SmartPot-Web/actions/workflows/packaging.yml)
 
 ## Descripción
 
 SmartPot-Web es la **aplicación web progresiva (PWA)** de SmartPot, publicada en [smartpot.app](https://smartpot.app). Se instala en Android, iOS y escritorio, y permite:
 
+- Ver todos los cultivos juntos en el **panel general**: salud de cada uno, comparación de una variable entre cultivos (6 h, 24 h o 7 días), tabla con la última lectura frente al rango ideal y el análisis del asistente sobre toda la cuenta (problemas compartidos del entorno, grupos con condiciones parecidas y acciones en bloque).
+- Usar el **control general** para activar el modo automático o enviar la misma orden (regar, ventilar, luz) a varias macetas a la vez.
+- Revisar las **acciones**: las que sugiere el asistente para varios cultivos y el historial de todas las órdenes, filtrado por estado y origen.
 - Crear cultivos de seis especies y conectar su maceta con las credenciales MQTT que entrega la API.
 - Ver las lecturas en tiempo real, comparadas con el rango ideal de la especie, e historiales de 6 h, 24 h o 7 días exportables a CSV.
-- Consultar al **asistente de IA**: índice de salud, diagnóstico por variable, conclusiones del sistema experto, predicciones de los modelos y acciones sugeridas.
+- Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico, conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas y acciones sugeridas.
 - Encender y apagar la bomba, la luz de cultivo y el ventilador, y activar el **modo automático** del agente.
 - Recibir alertas del cultivo, del dispositivo y del asistente.
 
@@ -39,7 +42,10 @@ SmartPot-Web/
 │   ├── config/env.ts           # URL de la API en tiempo de ejecución
 │   ├── features/
 │   │   ├── auth/               # Sesión, ingreso, registro y recuperación
-│   │   ├── crops/              # Panel, detalle, asistente, control, dispositivo y ajustes
+│   │   ├── overview/           # Panel general: ranking, comparativas y análisis de la IA
+│   ├── control/            # Control general: modo automático y órdenes en bloque
+│   ├── actions/            # Acciones sugeridas e historial de todos los cultivos
+│   ├── crops/              # Lista y detalle: resumen, asistente, control, historial, dispositivo y ajustes
 │   │   ├── landing/            # Página pública y preguntas frecuentes
 │   │   ├── notifications/      # Alertas
 │   │   ├── profile/            # Perfil, contraseña y borrado de cuenta
@@ -56,7 +62,7 @@ SmartPot-Web/
 
 | Token | Color | Uso |
 | --- | --- | --- |
-| `leaf-900` | `#0B3D2B` | Fondos de marca, color del tema de la PWA |
+| `leaf-900` | `#0B3D2B` | Barra lateral, navegación, encabezados y color del tema de la PWA |
 | `leaf-700` | `#067A52` | Acciones principales |
 | `leaf-500` | `#00B074` | Verde de marca |
 | `water-500` | `#2D9CDB` | Agua, información y señal del logo |
@@ -66,6 +72,8 @@ SmartPot-Web/
 | `ink` / `muted` / `line` / `surface` | `#17261F` / `#5B6B63` / `#D5E3DC` / `#F2F7F4` | Texto, bordes y superficies |
 
 Tipografías: **Outfit** para títulos e **Inter** para el cuerpo, servidas desde la propia app (sin CDNs).
+
+Las comparativas entre cultivos usan una paleta categórica de 8 colores en orden fijo (tonos de la marca más un violeta solo para gráficos), validada para daltonismo y contraste entre vecinos. Cada cultivo conserva su color mientras siga en la comparación, y los gráficos van acompañados de leyenda y de la tabla de últimas lecturas.
 
 ## SEO y PWA
 
