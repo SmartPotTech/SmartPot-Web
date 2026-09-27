@@ -6,6 +6,7 @@ import { METRICS } from "../../../lib/catalog";
 import { describeAction, formatHoursAhead, formatMetric, timeAgo } from "../../../lib/format";
 import type { Actuator, Insight } from "../../../lib/api/types";
 import { HealthGauge } from "./HealthGauge";
+import { LearningCard } from "./LearningCard";
 
 interface InsightPanelProps {
   insight: Insight | undefined;
@@ -84,6 +85,8 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
 
       <Outlook insight={insight} />
 
+      {insight.learning && <LearningCard learning={insight.learning} />}
+
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="card p-5">
           <h3 className="font-semibold">Diagnóstico por variable</h3>
@@ -148,6 +151,7 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
           <p><strong className="text-ink">Sistema experto:</strong> compara cada lectura con los rangos ideales de la especie y encadena reglas de agronomía; la certeza indica qué tan confiable es cada conclusión.</p>
           <p><strong className="text-ink">Lógica difusa:</strong> mide qué tan lejos está cada variable de su rango y lo resume en el índice de salud, dando más peso al pH, la temperatura y el sustrato.</p>
           <p><strong className="text-ink">Aprendizaje automático:</strong> una regresión logística estima la necesidad de ventilar, una red neuronal la de corregir el pH y un Isolation Forest detecta lecturas atípicas que pueden ser fallas de sensor.</p>
+          <p><strong className="text-ink">Aprendizaje continuo:</strong> con las lecturas reales de todas las macetas de la especie aprende a anticipar riego y calor en la próxima hora, estima la humedad del sustrato y reconoce estados típicos y lecturas poco habituales. Se reentrena solo cuando llegan datos nuevos.</p>
           <p><strong className="text-ink">Agente:</strong> con el modo automático activo ejecuta estas acciones por su cuenta, con una pausa de 10 minutos entre acciones del mismo actuador.</p>
         </div>
       </details>
