@@ -70,12 +70,15 @@ describe("componentes del cultivo", () => {
       health: { ...INSIGHT.health, byParameter: { soilMoisture: 20, ph: 100 } },
       forecasts: [{ parameter: "soilMoisture", current: 64, slopePerHour: -6, expectedIn3h: 46, trend: "FALLING",
         hoursToLimit: 0.66, limit: "MIN", confidence: 1,
-        message: "La humedad del sustrato baja 6 % por hora: llegará al mínimo (60 %) en unos 40 minutos." }] };
+        message: "La humedad del sustrato baja 6 % por hora: llegará al mínimo (60 %) en unos 40 minutos." },
+      { parameter: "ph", current: 6.1, slopePerHour: 0, expectedIn3h: 6.1, trend: "STABLE", confidence: 1,
+        message: "El pH se mantiene estable." }] };
     render(<InsightPanel insight={withForecast} error={null} loading={false} actuators={[]}
       onRefresh={() => undefined} onRunAction={vi.fn()} />);
 
     expect(screen.getByText("Pronóstico de las próximas horas")).toBeInTheDocument();
     expect(screen.getByText("Saldrá del rango ideal en unos 40 min")).toBeInTheDocument();
+    expect(screen.getAllByText(/Saldrá del rango ideal/)).toHaveLength(1);
     expect(screen.getByText("De qué depende el índice")).toBeInTheDocument();
   });
 
