@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { Spinner } from "./Spinner";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "light";
 type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
@@ -9,6 +9,8 @@ const VARIANTS: Record<Variant, string> = {
   secondary: "border border-line bg-white text-ink hover:border-leaf-500 hover:text-leaf-800",
   ghost: "text-leaf-800 hover:bg-leaf-50",
   danger: "bg-danger-500 text-white hover:bg-danger-600 disabled:bg-danger-500/50",
+  /** Sobre fondos verdes oscuros (encabezados de página). */
+  light: "border border-white/25 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50",
 };
 
 const SIZES: Record<Size, string> = {
