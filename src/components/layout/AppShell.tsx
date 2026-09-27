@@ -1,4 +1,4 @@
-import { Bell, Download, LayoutDashboard, ListChecks, LogOut, SlidersHorizontal, Sprout, UserRound, WifiOff } from "lucide-react";
+import { Bell, Download, GraduationCap, LayoutDashboard, ListChecks, LogOut, SlidersHorizontal, Sprout, UserRound, WifiOff } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router";
 import { useAuth } from "../../features/auth/AuthContext";
 import { useInstallPrompt } from "../../features/pwa/pwa";
@@ -8,12 +8,15 @@ import { notificationApi } from "../../lib/api/services";
 import { Logo } from "../brand/Logo";
 
 const NAV = [
-  { to: "/app", label: "Panel", icon: LayoutDashboard, end: true },
-  { to: "/app/crops", label: "Cultivos", icon: Sprout, end: false },
-  { to: "/app/control", label: "Control", icon: SlidersHorizontal, end: false },
-  { to: "/app/actions", label: "Acciones", icon: ListChecks, end: false },
-  { to: "/app/notifications", label: "Alertas", icon: Bell, end: false },
+  { to: "/app", label: "Panel", icon: LayoutDashboard, end: true, mobile: true },
+  { to: "/app/crops", label: "Cultivos", icon: Sprout, end: false, mobile: true },
+  { to: "/app/control", label: "Control", icon: SlidersHorizontal, end: false, mobile: true },
+  { to: "/app/actions", label: "Acciones", icon: ListChecks, end: false, mobile: true },
+  { to: "/app/learning", label: "Aprendizaje", icon: GraduationCap, end: false, mobile: false },
+  { to: "/app/notifications", label: "Alertas", icon: Bell, end: false, mobile: true },
 ];
+// La barra inferior del móvil tiene cinco lugares; Aprendizaje se abre desde el asistente de cada cultivo.
+const MOBILE_NAV = NAV.filter((item) => item.mobile);
 
 function initials(name?: string, lastName?: string): string {
   return `${name?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase() || "SP";
@@ -94,7 +97,7 @@ export function AppShell() {
 
       <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 bg-leaf-900 pb-[env(safe-area-inset-bottom)] md:hidden"
         aria-label="Aplicación">
-        {NAV.map(({ to, label, icon: Icon, end }) => (
+        {MOBILE_NAV.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end}
             className={({ isActive }) => `relative flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold
               ${isActive ? "text-white" : "text-leaf-300/80"}`}>

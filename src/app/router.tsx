@@ -9,6 +9,7 @@ import { ActionsPage } from "../features/actions/ActionsPage";
 import { ControlPage } from "../features/control/ControlPage";
 import { CropsPage } from "../features/crops/CropsPage";
 import { LandingPage } from "../features/landing/LandingPage";
+import { LearningPage } from "../features/learning/LearningPage";
 import { NotificationsPage } from "../features/notifications/NotificationsPage";
 import { ProfilePage } from "../features/profile/ProfilePage";
 import { LazyCropDetailPage } from "./LazyCropDetailPage";
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { path: "crops/:cropId", element: <LazyCropDetailPage /> },
       { path: "control", element: <ControlPage /> },
       { path: "actions", element: <ActionsPage /> },
+      { path: "learning", element: <LearningPage /> },
       { path: "notifications", element: <NotificationsPage /> },
       { path: "profile", element: <ProfilePage /> },
     ],
