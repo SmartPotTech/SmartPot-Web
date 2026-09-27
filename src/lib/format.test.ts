@@ -37,6 +37,7 @@ describe("timeAgo y greeting", () => {
     expect(greeting(new Date(2026, 0, 1, 8))).toBe("Buenos días");
     expect(greeting(new Date(2026, 0, 1, 15))).toBe("Buenas tardes");
     expect(greeting(new Date(2026, 0, 1, 21))).toBe("Buenas noches");
+    expect(greeting(new Date(2026, 0, 1, 1))).toBe("Buenas noches");
   });
 });
 

@@ -64,6 +64,8 @@ export function formatHoursAhead(hours: number): string {
 
 export function greeting(date: Date = new Date()): string {
   const hour = date.getHours();
+  // De madrugada todavía se saluda con «buenas noches».
+  if (hour < 5) return "Buenas noches";
   if (hour < 12) return "Buenos días";
   if (hour < 19) return "Buenas tardes";
   return "Buenas noches";
