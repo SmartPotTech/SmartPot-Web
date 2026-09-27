@@ -9,7 +9,9 @@ import type {
   Command,
   CommandAction,
   Crop,
+  CropCreateRequest,
   CropCreated,
+  CropForm,
   CropProfile,
   CropType,
   DeviceCredentials,
@@ -55,8 +57,8 @@ export const userApi = {
 export const cropApi = {
   list: () => request<Crop[]>(`${V1}/crops`),
   get: (id: string) => request<Crop>(`${V1}/crops/${id}`),
-  create: (data: { name: string; type: CropType }) => request<CropCreated>(`${V1}/crops`, { method: "POST", body: data }),
-  update: (id: string, data: { name: string; type: CropType }) =>
+  create: (data: CropCreateRequest) => request<CropCreated>(`${V1}/crops`, { method: "POST", body: data }),
+  update: (id: string, data: { name: string; type: CropType; form: CropForm }) =>
     request<Crop>(`${V1}/crops/${id}`, { method: "PUT", body: data }),
   remove: (id: string) => request<void>(`${V1}/crops/${id}`, { method: "DELETE" }),
   setAutomation: (id: string, enabled: boolean) =>
@@ -133,7 +135,8 @@ export const virtualDeviceApi = {
   get: (cropId: string) => request<VirtualDevice>(`${V1}/crops/${cropId}/virtual-device`),
   configure: (cropId: string, body: VirtualDeviceRequest) =>
     request<VirtualDevice>(`${V1}/crops/${cropId}/virtual-device`, { method: "PUT", body }),
-  stop: (cropId: string) => request<void>(`${V1}/crops/${cropId}/virtual-device`, { method: "DELETE" }),
+  /** Deja de publicar lecturas y conserva la configuración; configure la reanuda. */
+  pause: (cropId: string) => request<void>(`${V1}/crops/${cropId}/virtual-device`, { method: "DELETE" }),
   places: (query: string) => request<Place[]>(`${V1}/virtual-devices/places?q=${encodeURIComponent(query)}`),
 };
 
