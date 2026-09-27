@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { SelectField, TextField } from "../../components/ui/Field";
+import { HeaderStat, PageHeader } from "../../components/layout/PageHeader";
 import { Alert, EmptyState } from "../../components/ui/Feedback";
 import { PageLoader } from "../../components/ui/Spinner";
 import { usePageMeta } from "../../hooks/usePageMeta";
@@ -17,7 +18,7 @@ import { useAuth } from "../auth/AuthContext";
 import { CropCard } from "./components/CropCard";
 import { CredentialsView } from "./components/CredentialsView";
 
-export function DashboardPage() {
+export function CropsPage() {
   usePageMeta("Mis cultivos");
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -56,24 +57,17 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm text-muted">{greeting()}, {user?.name}</p>
-          <h1 className="text-3xl font-bold">Mis cultivos</h1>
-        </div>
-        <Button icon={<Plus size={18} />} onClick={() => setCreating(true)}>Nuevo cultivo</Button>
-      </div>
-
-      {list.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
-          {[["Cultivos", list.length], ["En línea", online], ["Necesitan atención", attention]].map(([label, value]) => (
-            <div key={label} className="card p-4">
-              <p className="font-display text-2xl font-bold">{value}</p>
-              <p className="text-xs text-muted sm:text-sm">{label}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      <PageHeader eyebrow={`${greeting()}, ${user?.name ?? ""}`} title="Mis cultivos" icon={<Sprout size={24} />}
+        description="Cada maceta con sus lecturas, su asistente y su control. Entra a uno para ver el detalle."
+        actions={<Button variant="light" icon={<Plus size={18} />} onClick={() => setCreating(true)}>Nuevo cultivo</Button>}>
+        {list.length > 0 && (
+          <div className="grid grid-cols-3 gap-3">
+            <HeaderStat label="Cultivos" value={list.length} />
+            <HeaderStat label="En línea" value={online} />
+            <HeaderStat label="Necesitan atención" value={attention} />
+          </div>
+        )}
+      </PageHeader>
 
       {crops.error && <Alert tone="danger">{crops.error}</Alert>}
       {crops.loading && !crops.data ? <PageLoader /> : list.length === 0 && !crops.error ? (
