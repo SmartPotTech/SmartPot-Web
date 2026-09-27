@@ -65,6 +65,20 @@ describe("componentes del cultivo", () => {
     expect(screen.getByText("Todas las variables están en su rango ideal.")).toBeInTheDocument();
   });
 
+  it("InsightPanel muestra el pronóstico y de qué depende el índice", () => {
+    const withForecast: Insight = { ...INSIGHT, actions: [],
+      health: { ...INSIGHT.health, byParameter: { soilMoisture: 20, ph: 100 } },
+      forecasts: [{ parameter: "soilMoisture", current: 64, slopePerHour: -6, expectedIn3h: 46, trend: "FALLING",
+        hoursToLimit: 0.66, limit: "MIN", confidence: 1,
+        message: "La humedad del sustrato baja 6 % por hora: llegará al mínimo (60 %) en unos 40 minutos." }] };
+    render(<InsightPanel insight={withForecast} error={null} loading={false} actuators={[]}
+      onRefresh={() => undefined} onRunAction={vi.fn()} />);
+
+    expect(screen.getByText("Pronóstico de las próximas horas")).toBeInTheDocument();
+    expect(screen.getByText("Saldrá del rango ideal en unos 40 min")).toBeInTheDocument();
+    expect(screen.getByText("De qué depende el índice")).toBeInTheDocument();
+  });
+
   it("genera la configuración del firmware sin exponer claves ausentes", () => {
     const config = firmwareConfig({ host: "mqtt.smartpot.app", port: 8883, tls: true, username: "c1",
       topics: { telemetry: "t", commands: "c", commandAck: "a", status: "s" } });
