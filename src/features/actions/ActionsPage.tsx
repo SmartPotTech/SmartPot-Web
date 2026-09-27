@@ -99,7 +99,7 @@ export function ActionsPage() {
           {commands.error && <div className="mt-3"><Alert tone="danger">{commands.error}</Alert></div>}
           {commands.loading && !commands.data ? <PageLoader /> : history.length === 0 ? (
             <div className="mt-4"><EmptyState icon={<History size={24} />} title="Sin acciones">
-              Aquí aparecerán las órdenes enviadas a tus macetas, por ti o por el agente.
+              Aquí aparecerán las órdenes enviadas a tus cultivos, por ti o por el agente.
             </EmptyState></div>
           ) : (
             <ul className="mt-4 divide-y divide-line">

@@ -68,7 +68,7 @@ export function ControlPage() {
   return (
     <div className="space-y-6">
       <PageHeader eyebrow="Todos tus cultivos a la vez" title="Control general" icon={<SlidersHorizontal size={24} />}
-        description="Activa el modo automático o envía la misma orden a varias macetas sin entrar a cada una.">
+        description="Activa el modo automático o envía la misma orden a varios cultivos sin entrar a cada uno.">
         {list.length > 0 && (
           <div className="grid grid-cols-3 gap-3">
             <HeaderStat label="Cultivos" value={list.length} />
