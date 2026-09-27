@@ -7,10 +7,12 @@ interface DialogProps {
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Más ancho para guías y vistas previas. */
+  wide?: boolean;
 }
 
 /** Diálogo nativo (<dialog>): gestiona el foco, Escape y el fondo sin librerías. */
-export function Dialog({ open, title, onClose, children, footer }: DialogProps) {
+export function Dialog({ open, title, onClose, children, footer, wide = false }: DialogProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -29,8 +31,8 @@ export function Dialog({ open, title, onClose, children, footer }: DialogProps) 
         onClose();
       }}
       aria-labelledby="dialog-title"
-      className="m-auto w-[min(92vw,34rem)] rounded-[var(--radius-card)] border border-line bg-white p-0 text-ink
-        shadow-2xl backdrop:bg-leaf-950/50 backdrop:backdrop-blur-sm"
+      className={`m-auto ${wide ? "w-[min(94vw,46rem)]" : "w-[min(92vw,34rem)]"} rounded-[var(--radius-card)] border border-line bg-white p-0 text-ink
+        shadow-2xl backdrop:bg-leaf-950/50 backdrop:backdrop-blur-sm`}
     >
       {open && (
         <div className="flex max-h-[85vh] flex-col">
