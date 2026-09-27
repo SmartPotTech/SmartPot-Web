@@ -59,7 +59,7 @@ export default function CropDetailPage() {
   if (!crop.data) {
     return (
       <div className="space-y-4">
-        <Link to="/app" className="inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft size={16} /> Mis cultivos</Link>
+        <Link to="/app/crops" className="inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft size={16} /> Mis cultivos</Link>
         <Alert tone="danger">{crop.error ?? "El cultivo no existe"}</Alert>
       </div>
     );
@@ -87,7 +87,7 @@ export default function CropDetailPage() {
   return (
     <div className="space-y-6">
       <div>
-        <Link to="/app" className="inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft size={16} /> Mis cultivos</Link>
+        <Link to="/app/crops" className="inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft size={16} /> Mis cultivos</Link>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold">{current.name}</h1>

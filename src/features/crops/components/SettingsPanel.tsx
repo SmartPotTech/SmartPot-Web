@@ -41,7 +41,7 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
     setDeleting(true);
     try {
       await cropApi.remove(crop.id);
-      navigate("/app", { replace: true });
+      navigate("/app/crops", { replace: true });
     } catch (caught) {
       setMessage({ tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo eliminar" });
       setDeleting(false);
