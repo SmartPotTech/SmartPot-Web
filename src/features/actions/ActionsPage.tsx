@@ -1,4 +1,4 @@
-import { Bot, History, ListChecks, Sparkles, UserRound } from "lucide-react";
+import { AlertTriangle, Bot, History, ListChecks, Sparkles, UserRound } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { HeaderStat, PageHeader } from "../../components/layout/PageHeader";
@@ -58,6 +58,18 @@ export function ActionsPage() {
           {fleet.loading && !fleet.data ? <PageLoader /> : fleet.data && (
             <>
               <p className="mb-2 text-sm text-muted">{fleet.data.summary}</p>
+              {fleet.data.sharedIssues.length > 0 && (
+                <ul className="mb-4 space-y-2">
+                  {fleet.data.sharedIssues.map((issue) => (
+                    <li key={`${issue.parameter}-${issue.status}`} className="flex gap-2 rounded-xl bg-sun-100 p-3 text-sm">
+                      <AlertTriangle size={16} className="mt-0.5 shrink-0 text-clay-600" />
+                      <span>{issue.message}
+                        <span className="block text-xs text-muted">{issue.cropIds.map(cropName).join(", ")}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <FleetActionsList actions={fleet.data.actions} crops={crops.data ?? []}
                 onApplied={() => { void commands.reload(); void fleet.reload(); }} />
             </>
