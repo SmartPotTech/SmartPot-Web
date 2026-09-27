@@ -168,8 +168,144 @@ export interface Insight {
   predictions: { name: string; label: string; probability: number; model: string }[];
   actions: SuggestedAction[];
   forecasts?: Forecast[];
+  learning?: Learning | null;
   summary: string;
   evaluatedAt: string;
+}
+
+/** Lo aprendido de las lecturas reales de la especie; source BASE mientras no hay modelos entrenados. */
+export interface Learning {
+  source: "LEARNED" | "BASE";
+  readings: number;
+  trainedAt?: string | null;
+  message: string;
+  predictions?: { name: "needs_water" | "overheat"; label: string; probability: number; model: string;
+    metric: string; score?: number | null }[];
+  moisture?: { expectedIn1h: number; model: string; mae?: number | null } | null;
+  state?: { label: string; description: string; share: number } | null;
+  anomaly?: { score: number; unusual: boolean } | null;
+}
+
+export interface ModelCard {
+  task: "needs_water" | "overheat" | "moisture_1h";
+  label: string;
+  status: "TRAINED" | "PENDING";
+  reason?: string | null;
+  metric: string;
+  model?: string | null;
+  score?: number | null;
+  std?: number | null;
+  holdout?: number | null;
+  baseline?: number | null;
+  samples: number;
+  positives?: number | null;
+  version: number;
+  trainedAt?: string | null;
+  params?: Record<string, number | string | null>;
+  candidates: { model: string; score?: number | null; std?: number | null }[];
+}
+
+export interface CropTypeLearning {
+  cropType: CropType;
+  name: string;
+  readings: number;
+  crops: number;
+  newSinceTraining: number;
+  training: boolean;
+  trainedAt?: string | null;
+  quality?: { rows: number; completeness: number; validity: number; outliers: number; score: number } | null;
+  models: ModelCard[];
+  states?: { k: number; silhouette: number; clusters: { label: string; description: string; share: number }[] } | null;
+  anomaly?: { samples: number; contamination: number } | null;
+}
+
+export interface LearningStatus {
+  enabled: boolean;
+  persistent: boolean;
+  storedReadings: number;
+  minSamples: number;
+  retrainEvery: number;
+  cropTypes: CropTypeLearning[];
+}
+
+export type NotificationType = AppNotification["type"];
+
+export interface ChannelLink {
+  id: string;
+  type: "TELEGRAM";
+  displayName?: string | null;
+  enabled: boolean;
+  events: NotificationType[];
+  linkedAt?: string | null;
+  lastDeliveredAt?: string | null;
+}
+
+export interface ChannelOption {
+  type: "TELEGRAM";
+  name: string;
+  available: boolean;
+  handle?: string | null;
+  link?: ChannelLink | null;
+}
+
+export interface LinkCode {
+  type: "TELEGRAM";
+  code: string;
+  url: string;
+  expiresAt: string;
+}
+
+export type VirtualMode = "AUTO" | "MANUAL" | "WEATHER";
+export type WeatherCondition = "CLEAR" | "MOSTLY_CLEAR" | "PARTLY_CLOUDY" | "CLOUDY" | "FOG" | "DRIZZLE" | "RAIN"
+  | "SNOW" | "STORM";
+
+export interface Weather {
+  temperature: number;
+  humidity: number;
+  cloudCover: number;
+  radiation: number;
+  precipitation: number;
+  pressure: number;
+  windSpeed: number;
+  isDay: boolean;
+  code: number;
+  condition: WeatherCondition;
+  label: string;
+  observedAt: string;
+}
+
+export interface Place {
+  name: string;
+  latitude: number;
+  longitude: number;
+  country?: string | null;
+  region?: string | null;
+}
+
+export interface VirtualDevice {
+  cropId: string;
+  available: boolean;
+  active: boolean;
+  running: boolean;
+  mode?: VirtualMode | null;
+  manual?: Measures | null;
+  location?: { name: string; latitude: number; longitude: number } | null;
+  intervalSeconds?: number | null;
+  connected: boolean;
+  lastReading?: Measures | null;
+  lastPublishedAt?: string | null;
+  weather?: Weather | null;
+  weatherError?: string | null;
+  activeActuators: { actuator: ActuatorType; until: string }[];
+  lastCommand?: { id: string; status: string; message: string; at: string } | null;
+  updatedAt?: string | null;
+}
+
+export interface VirtualDeviceRequest {
+  mode: VirtualMode;
+  manual?: Measures;
+  location?: { name: string; latitude: number; longitude: number };
+  intervalSeconds?: number;
 }
 
 export interface Overview {
