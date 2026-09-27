@@ -88,5 +88,8 @@ describe("componentes del cultivo", () => {
     expect(config).toContain('"crop_id": "c1"');
     expect(config).toContain('"tls": True');
     expect(config).toContain("<CLAVE_DEL_DISPOSITIVO>");
+    expect(config).toContain("<NOMBRE_DE_TU_RED>");
+    expect(firmwareConfig({ host: "h", port: 8883, tls: true, username: "c1", key: "k",
+      topics: { telemetry: "t", commands: "c", commandAck: "a", status: "s" } }, "wokwi")).toContain('"ssid": "Wokwi-GUEST"');
   });
 });
