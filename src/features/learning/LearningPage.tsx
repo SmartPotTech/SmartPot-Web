@@ -75,8 +75,10 @@ function SpeciesLearning({ item }: { item: CropTypeLearning }) {
         <div>
           <h2 id={`species-${item.cropType}`} className="text-lg font-semibold">{item.name}</h2>
           <p className="text-sm text-muted">
-            {item.readings.toLocaleString("es-CO")} lecturas de {item.crops} {item.crops === 1 ? "maceta" : "macetas"}
-            {item.trainedAt ? ` · entrenado ${timeAgo(item.trainedAt)}` : ""} · {item.newSinceTraining} nuevas desde el último entrenamiento
+            {plural(item.readings, "lectura", "lecturas")} de {plural(item.crops, "maceta", "macetas")}
+            {item.trainedAt
+              ? ` · entrenado ${timeAgo(item.trainedAt)} · ${plural(item.newSinceTraining, "lectura nueva", "lecturas nuevas")} desde entonces`
+              : " · aún sin entrenar"}
           </p>
         </div>
         {item.training ? <Badge tone="info"><Hourglass size={12} /> Entrenando</Badge>
@@ -135,6 +137,10 @@ function SpeciesLearning({ item }: { item: CropTypeLearning }) {
       )}
     </section>
   );
+}
+
+function plural(count: number, one: string, many: string): string {
+  return `${count.toLocaleString("es-CO")} ${count === 1 ? one : many}`;
 }
 
 /** Tarjeta de una tarea: modelo elegido, su puntaje frente a la línea base y la comparación de candidatos. */
