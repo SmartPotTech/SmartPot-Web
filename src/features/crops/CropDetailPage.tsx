@@ -8,29 +8,31 @@ import { usePageMeta } from "../../hooks/usePageMeta";
 import { useResource } from "../../hooks/useResource";
 import { ApiError } from "../../lib/api/client";
 import { actuatorApi, commandApi, cropApi, insightApi, readingApi } from "../../lib/api/services";
-import { CROP_TYPES, HEALTH, METRICS, PRIMARY_METRICS } from "../../lib/catalog";
+import { CROP_FORMS, CROP_TYPES, HEALTH, METRICS, PRIMARY_METRICS } from "../../lib/catalog";
 import { formatMetric, timeAgo } from "../../lib/format";
-import type { MetricKey } from "../../lib/api/types";
+import type { CropKind, MetricKey } from "../../lib/api/types";
 import { ControlPanel } from "./components/ControlPanel";
 import { DevicePanel } from "./components/DevicePanel";
 import { InsightPanel } from "./components/InsightPanel";
+import { LivePanel } from "./components/LivePanel";
 import { MetricTile } from "./components/MetricTile";
 import { ReadingsChart } from "./components/ReadingsChart";
 import { SettingsPanel } from "./components/SettingsPanel";
-import { VirtualPotPanel } from "./components/VirtualPotPanel";
 import { useCropProfiles } from "./useCropProfiles";
 
-const TABS = [
+/** Dispositivo solo existe en los cultivos reales: los virtuales no tienen credenciales que configurar. */
+const TABS: { id: string; label: string; only?: CropKind }[] = [
   { id: "summary", label: "Resumen" },
+  { id: "live", label: "Cultivo en vivo" },
   { id: "assistant", label: "Asistente IA" },
   { id: "control", label: "Control" },
   { id: "history", label: "Historial" },
-  { id: "device", label: "Dispositivo" },
-  { id: "virtual", label: "Maceta virtual" },
+  { id: "device", label: "Dispositivo", only: "REAL" },
   { id: "settings", label: "Ajustes" },
-] as const;
+];
 
-type TabId = (typeof TABS)[number]["id"];
+/** Enlaces antiguos a la pestaña de la maceta virtual abren la vista en vivo. */
+const ALIASES: Record<string, string> = { virtual: "live" };
 
 const RANGES = [
   { hours: 6, label: "6 h" },
@@ -41,7 +43,8 @@ const RANGES = [
 export default function CropDetailPage() {
   const { cropId = "" } = useParams();
   const [params, setParams] = useSearchParams();
-  const tab = (TABS.find((item) => item.id === params.get("tab"))?.id ?? "summary") as TabId;
+  const requested = params.get("tab") ?? "summary";
+  const wanted = ALIASES[requested] ?? requested;
   const [metric, setMetric] = useState<MetricKey>("temperature");
   const [hours, setHours] = useState(24);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -49,8 +52,11 @@ export default function CropDetailPage() {
   const crop = useResource(() => cropApi.get(cropId), [cropId], 20_000);
   const readings = useResource(() => readingApi.list(cropId, new Date(Date.now() - hours * 3600_000), 2000),
     [cropId, hours], 30_000);
-  const actuators = useResource(() => actuatorApi.list(cropId), [cropId], tab === "control" ? 10_000 : undefined);
-  const commands = useResource(() => commandApi.list(cropId), [cropId], tab === "control" ? 5_000 : undefined);
+  const tabs = TABS.filter((item) => !item.only || !crop.data || item.only === crop.data.kind);
+  const tab = tabs.find((item) => item.id === wanted)?.id ?? "summary";
+  const watching = tab === "control" || tab === "live";
+  const actuators = useResource(() => actuatorApi.list(cropId), [cropId], watching ? 10_000 : undefined);
+  const commands = useResource(() => commandApi.list(cropId), [cropId], watching ? 5_000 : undefined);
   const insight = useResource(() => (tab === "assistant" ? insightApi.get(cropId) : Promise.resolve(undefined)),
     [cropId, tab === "assistant"]);
   const profiles = useCropProfiles();
@@ -70,6 +76,8 @@ export default function CropDetailPage() {
   const current = crop.data;
   const profile = profiles[current.type];
   const latest = current.latestReading;
+  const virtual = current.kind === "VIRTUAL";
+  const openTab = (id: string) => setParams(id === "summary" ? {} : { tab: id }, { replace: true });
 
   async function exportCsv() {
     setExportError(null);
@@ -94,20 +102,24 @@ export default function CropDetailPage() {
           <div>
             <h1 className="text-3xl font-bold">{current.name}</h1>
             <p className="text-sm text-muted">
-              {CROP_TYPES[current.type].label} · {current.device.online ? "En línea" : "Desconectada"} · última lectura {timeAgo(latest?.measuredAt)}
+              {CROP_TYPES[current.type].label} {CROP_FORMS[current.form].phrase} · {current.device.online
+                ? "En línea" : "Desconectado"} · última lectura {timeAgo(latest?.measuredAt)}
             </p>
           </div>
-          {current.health && (
-            <Badge tone={HEALTH[current.health.level]?.tone ?? "neutral"}>
-              Salud {Math.round(current.health.index)}/100 · {current.health.label}
-            </Badge>
-          )}
+          <div className="flex flex-wrap gap-2">
+            <Badge tone={virtual ? "info" : "success"}>{virtual ? "Virtual" : "Real"}</Badge>
+            {current.health && (
+              <Badge tone={HEALTH[current.health.level]?.tone ?? "neutral"}>
+                Salud {Math.round(current.health.index)}/100 · {current.health.label}
+              </Badge>
+            )}
+          </div>
         </div>
       </div>
 
       <nav className="-mx-4 flex gap-1 overflow-x-auto border-b border-line px-4" aria-label="Secciones del cultivo">
-        {TABS.map((item) => (
-          <button key={item.id} type="button" onClick={() => setParams(item.id === "summary" ? {} : { tab: item.id }, { replace: true })}
+        {tabs.map((item) => (
+          <button key={item.id} type="button" onClick={() => openTab(item.id)}
             aria-current={tab === item.id ? "page" : undefined}
             className={`shrink-0 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab === item.id
               ? "border-leaf-600 text-leaf-800" : "border-transparent text-muted hover:text-ink"}`}>
@@ -120,7 +132,9 @@ export default function CropDetailPage() {
         <div className="space-y-5">
           {!latest && (
             <Alert tone="info" title="Aún no hay lecturas">
-              Conecta tu maceta con los datos de la pestaña Dispositivo; las lecturas aparecerán aquí en segundos.
+              {virtual
+                ? "La simulación publica la primera lectura en unos segundos; puedes verla crecer en Cultivo en vivo."
+                : "Conecta tu ESP32 o la simulación de Wokwi con la guía de la pestaña Dispositivo; las lecturas aparecerán aquí en segundos."}
             </Alert>
           )}
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
@@ -195,8 +209,15 @@ export default function CropDetailPage() {
         </div>
       )}
 
+      {tab === "live" && (
+        <LivePanel crop={current} profile={profile} actuators={actuators.data ?? []} commands={commands.data ?? []}
+          onOpenDevice={() => openTab("device")}
+          onChanged={() => {
+            void actuators.reload();
+            void commands.reload();
+          }} />
+      )}
       {tab === "device" && <DevicePanel crop={current} />}
-      {tab === "virtual" && <VirtualPotPanel cropId={cropId} profile={profile} />}
       {tab === "settings" && <SettingsPanel crop={current} onSaved={(updated) => crop.setData(updated)} />}
     </div>
   );
