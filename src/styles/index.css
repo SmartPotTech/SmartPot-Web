@@ -73,3 +73,27 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Escena del clima de la maceta virtual: movimiento suave, apagado si se prefiere menos movimiento. */
+.weather-scene .scene-rain {
+  animation: scene-fall 1.4s linear infinite;
+}
+.weather-scene .scene-fan {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: scene-spin 1s linear infinite;
+}
+@keyframes scene-fall {
+  from { transform: translateY(-6px); opacity: 0.2; }
+  30% { opacity: 1; }
+  to { transform: translateY(14px); opacity: 0; }
+}
+@keyframes scene-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .weather-scene .scene-rain,
+  .weather-scene .scene-fan {
+    animation: none;
+  }
+}
