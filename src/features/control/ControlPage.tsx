@@ -148,14 +148,16 @@ export function ControlPage() {
               </div>
             </div>
 
-            <form onSubmit={submit} className="mt-5 grid gap-3 rounded-xl bg-surface p-4 sm:grid-cols-3" noValidate>
-              <SelectField label="Actuador" value={actuator} onChange={(event) => {
-                const next = event.target.value as ActuatorType;
-                setActuator(next);
-                setDuration(ACTUATORS[next].defaultSeconds ?? 15);
-              }}>
-                {Object.entries(ACTUATORS).map(([value, info]) => <option key={value} value={value}>{info.label}</option>)}
-              </SelectField>
+            <form onSubmit={submit} className="mt-5 grid grid-cols-2 gap-3 rounded-xl bg-surface p-4" noValidate>
+              <div className="col-span-2">
+                <SelectField label="Actuador" value={actuator} onChange={(event) => {
+                  const next = event.target.value as ActuatorType;
+                  setActuator(next);
+                  setDuration(ACTUATORS[next].defaultSeconds ?? 15);
+                }}>
+                  {Object.entries(ACTUATORS).map(([value, info]) => <option key={value} value={value}>{info.label}</option>)}
+                </SelectField>
+              </div>
               <SelectField label="Acción" value={action} onChange={(event) => setAction(event.target.value as CommandAction)}>
                 <option value="ACTIVATE">Encender</option>
                 <option value="DEACTIVATE">Apagar</option>
@@ -164,7 +166,7 @@ export function ControlPage() {
                 onChange={(event) => setDuration(Number(event.target.value))}>
                 {DURATIONS.map((seconds) => <option key={seconds} value={seconds}>{formatDuration(seconds)}</option>)}
               </SelectField>
-              <Button type="submit" className="sm:col-span-3" icon={<Send size={16} />} loading={bulk.sending === "custom"}
+              <Button type="submit" className="col-span-2" icon={<Send size={16} />} loading={bulk.sending === "custom"}
                 disabled={selected.length === 0}>
                 {describeAction(actuator, action, action === "ACTIVATE" ? duration : null)} en {selected.length}{" "}
                 {selected.length === 1 ? "cultivo" : "cultivos"}
