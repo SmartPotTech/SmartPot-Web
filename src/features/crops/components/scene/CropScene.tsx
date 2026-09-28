@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from "react";
-import type { ActuatorType, CropForm, CropType, WeatherCondition } from "../../../../lib/api/types";
-import { Backdrop, GROUND, HEIGHT, WIDTH } from "./Backdrop";
+import type { ActuatorType, CropForm, CropType, PlacementSetting, SunExposure, WeatherCondition } from "../../../../lib/api/types";
+import { Backdrop, GROUND, HEIGHT, Shelter, WIDTH } from "./Backdrop";
 import { Doser, Fan, GrowLight, Humidifier, WaterPump } from "./Equipment";
 import type { Vigor } from "../../live";
 import { Plant } from "./Plant";
@@ -11,8 +11,12 @@ export interface CropSceneProps {
   /** Actuadores instalados: solo se dibujan esos. */
   installed: ActuatorType[];
   running: Set<ActuatorType>;
-  /** Clima del lugar (cultivo virtual en modo clima); sin él la escena es interior. */
+  /** Clima del lugar: el cielo al aire libre o lo que se ve por la ventana bajo techo. */
   condition?: WeatherCondition | null;
+  /** Bajo techo o al aire libre; sin él, un clima conocido significa aire libre. */
+  setting?: PlacementSetting | null;
+  /** Cuánto sol recibe: al aire libre agrega una malla de sombra o un árbol; bajo techo, el sol de la ventana. */
+  exposure?: SunExposure | null;
   isDay: boolean;
   vigor: Vigor;
   /** Humedad del sustrato (0–100): oscurece el sustrato de la maceta y de la torre. */
@@ -205,9 +209,11 @@ const HUMIDIFIERS: Record<CropForm, number> = { POT: 318, NFT: 330, TOWER: 318, 
 
 /**
  * Ilustración fiel del cultivo: su forma (maceta, tubos NFT, torre o balsa), la especie con el color de su salud,
- * el entorno (interior o el clima del lugar) y cada actuador instalado, animado mientras está encendido.
+ * el entorno (bajo techo o al aire libre, con el clima y la sombra del lugar) y cada actuador instalado, animado
+ * mientras está encendido.
  */
-export function CropScene({ form, type, installed, running, condition, isDay, vigor, moisture, label }: CropSceneProps) {
+export function CropScene({ form, type, installed, running, condition, setting, exposure, isDay, vigor, moisture,
+  label }: CropSceneProps) {
   const has = (actuator: ActuatorType) => installed.includes(actuator);
   const on = (actuator: ActuatorType) => has(actuator) && running.has(actuator);
   const parts: Parts = { has, on, type, vigor, soil: soilColor(moisture) };
@@ -223,11 +229,12 @@ export function CropScene({ form, type, installed, running, condition, isDay, vi
           <stop offset="1" stopColor="#F2B632" stopOpacity="0.06" />
         </linearGradient>
       </defs>
-      <Backdrop id={id} condition={condition} isDay={isDay} />
+      <Backdrop id={id} condition={condition} isDay={isDay} setting={setting} exposure={exposure} />
       {has("FAN") && <Fan x={fan.x} y={fan.y} on={on("FAN")} />}
       {has("HUMIDIFIER") && <Humidifier x={HUMIDIFIERS[form] ?? 318} on={on("HUMIDIFIER")} />}
       <System {...parts} />
       {has("UV_LIGHT") && <GrowLight {...light} on={on("UV_LIGHT")} glow={`${id}-light`} />}
+      <Shelter setting={setting} exposure={exposure} isDay={isDay} />
     </svg>
   );
 }
