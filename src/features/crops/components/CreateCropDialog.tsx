@@ -8,9 +8,9 @@ import { Alert } from "../../../components/ui/Feedback";
 import { ApiError } from "../../../lib/api/client";
 import { cropApi } from "../../../lib/api/services";
 import { CROP_FORMS, CROP_KINDS, CROP_TYPES } from "../../../lib/catalog";
-import type { ActuatorType, Crop, CropCreated, CropForm, CropKind, CropType, VirtualMode } from "../../../lib/api/types";
+import type { ActuatorType, Crop, CropCreated, CropForm, CropKind, CropType, Placement, VirtualMode } from "../../../lib/api/types";
 import { ConnectionGuide } from "./ConnectionGuide";
-import { LocationPicker, type PickedLocation } from "./LocationPicker";
+import { PlacementPicker } from "./PlacementPicker";
 import { CropScene } from "./scene/CropScene";
 import { ModePicker } from "./SimulationPanel";
 
@@ -31,8 +31,8 @@ interface CreateCropDialogProps {
 }
 
 /**
- * Crear un cultivo en tres pasos: real o virtual (no se puede cambiar después), sus datos con la vista previa de
- * la forma elegida y, si es real, la guía para conectar el ESP32 o la simulación de Wokwi con su clave.
+ * Crear un cultivo en tres pasos: real o virtual (no se puede cambiar después), sus datos y su lugar con la vista
+ * previa y, si es real, la guía para conectar el ESP32 o la simulación de Wokwi con su clave.
  */
 export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogProps) {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogP
   const [type, setType] = useState<CropType>("LETTUCE");
   const [form, setForm] = useState<CropForm>("POT");
   const [mode, setMode] = useState<VirtualMode>("AUTO");
-  const [location, setLocation] = useState<PickedLocation | null>(null);
+  const [placement, setPlacement] = useState<Placement>({});
   const [created, setCreated] = useState<CropCreated | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -54,7 +54,7 @@ export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogP
     setType("LETTUCE");
     setForm("POT");
     setMode("AUTO");
-    setLocation(null);
+    setPlacement({});
     setCreated(null);
     setError(null);
     onClose();
@@ -72,15 +72,17 @@ export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogP
       setError("Ponle un nombre de al menos 2 caracteres");
       return;
     }
+    const location = placement.location ?? null;
     if (kind === "VIRTUAL" && mode === "WEATHER" && !location) {
-      setError("Elige el lugar cuyo clima seguirá el cultivo.");
+      setError("Elige la ubicación del cultivo: su clima es el que se simula.");
       return;
     }
+    const placed = placement.setting || placement.location ? { placement } : {};
     setSaving(true);
     setError(null);
     try {
       const result = await cropApi.create({
-        name: name.trim(), type, kind, form,
+        name: name.trim(), type, kind, form, ...placed,
         ...(kind === "VIRTUAL" ? { virtual: { mode, ...(mode === "WEATHER" && location ? { location } : {}) } } : {}),
       });
       onCreated(result.crop);
@@ -177,18 +179,29 @@ export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogP
           </form>
           <div className="space-y-3">
             <CropScene form={form} type={type} installed={STARTING_ACTUATORS[kind]} running={NOTHING_RUNNING} isDay
+              setting={placement.setting} exposure={placement.exposure}
               vigor="healthy" label={`Vista previa: ${CROP_TYPES[type].label} ${CROP_FORMS[form].phrase}`} />
             <p className="text-xs text-muted">
               {kind === "REAL"
-                ? "Nace con la bomba de agua, la luz de cultivo y el ventilador del firmware; puedes sumar más en Control."
-                : "Nace con los seis actuadores: bomba, luz, ventilador, humidificador y dosificadores de nutrientes y pH."}
+                ? "Nace con la bomba de agua, la luz ultravioleta y el ventilador del firmware; puedes sumar más en Control."
+                : "Nace con los seis actuadores: bomba, luz ultravioleta, ventilador, humidificador y dosificadores de nutrientes y pH."}
             </p>
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <p className="text-sm font-semibold">¿Dónde está? <span className="font-normal text-muted">(puedes cambiarlo luego en Ajustes)</span></p>
+            <PlacementPicker type={type} value={placement} onChange={setPlacement} />
           </div>
           {kind === "VIRTUAL" && (
             <div className="space-y-3 sm:col-span-2">
               <p className="text-sm font-semibold">¿Cómo empieza la simulación?</p>
               <ModePicker value={mode} onChange={setMode} />
-              {mode === "WEATHER" && <LocationPicker value={location} onChange={setLocation} />}
+              {mode === "WEATHER" && (
+                <p className="text-xs text-muted">
+                  {placement.location
+                    ? `Sigue el clima de ${placement.location.name}, filtrado por el lugar que elegiste.`
+                    : "Elige arriba la ubicación del cultivo: su clima es el que se simula."}
+                </p>
+              )}
               {mode === "MANUAL" && (
                 <p className="text-xs text-muted">Empieza con los valores típicos de la especie; muévelos luego en la pestaña Simulación.</p>
               )}
