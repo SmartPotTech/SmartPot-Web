@@ -8,26 +8,43 @@
 
 ## Descripción
 
-SmartPot-Web es la **aplicación web progresiva (PWA)** de SmartPot, publicada en [smartpot.app](https://smartpot.app). Se instala en Android, iOS y escritorio, y permite:
+SmartPot-Web es la **aplicación web progresiva (PWA)** de SmartPot, publicada en [smartpot.app](https://smartpot.app).
+Se instala en Android, iOS y escritorio, y permite:
 
-- Ver todos los cultivos juntos en el **panel general**: salud de cada uno, comparación de una variable entre cultivos (6 h, 24 h o 7 días), tabla con la última lectura frente al rango ideal y el análisis del asistente sobre toda la cuenta (problemas compartidos del entorno, grupos con condiciones parecidas y acciones en bloque).
-- Usar el **control general** para activar el modo automático o enviar la misma orden (regar, ventilar, luz) a varios cultivos a la vez.
-- Revisar las **acciones**: las que sugiere el asistente para varios cultivos y el historial de todas las órdenes, filtrado por estado y origen.
-- Crear cultivos **reales** (un ESP32 con el firmware, físico o simulado en Wokwi, con su guía de conexión) o **virtuales** (los simula SmartPot), de seis especies y cuatro formas: maceta, tubos NFT, torre vertical o balsa flotante. El tipo no cambia después.
-- Ver cada cultivo **ilustrado** sobre todas sus secciones: su forma y su especie (lechuga, tomate, fresa…) con el color de su salud, el entorno (interior o el clima del lugar) y cada actuador encendido o apagado. La ilustración no tiene botones: las órdenes se dan en Control. Si no está conectado, no se ilustra.
-- Ver las lecturas en tiempo real, comparadas con el rango ideal de la especie, e historiales de 6 h, 24 h o 7 días exportables a CSV.
-- Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico, conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas, lo **aprendido de cultivos reales** (estado de operación, lectura habitual o no, riego o calor probables en la próxima hora y sustrato esperado) y acciones sugeridas.
-- Ver en **Aprendizaje** cómo mejora el asistente con cada lectura: calidad de los datos, comparación de modelos con su puntaje frente a la línea base, estados típicos de cada especie y detector de lecturas poco habituales.
-- Controlar la **simulación** de un cultivo virtual: el clima real de un lugar (con su escena de sol, nubes, lluvia o noche), medidores manuales o el ciclo de día y noche de la especie; pausarla y reanudarla.
+- Ver todos los cultivos juntos en el **panel general**: salud de cada uno, comparación de una variable entre cultivos (
+  6 h, 24 h o 7 días), tabla con la última lectura frente al rango ideal y el análisis del asistente sobre toda la
+  cuenta (problemas compartidos del entorno, grupos con condiciones parecidas y acciones en bloque).
+- Usar el **control general** para activar el modo automático o enviar la misma orden (regar, ventilar, luz) a varios
+  cultivos a la vez.
+- Revisar las **acciones**: las que sugiere el asistente para varios cultivos y el historial de todas las órdenes,
+  filtrado por estado y origen.
+- Crear cultivos **reales** (un ESP32 con el firmware, físico o simulado en Wokwi, con su guía de conexión) o *
+  *virtuales** (los simula SmartPot), de seis especies y cuatro formas: maceta, tubos NFT, torre vertical o balsa
+  flotante. El tipo no cambia después.
+- Ver cada cultivo **ilustrado** sobre todas sus secciones: su forma y su especie (lechuga, tomate, fresa…) con el color
+  de su salud, el entorno (interior o el clima del lugar) y cada actuador encendido o apagado. La ilustración no tiene
+  botones: las órdenes se dan en Control. Si no está conectado, no se ilustra.
+- Ver las lecturas en tiempo real, comparadas con el rango ideal de la especie, e historiales de 6 h, 24 h o 7 días
+  exportables a CSV.
+- Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico,
+  conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas, lo **aprendido de
+  cultivos reales** (estado de operación, lectura habitual o no, riego o calor probables en la próxima hora y sustrato
+  esperado) y acciones sugeridas.
+- Ver en **Aprendizaje** cómo mejora el asistente con cada lectura: calidad de los datos, comparación de modelos con su
+  puntaje frente a la línea base, estados típicos de cada especie y detector de lecturas poco habituales.
+- Controlar la **simulación** de un cultivo virtual: el clima real de un lugar (con su escena de sol, nubes, lluvia o
+  noche), medidores manuales o el ciclo de día y noche de la especie; pausarla y reanudarla.
 - Vincular **Telegram** desde el perfil para recibir las alertas elegidas fuera de la app.
-- Encender y apagar la bomba, la luz de cultivo, el ventilador, el humidificador y los dosificadores, y activar el **modo automático** del agente.
+- Encender y apagar la bomba, la luz de cultivo, el ventilador, el humidificador y los dosificadores, y activar el *
+  *modo automático** del agente.
 - Recibir alertas del cultivo, del dispositivo y del asistente.
 
 La página de inicio es pública e indexable; la aplicación vive bajo `/app` y no se indexa.
 
 ## Tecnologías
 
-React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · React Router 7 · Recharts · Lucide · Vitest · Testing Library · pnpm 11.
+React 19 · TypeScript 6 · Vite 8 · Tailwind CSS 4 · React Router 7 · Recharts · Lucide · Vitest · Testing Library · pnpm
+11.
 
 ## Estructura del Proyecto
 
@@ -65,32 +82,40 @@ SmartPot-Web/
 
 ## Identidad Visual
 
-| Token | Color | Uso |
-| --- | --- | --- |
-| `leaf-900` | `#0B3D2B` | Barra lateral, navegación, encabezados y color del tema de la PWA |
-| `leaf-700` | `#067A52` | Acciones principales |
-| `leaf-500` | `#00B074` | Verde de marca |
-| `water-500` | `#2D9CDB` | Agua, información y señal del logo |
-| `sun-500` | `#F2B632` | Luz y advertencias |
-| `clay-500` | `#D9734E` | Maceta de la ilustración y temperatura |
-| `danger-500` | `#D64545` | Errores |
-| `ink` / `muted` / `line` / `surface` | `#17261F` / `#5B6B63` / `#D5E3DC` / `#F2F7F4` | Texto, bordes y superficies |
+| Token                                | Color                                         | Uso                                                               |
+|--------------------------------------|-----------------------------------------------|-------------------------------------------------------------------|
+| `leaf-900`                           | `#0B3D2B`                                     | Barra lateral, navegación, encabezados y color del tema de la PWA |
+| `leaf-700`                           | `#067A52`                                     | Acciones principales                                              |
+| `leaf-500`                           | `#00B074`                                     | Verde de marca                                                    |
+| `water-500`                          | `#2D9CDB`                                     | Agua, información y señal del logo                                |
+| `sun-500`                            | `#F2B632`                                     | Luz y advertencias                                                |
+| `clay-500`                           | `#D9734E`                                     | Maceta de la ilustración y temperatura                            |
+| `danger-500`                         | `#D64545`                                     | Errores                                                           |
+| `ink` / `muted` / `line` / `surface` | `#17261F` / `#5B6B63` / `#D5E3DC` / `#F2F7F4` | Texto, bordes y superficies                                       |
 
 Tipografías: **Outfit** para títulos e **Inter** para el cuerpo, servidas desde la propia app (sin CDNs).
 
-Las comparativas entre cultivos usan una paleta categórica de 8 colores en orden fijo (tonos de la marca más un violeta solo para gráficos), validada para daltonismo y contraste entre vecinos. Cada cultivo conserva su color mientras siga en la comparación, y los gráficos van acompañados de leyenda y de la tabla de últimas lecturas.
+Las comparativas entre cultivos usan una paleta categórica de 8 colores en orden fijo (tonos de la marca más un violeta
+solo para gráficos), validada para daltonismo y contraste entre vecinos. Cada cultivo conserva su color mientras siga en
+la comparación, y los gráficos van acompañados de leyenda y de la tabla de últimas lecturas.
 
 ## SEO y PWA
 
-- `index.html` trae descripción, palabras clave, URL canónica, Open Graph, Twitter Card y datos estructurados JSON-LD (`Organization`, `WebSite`, `SoftwareApplication` y `FAQPage`), además de contenido estático que leen los rastreadores sin JavaScript.
+- `index.html` trae descripción, palabras clave, URL canónica, Open Graph, Twitter Card y datos estructurados JSON-LD (
+  `Organization`, `WebSite`, `SoftwareApplication` y `FAQPage`), además de contenido estático que leen los rastreadores
+  sin JavaScript.
 - Cada página ajusta su título y `robots`: la landing, el ingreso y el registro se indexan; `/app` no.
-- El manifiesto declara íconos normales y adaptables, accesos directos y el color `#0B3D2B`. El botón «Instalar app» aparece cuando el navegador lo permite; en iPhone se explica «Compartir → Agregar a inicio».
+- El manifiesto declara íconos normales y adaptables, accesos directos y el color `#0B3D2B`. El botón «Instalar app»
+  aparece cuando el navegador lo permite; en iPhone se explica «Compartir → Agregar a inicio».
 - El service worker guarda el app shell y los recursos con hash; la API y `/config.js` nunca se guardan en caché.
 
 ## Seguridad
 
-- CSP estricta (`script-src 'self'`, `style-src 'self'`, `connect-src` limitado a la API), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy` (solo la geolocalización del propio sitio, para ubicar un cultivo virtual en modo clima; nunca se envía sin que la persona toque «Usar mi ubicación»).
-- El token JWT se guarda en `localStorage` solo si el usuario marca «Mantener sesión iniciada»; si no, en `sessionStorage`. Un 401 cierra la sesión.
+- CSP estricta (`script-src 'self'`, `style-src 'self'`, `connect-src` limitado a la API), `X-Frame-Options: DENY`,
+  `nosniff`, `Referrer-Policy` y `Permissions-Policy` (solo la geolocalización del propio sitio, para ubicar un cultivo
+  virtual en modo clima; nunca se envía sin que la persona toque «Usar mi ubicación»).
+- El token JWT se guarda en `localStorage` solo si el usuario marca «Mantener sesión iniciada»; si no, en
+  `sessionStorage`. Un 401 cierra la sesión.
 - La clave del dispositivo se muestra una sola vez, al crear un cultivo real o al rotarla.
 
 ## Guía de Instalación
@@ -98,7 +123,8 @@ Las comparativas entre cultivos usan una paleta categórica de 8 colores en orde
 ### Requisitos Previos
 
 - Node.js 22 o 24 y pnpm 11 (`corepack enable`)
-- La API de SmartPot en `http://localhost:8091` (el entorno completo está en [SmartPotTech/.github](https://github.com/SmartPotTech/.github))
+- La API de SmartPot en `http://localhost:8091` (el entorno completo está
+  en [SmartPotTech/.github](https://github.com/SmartPotTech/.github))
 
 ### Desarrollo
 
@@ -118,7 +144,10 @@ pnpm test
 pnpm build
 ```
 
-Las pruebas cubren el cliente HTTP y sus errores en español, la sesión, las validaciones, el ingreso, los componentes del cultivo, el panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, la ilustración del cultivo (formas, especies, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
+Las pruebas cubren el cliente HTTP y sus errores en español, la sesión, las validaciones, el ingreso, los componentes
+del cultivo, el panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, la ilustración
+del cultivo (formas, especies, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los
+requisitos de SEO y PWA.
 
 ### Imagen Docker
 
@@ -128,9 +157,13 @@ docker run --rm -p 5173:8080 -e API_URL=http://localhost:8091 \
   --read-only --tmpfs /tmp --tmpfs /etc/nginx/conf.d:uid=101,gid=101 smartpot-web
 ```
 
-`API_URL` se inyecta al arrancar en `/config.js` y en la CSP, así la misma imagen sirve para cualquier entorno. Imagen publicada: `ghcr.io/smartpottech/smartpot-web:latest`.
+`API_URL` se inyecta al arrancar en `/config.js` y en la CSP, así la misma imagen sirve para cualquier entorno. Imagen
+publicada: `ghcr.io/smartpottech/smartpot-web:latest`.
 
-Cada cambio en `main` pasa por el CI, publica la imagen en GHCR (y en Docker Hub como réplica cuando el repositorio tiene credenciales) y pide el despliegue al workflow central de [SmartPotTech/.github](https://github.com/SmartPotTech/.github), que actualiza producción de a uno y verifica `/health`.
+Cada cambio en `main` pasa por el CI, publica la imagen en GHCR (y en Docker Hub como réplica cuando el repositorio
+tiene credenciales) y pide el despliegue al workflow central
+de [SmartPotTech/.github](https://github.com/SmartPotTech/.github), que actualiza producción de a uno y verifica
+`/health`.
 
 ### Íconos
 
@@ -142,11 +175,20 @@ pnpm icons
 
 ## Documentación
 
-La PWA es la cara de la plataforma: todo lo que muestra viene de la API. Su documentación propia está en [`docs/`](docs/SmartPot_Web_Documentation.md) (también en [DOCX](docs/SmartPot_Web_Documentation.docx) y [PDF](docs/SmartPot_Web_Documentation.pdf)), con sus diagramas en [`docs/diagrams`](docs/diagrams): el general del componente y los de creación de un cultivo, su ilustración y sesión y caché. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma completa en una sola imagen ampliable:
+La PWA es la cara de la plataforma: todo lo que muestra viene de la API. Su documentación propia está en [
+`docs/`](docs/SmartPot_Web_Documentation.md) (también en [DOCX](docs/SmartPot_Web_Documentation.docx)
+y [PDF](docs/SmartPot_Web_Documentation.pdf)), con sus diagramas en [`docs/diagrams`](docs/diagrams): el general del
+componente y los de creación de un cultivo, su ilustración y sesión y caché.
+La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md)
+describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma
+completa en una sola imagen ampliable:
 
-- [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_07_User_Journey.svg): cada pantalla, las rutas de la API que llama y el servicio que responde
-- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA al dispositivo
-- [Arquitectura completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_01_Architecture.svg): dónde vive la PWA dentro de la plataforma
+- [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_07_User_Journey.svg):
+  cada pantalla, las rutas de la API que llama y el servicio que responde
+- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_02_Operation_Sequence.svg):
+  qué pasa detrás de cada acción de la persona, de la PWA al dispositivo
+- [Arquitectura completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_01_Architecture.svg):
+  dónde vive la PWA dentro de la plataforma
 
 ## Licencia
 
