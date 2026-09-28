@@ -1,4 +1,7 @@
-import type { ActuatorType, CommandAction, CommandStatus, CropForm, CropKind, CropType, HealthLevel, MetricKey } from "./api/types";
+import type {
+  ActuatorType, CommandAction, CommandStatus, CropForm, CropKind, CropType, HealthLevel, MetricKey, Placement,
+  PlacementSetting, SunExposure,
+} from "./api/types";
 
 export const CROP_TYPES: Record<CropType, { label: string; hint: string }> = {
   LETTUCE: { label: "Lechuga", hint: "Hoja de clima fresco, ideal para empezar." },
@@ -22,13 +25,58 @@ export const CROP_FORMS: Record<CropForm, { label: string; phrase: string; hint:
   RAFT: { label: "Balsa flotante", phrase: "en balsa flotante", hint: "Plantas sobre una balsa que flota en un estanque de solución aireada." },
 };
 
-export const ACTUATORS: Record<ActuatorType, { label: string; defaultSeconds: number | null }> = {
-  WATER_PUMP: { label: "Bomba de agua", defaultSeconds: 15 },
-  UV_LIGHT: { label: "Luz de cultivo", defaultSeconds: 900 },
-  FAN: { label: "Ventilador", defaultSeconds: 600 },
-  HUMIDIFIER: { label: "Humidificador", defaultSeconds: 300 },
-  NUTRIENT_DOSER: { label: "Dosificador de nutrientes", defaultSeconds: 3 },
-  PH_DOSER: { label: "Dosificador de pH", defaultSeconds: 3 },
+export const PLACEMENT_SETTINGS: Record<PlacementSetting, { label: string; hint: string }> = {
+  INDOOR: { label: "Bajo techo", hint: "Dentro de la casa, un invernadero cerrado o un cuarto de cultivo." },
+  OUTDOOR: { label: "Al aire libre", hint: "Balcón, terraza, patio o huerta, con el clima de afuera." },
+};
+
+/** La exposición se nombra distinto según el lugar: afuera cuenta el sol directo; adentro, la ventana. */
+export const EXPOSURES: Record<SunExposure, Record<PlacementSetting, { label: string; hint: string; phrase: string }>> = {
+  FULL_SUN: {
+    OUTDOOR: { label: "Pleno sol", hint: "6 horas o más de sol directo.", phrase: "a pleno sol" },
+    INDOOR: { label: "Ventana soleada", hint: "Le da el sol directo por la ventana.", phrase: "junto a una ventana soleada" },
+  },
+  PARTIAL_SUN: {
+    OUTDOOR: { label: "Media sombra", hint: "Sol de la mañana o filtrado, de 3 a 5 horas.", phrase: "en media sombra" },
+    INDOOR: { label: "Luz indirecta", hint: "Cerca de una ventana, sin sol directo.", phrase: "con luz indirecta" },
+  },
+  SHADE: {
+    OUTDOOR: { label: "Sombra", hint: "Bajo un techo o un árbol: menos de 3 horas de sol.", phrase: "en sombra" },
+    INDOOR: { label: "Sin luz natural", hint: "Lejos de las ventanas; depende de la lámpara.", phrase: "sin luz natural" },
+  },
+};
+
+/** Luz que pide cada especie, la misma base de conocimiento del asistente. */
+export const LIGHT_NEEDS: Record<CropType, { exposure: SunExposure; note: string }> = {
+  LETTUCE: { exposure: "PARTIAL_SUN", note: "La lechuga prefiere media sombra: con sol fuerte se espiga." },
+  SPINACH: { exposure: "PARTIAL_SUN", note: "La espinaca prefiere media sombra y clima fresco." },
+  TOMATO: { exposure: "FULL_SUN", note: "El tomate es de sol: de 6 a 8 horas de sol directo." },
+  PEPPER: { exposure: "FULL_SUN", note: "El pimentón es de sol: de 6 a 8 horas de sol directo." },
+  STRAWBERRY: { exposure: "FULL_SUN", note: "La fresa necesita al menos 6 horas de sol directo." },
+  BASIL: { exposure: "FULL_SUN", note: "La albahaca es de sol: 6 horas de sol directo." },
+};
+
+/** «al aire libre a pleno sol en Medellín»; null si no se sabe dónde está. */
+export function describePlacement(placement: Placement | null | undefined): string | null {
+  if (!placement?.setting) return placement?.location ? `en ${placement.location.name}` : null;
+  const parts = [PLACEMENT_SETTINGS[placement.setting].label.toLowerCase()];
+  if (placement.exposure) parts.push(EXPOSURES[placement.exposure][placement.setting].phrase);
+  if (placement.location) parts.push(`en ${placement.location.name}`);
+  return parts.join(" ");
+}
+
+/**
+ * durations: cuánto tiempo puede quedar encendido al activarlo con el switch; unlimited permite dejarlo encendido
+ * hasta apagarlo (nunca la bomba ni los dosificadores).
+ */
+export const ACTUATORS: Record<ActuatorType, { label: string; defaultSeconds: number | null; durations: number[];
+  unlimited: boolean }> = {
+  WATER_PUMP: { label: "Bomba de agua", defaultSeconds: 15, durations: [5, 15, 30, 60], unlimited: false },
+  UV_LIGHT: { label: "Luz ultravioleta", defaultSeconds: 900, durations: [900, 1800, 3600, 7200], unlimited: true },
+  FAN: { label: "Ventilador", defaultSeconds: 600, durations: [300, 600, 1800], unlimited: true },
+  HUMIDIFIER: { label: "Humidificador", defaultSeconds: 300, durations: [300, 600, 1800], unlimited: true },
+  NUTRIENT_DOSER: { label: "Dosificador de nutrientes", defaultSeconds: 3, durations: [1, 3, 5], unlimited: false },
+  PH_DOSER: { label: "Dosificador de pH", defaultSeconds: 3, durations: [1, 3, 5], unlimited: false },
 };
 
 export interface MetricInfo {
