@@ -7,32 +7,33 @@ import { PageLoader } from "../../components/ui/Spinner";
 import { usePageMeta } from "../../hooks/usePageMeta";
 import { useResource } from "../../hooks/useResource";
 import { ApiError } from "../../lib/api/client";
-import { actuatorApi, commandApi, cropApi, insightApi, readingApi } from "../../lib/api/services";
+import { actuatorApi, commandApi, cropApi, insightApi, readingApi, virtualDeviceApi } from "../../lib/api/services";
 import { CROP_FORMS, CROP_TYPES, HEALTH, METRICS, PRIMARY_METRICS } from "../../lib/catalog";
 import { formatMetric, timeAgo } from "../../lib/format";
-import type { CropKind, MetricKey } from "../../lib/api/types";
+import type { CropKind, MetricKey, VirtualDevice } from "../../lib/api/types";
 import { ControlPanel } from "./components/ControlPanel";
 import { DevicePanel } from "./components/DevicePanel";
+import { CropHero } from "./components/CropHero";
 import { InsightPanel } from "./components/InsightPanel";
-import { LivePanel } from "./components/LivePanel";
 import { MetricTile } from "./components/MetricTile";
 import { ReadingsChart } from "./components/ReadingsChart";
 import { SettingsPanel } from "./components/SettingsPanel";
+import { SimulationPanel } from "./components/SimulationPanel";
 import { useCropProfiles } from "./useCropProfiles";
 
-/** Dispositivo solo existe en los cultivos reales: los virtuales no tienen credenciales que configurar. */
+/** Los reales se configuran en Dispositivo; los virtuales, en Simulación. */
 const TABS: { id: string; label: string; only?: CropKind }[] = [
   { id: "summary", label: "Resumen" },
-  { id: "live", label: "Cultivo en vivo" },
   { id: "assistant", label: "Asistente IA" },
   { id: "control", label: "Control" },
   { id: "history", label: "Historial" },
   { id: "device", label: "Dispositivo", only: "REAL" },
+  { id: "simulation", label: "Simulación", only: "VIRTUAL" },
   { id: "settings", label: "Ajustes" },
 ];
 
-/** Enlaces antiguos a la pestaña de la maceta virtual abren la vista en vivo. */
-const ALIASES: Record<string, string> = { virtual: "live" };
+/** Enlaces antiguos: la ilustración ya vive sobre todas las secciones. */
+const ALIASES: Record<string, string> = { live: "summary", virtual: "simulation" };
 
 const RANGES = [
   { hours: 6, label: "6 h" },
@@ -54,9 +55,12 @@ export default function CropDetailPage() {
     [cropId, hours], 30_000);
   const tabs = TABS.filter((item) => !item.only || !crop.data || item.only === crop.data.kind);
   const tab = tabs.find((item) => item.id === wanted)?.id ?? "summary";
-  const watching = tab === "control" || tab === "live";
-  const actuators = useResource(() => actuatorApi.list(cropId), [cropId], watching ? 10_000 : undefined);
-  const commands = useResource(() => commandApi.list(cropId), [cropId], watching ? 5_000 : undefined);
+  const isVirtual = crop.data?.kind === "VIRTUAL";
+  // La ilustración está sobre todas las secciones: actuadores y órdenes se refrescan siempre.
+  const actuators = useResource(() => actuatorApi.list(cropId), [cropId], 10_000);
+  const commands = useResource(() => commandApi.list(cropId), [cropId], tab === "control" ? 5_000 : 10_000);
+  const simulation = useResource<VirtualDevice | null>(
+    () => (isVirtual ? virtualDeviceApi.get(cropId) : Promise.resolve(null)), [cropId, isVirtual], isVirtual ? 10_000 : undefined);
   const insight = useResource(() => (tab === "assistant" ? insightApi.get(cropId) : Promise.resolve(undefined)),
     [cropId, tab === "assistant"]);
   const profiles = useCropProfiles();
@@ -117,6 +121,9 @@ export default function CropDetailPage() {
         </div>
       </div>
 
+      <CropHero crop={current} actuators={actuators.data ?? []} commands={commands.data ?? []}
+        simulation={simulation.data} onOpenTab={openTab} />
+
       <nav className="-mx-4 flex gap-1 overflow-x-auto border-b border-line px-4" aria-label="Secciones del cultivo">
         {tabs.map((item) => (
           <button key={item.id} type="button" onClick={() => openTab(item.id)}
@@ -133,7 +140,7 @@ export default function CropDetailPage() {
           {!latest && (
             <Alert tone="info" title="Aún no hay lecturas">
               {virtual
-                ? "La simulación publica la primera lectura en unos segundos; puedes verla crecer en Cultivo en vivo."
+                ? "La simulación publica la primera lectura en unos segundos; su configuración está en la pestaña Simulación."
                 : "Conecta tu ESP32 o la simulación de Wokwi con la guía de la pestaña Dispositivo; las lecturas aparecerán aquí en segundos."}
             </Alert>
           )}
@@ -209,15 +216,21 @@ export default function CropDetailPage() {
         </div>
       )}
 
-      {tab === "live" && (
-        <LivePanel crop={current} profile={profile} actuators={actuators.data ?? []} commands={commands.data ?? []}
-          onOpenDevice={() => openTab("device")}
-          onChanged={() => {
-            void actuators.reload();
-            void commands.reload();
-          }} />
-      )}
       {tab === "device" && <DevicePanel crop={current} />}
+      {tab === "simulation" && (
+        simulation.data ? (
+          simulation.data.available ? (
+            // La llave reinicia el formulario con lo guardado cada vez que cambia la configuración.
+            <SimulationPanel key={`${simulation.data.active}-${simulation.data.updatedAt ?? ""}`} cropId={cropId}
+              simulation={simulation.data} profile={profile} onSaved={(saved) => simulation.setData(saved)}
+              onPaused={() => void simulation.reload()} />
+          ) : (
+            <Alert tone="info" title="El simulador no está disponible">
+              Este servidor no tiene el simulador de cultivos virtuales encendido. La configuración sigue guardada.
+            </Alert>
+          )
+        ) : simulation.error ? <Alert tone="danger">{simulation.error}</Alert> : <PageLoader />
+      )}
       {tab === "settings" && <SettingsPanel crop={current} onSaved={(updated) => crop.setData(updated)} />}
     </div>
   );
