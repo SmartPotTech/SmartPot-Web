@@ -1,21 +1,13 @@
 import {
-  CloudFog, Droplets, Fan, FlaskConical, Lightbulb, type LucideIcon, PauseCircle, Play, PlugZap, Power, PowerOff,
-  ServerOff, TestTubeDiagonal, WifiOff,
+  CloudFog, Droplets, Fan, FlaskConical, Lightbulb, type LucideIcon, PauseCircle, PlugZap, ServerOff, TestTubeDiagonal,
+  WifiOff,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Button } from "../../../components/ui/Button";
-import { Alert, Badge, EmptyState } from "../../../components/ui/Feedback";
-import { PageLoader } from "../../../components/ui/Spinner";
-import { useResource } from "../../../hooks/useResource";
-import { ApiError } from "../../../lib/api/client";
-import { commandApi, virtualDeviceApi } from "../../../lib/api/services";
-import { ACTUATORS, CROP_FORMS, CROP_TYPES, PRIMARY_METRICS } from "../../../lib/catalog";
+import { useEffect, useState, type ReactNode } from "react";
+import { ACTUATORS, CROP_FORMS, CROP_TYPES } from "../../../lib/catalog";
 import { formatMetric, timeAgo } from "../../../lib/format";
-import type { Actuator, ActuatorType, Command, Crop, CropProfile, VirtualDevice } from "../../../lib/api/types";
+import type { Actuator, ActuatorType, Command, Crop, VirtualDevice } from "../../../lib/api/types";
 import { isDaylight, liveStatus, runningActuators, vigorOf } from "../live";
-import { MetricTile } from "./MetricTile";
 import { CropScene } from "./scene/CropScene";
-import { SimulationPanel } from "./SimulationPanel";
 
 const ICONS: Record<ActuatorType, LucideIcon> = {
   WATER_PUMP: Droplets,
@@ -26,29 +18,36 @@ const ICONS: Record<ActuatorType, LucideIcon> = {
   PH_DOSER: TestTubeDiagonal,
 };
 
-function duration(seconds: number): string {
-  return seconds >= 60 ? `${seconds / 60} min` : `${seconds} s`;
-}
-
-interface LivePanelProps {
+interface CropHeroProps {
   crop: Crop;
-  profile: CropProfile | undefined;
   actuators: Actuator[];
   commands: Command[];
-  onChanged: () => void;
-  onOpenDevice: () => void;
+  /** Solo en los virtuales: estado de la simulación (clima, conexión y actuadores del simulador). */
+  simulation?: VirtualDevice | null;
+  onOpenTab: (tab: string) => void;
+}
+
+function Unlit({ icon, title, children, link }: { icon: ReactNode; title: string; children: ReactNode;
+  link?: { label: string; onClick: () => void } }) {
+  return (
+    <div className="flex aspect-[36/22] w-full flex-col items-center justify-center gap-2 bg-surface px-6 text-center">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-50 text-leaf-700">{icon}</span>
+      <p className="font-semibold">{title}</p>
+      <p className="max-w-sm text-sm text-muted">{children}</p>
+      {link && (
+        <button type="button" onClick={link.onClick} className="text-sm font-semibold text-water-700 hover:underline">
+          {link.label}
+        </button>
+      )}
+    </div>
+  );
 }
 
 /**
- * El cultivo en vivo, real o virtual: su forma con la especie, el entorno y cada actuador encendido o apagado.
- * Solo se ilustra lo conectado. Un cultivo virtual suma aquí los controles de su simulación.
+ * La ilustración del cultivo, fija sobre todas sus secciones: su forma con la especie, el entorno y cada actuador
+ * encendido o apagado. Solo muestra; las órdenes se dan en Control. Si el cultivo no está conectado no se dibuja.
  */
-export function LivePanel({ crop, profile, actuators, commands, onChanged, onOpenDevice }: LivePanelProps) {
-  const virtual = crop.kind === "VIRTUAL";
-  const simulation = useResource<VirtualDevice | null>(
-    () => (virtual ? virtualDeviceApi.get(crop.id) : Promise.resolve(null)), [crop.id, virtual], virtual ? 10_000 : undefined);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export function CropHero({ crop, actuators, commands, simulation, onOpenTab }: CropHeroProps) {
   const [now, setNow] = useState(() => Date.now());
 
   // Los encendidos por tiempo se apagan solos: la escena se revisa cada pocos segundos.
@@ -57,61 +56,26 @@ export function LivePanel({ crop, profile, actuators, commands, onChanged, onOpe
     return () => clearInterval(timer);
   }, []);
 
-  if (virtual && simulation.loading && !simulation.data) return <PageLoader />;
-
-  const sim = simulation.data ?? null;
-  const status = liveStatus(crop, sim);
-  const measures = crop.latestReading?.measures ?? sim?.lastReading ?? undefined;
-  const weather = sim?.active && sim.mode === "WEATHER" ? sim.weather : null;
-  const running = runningActuators(actuators, commands, sim?.activeActuators ?? [], now);
+  const virtual = crop.kind === "VIRTUAL";
+  const status = liveStatus(crop, simulation);
+  const measures = crop.latestReading?.measures ?? simulation?.lastReading ?? undefined;
+  const weather = simulation?.active && simulation.mode === "WEATHER" ? simulation.weather : null;
+  const running = runningActuators(actuators, commands, simulation?.activeActuators ?? [], now);
   const day = isDaylight(weather, measures);
   const connected = status === "live" || status === "waiting";
+  const species = `${CROP_TYPES[crop.type].label} ${CROP_FORMS[crop.form].phrase}`;
   const on = actuators.filter((actuator) => running.has(actuator.type));
-  const place = weather ? `${weather.label.toLowerCase()} en ${sim?.location?.name ?? "el lugar elegido"}` : "bajo techo";
-  const label = `${CROP_TYPES[crop.type].label} ${CROP_FORMS[crop.form].phrase}, ${place}, `
-    + `${day ? "de día" : "de noche"}; ${on.length > 0
-      ? `encendidos: ${on.map((actuator) => ACTUATORS[actuator.type].label.toLowerCase()).join(", ")}`
-      : "actuadores apagados"}`;
-
-  async function send(actuator: Actuator, action: "ACTIVATE" | "DEACTIVATE") {
-    const key = `${actuator.id}-${action}`;
-    setBusy(key);
-    setError(null);
-    try {
-      await commandApi.send(crop.id, actuator.id, action,
-        action === "ACTIVATE" ? ACTUATORS[actuator.type].defaultSeconds : null);
-      onChanged();
-    } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : "No se pudo enviar la orden");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function resume() {
-    if (!sim) return;
-    setBusy("resume");
-    setError(null);
-    try {
-      simulation.setData(await virtualDeviceApi.configure(crop.id, {
-        mode: sim.mode ?? "AUTO",
-        intervalSeconds: sim.intervalSeconds ?? 30,
-        ...(sim.location ? { location: sim.location } : {}),
-        ...(sim.mode === "MANUAL" && sim.manual ? { manual: sim.manual } : {}),
-      }));
-    } catch (caught) {
-      setError(caught instanceof ApiError ? caught.message : "No se pudo reanudar la simulación");
-    } finally {
-      setBusy(null);
-    }
-  }
+  const place = weather ? `${weather.label.toLowerCase()} en ${simulation?.location?.name ?? "el lugar elegido"}` : "bajo techo";
+  const label = `${species}, ${place}, ${day ? "de día" : "de noche"}; ${on.length > 0
+    ? `encendidos: ${on.map((actuator) => ACTUATORS[actuator.type].label.toLowerCase()).join(", ")}`
+    : "actuadores apagados"}`;
 
   return (
-    <div className="space-y-5">
-      <section className="card grid gap-5 p-5 lg:grid-cols-[1.5fr_1fr]">
-        <div>
+    <section className="card overflow-hidden" aria-label="Ilustración del cultivo">
+      <div className="grid md:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+        <div className="relative">
           {connected ? (
-            <div className="relative">
+            <>
               <CropScene form={crop.form} type={crop.type} installed={actuators.map((actuator) => actuator.type)}
                 running={running} condition={weather?.condition} isDay={day} vigor={vigorOf(crop.health?.level)}
                 moisture={measures?.soilMoisture} label={label} />
@@ -120,113 +84,70 @@ export function LivePanel({ crop, profile, actuators, commands, onChanged, onOpe
                   Esperando la primera lectura…
                 </span>
               )}
-            </div>
+            </>
           ) : status === "paused" ? (
-            <EmptyState icon={<PauseCircle size={26} />} title="La simulación está en pausa"
-              action={<Button icon={<Play size={16} />} loading={busy === "resume"} onClick={() => void resume()}>Reanudar</Button>}>
+            <Unlit icon={<PauseCircle size={24} />} title="La simulación está en pausa"
+              link={{ label: "Ir a Simulación", onClick: () => onOpenTab("simulation") }}>
               Sin lecturas no hay nada que ilustrar. Reanúdala y el cultivo vuelve a crecer aquí.
-            </EmptyState>
+            </Unlit>
           ) : status === "unavailable" ? (
-            <EmptyState icon={<ServerOff size={26} />} title="El simulador no está disponible">
+            <Unlit icon={<ServerOff size={24} />} title="El simulador no está disponible">
               Este servidor no tiene el simulador de cultivos virtuales encendido. Tus datos siguen guardados.
-            </EmptyState>
+            </Unlit>
           ) : virtual ? (
-            <EmptyState icon={<PlugZap size={26} />} title="Conectando la simulación…">
-              En unos segundos el cultivo virtual publica su primera lectura y aparece aquí.
-            </EmptyState>
+            <Unlit icon={<PlugZap size={24} />} title="Conectando la simulación…">
+              En unos segundos el cultivo publica su primera lectura y aparece aquí.
+            </Unlit>
           ) : (
-            <EmptyState icon={<WifiOff size={26} />} title="Tu cultivo no está conectado"
-              action={<Button variant="secondary" onClick={onOpenDevice}>Ver cómo conectarlo</Button>}>
-              Sin conexión no hay nada que ilustrar. Enciende el ESP32 o la simulación de Wokwi; la última señal
-              llegó {timeAgo(crop.device.lastSeenAt)}.
-            </EmptyState>
+            <Unlit icon={<WifiOff size={24} />} title="Tu cultivo no está conectado"
+              link={{ label: "Ver cómo conectarlo", onClick: () => onOpenTab("device") }}>
+              Sin conexión no hay nada que ilustrar. La última señal llegó {timeAgo(crop.device.lastSeenAt)}.
+            </Unlit>
           )}
-          {connected && (
-            <p className="mt-2 text-sm text-muted">
-              {weather ? (
-                <>
-                  {weather.label} en <strong className="text-ink">{sim?.location?.name}</strong> · {weather.temperature.toFixed(1)} °C ·
-                  humedad {Math.round(weather.humidity)} % · nubes {Math.round(weather.cloudCover)} %
-                  {weather.precipitation > 0 && ` · lluvia ${weather.precipitation.toFixed(1)} mm`}
-                </>
-              ) : (
-                <>
-                  Bajo techo · {day ? "de día" : "de noche"}
-                  {measures?.brightness != null && ` · luz ${formatMetric("brightness", measures.brightness)}`}
-                  {measures?.temperature != null && ` · ${formatMetric("temperature", measures.temperature)}`}
-                </>
-              )}
-            </p>
-          )}
-          {sim?.weatherError && <p className="mt-1 text-xs text-clay-600">{sim.weatherError}</p>}
         </div>
 
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold">Actuadores</h2>
-            <Badge tone={virtual ? "info" : "success"}>{virtual ? "Virtual" : "Real"}</Badge>
-            <Badge>{CROP_FORMS[crop.form].label}</Badge>
+        <div className="space-y-4 border-t border-line p-5 md:border-l md:border-t-0">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-leaf-700">{virtual ? "Cultivo virtual" : "Cultivo real"}</p>
+            <p className="mt-0.5 font-display text-lg font-semibold">{species}</p>
+            {connected && (
+              <p className="mt-1 text-sm text-muted">
+                {weather ? (
+                  <>
+                    {weather.label} en <strong className="text-ink">{simulation?.location?.name}</strong> ·{" "}
+                    {weather.temperature.toFixed(1)} °C · humedad {Math.round(weather.humidity)} %
+                    {weather.precipitation > 0 && ` · lluvia ${weather.precipitation.toFixed(1)} mm`}
+                  </>
+                ) : (
+                  <>
+                    Bajo techo · {day ? "de día" : "de noche"}
+                    {measures?.brightness != null && ` · luz ${formatMetric("brightness", measures.brightness)}`}
+                    {measures?.temperature != null && ` · ${formatMetric("temperature", measures.temperature)}`}
+                  </>
+                )}
+              </p>
+            )}
+            {simulation?.weatherError && <p className="mt-1 text-xs text-clay-600">{simulation.weatherError}</p>}
           </div>
-          {error && <Alert tone="danger">{error}</Alert>}
-          <ul className="divide-y divide-line">
-            {actuators.map((actuator) => {
-              const info = ACTUATORS[actuator.type];
-              const Icon = ICONS[actuator.type];
-              const active = running.has(actuator.type);
-              return (
-                <li key={actuator.id} className="flex items-center justify-between gap-3 py-2.5">
-                  <span className="flex min-w-0 items-center gap-2.5">
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${active
-                      ? "bg-leaf-700 text-white" : "bg-surface text-muted"}`}>
-                      <Icon size={17} />
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium">{info.label}</span>
-                      <span className={`block text-xs ${active ? "font-semibold text-leaf-700" : "text-muted"}`}>
-                        {active ? "Encendido" : "Apagado"}
-                      </span>
-                    </span>
-                  </span>
-                  {active ? (
-                    <Button size="sm" variant="secondary" icon={<PowerOff size={14} />} disabled={!connected}
-                      className="shrink-0 whitespace-nowrap"
-                      loading={busy === `${actuator.id}-DEACTIVATE`} onClick={() => void send(actuator, "DEACTIVATE")}>
-                      Apagar
-                    </Button>
-                  ) : (
-                    <Button size="sm" variant="secondary" icon={<Power size={14} />} disabled={!connected}
-                      className="shrink-0 whitespace-nowrap"
-                      loading={busy === `${actuator.id}-ACTIVATE`} onClick={() => void send(actuator, "ACTIVATE")}>
-                      {info.defaultSeconds ? duration(info.defaultSeconds) : "Encender"}
-                    </Button>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-          {actuators.length === 0 && <p className="text-sm text-muted">Este cultivo no tiene actuadores.</p>}
-          <p className="text-xs text-muted">
-            {connected
-              ? "Cada orden llega por MQTT y la escena cambia cuando el dispositivo la confirma."
-              : "Las órdenes se habilitan cuando el cultivo está conectado."}
-          </p>
-        </div>
-      </section>
 
-      {connected && measures && (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-          {PRIMARY_METRICS.map((key) => (
-            <MetricTile key={key} metric={key} value={measures[key]} range={profile?.ranges[key]} />
-          ))}
+          {actuators.length > 0 && (
+            <ul className="flex flex-wrap gap-1.5" aria-label="Estado de los actuadores">
+              {actuators.map((actuator) => {
+                const Icon = ICONS[actuator.type];
+                const active = connected && running.has(actuator.type);
+                return (
+                  <li key={actuator.id} className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs ${active
+                    ? "bg-leaf-700 font-semibold text-white" : "bg-surface text-muted"}`}>
+                    <Icon size={13} className="shrink-0" />
+                    <span>{ACTUATORS[actuator.type].label}</span>
+                    <span className={active ? "text-leaf-100" : "text-muted"}>· {active ? "encendido" : "apagado"}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
-      )}
-
-      {virtual && sim?.available && (
-        // La llave reinicia el formulario con lo guardado cada vez que cambia la configuración.
-        <SimulationPanel key={`${sim.active}-${sim.updatedAt ?? ""}`} cropId={crop.id} simulation={sim} profile={profile}
-          onSaved={(saved) => simulation.setData(saved)} onPaused={() => void simulation.reload()} />
-      )}
-      {virtual && simulation.error && <Alert tone="danger">{simulation.error}</Alert>}
-    </div>
+      </div>
+    </section>
   );
 }
