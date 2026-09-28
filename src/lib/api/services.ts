@@ -6,14 +6,16 @@ import type {
   AuthResponse,
   ChannelLink,
   ChannelOption,
+  ChannelType,
   Command,
   CommandAction,
   Crop,
+  CropChannel,
+  CropChannelUpdate,
   CropCreateRequest,
   CropCreated,
-  CropForm,
   CropProfile,
-  CropType,
+  CropUpdateRequest,
   DeviceCredentials,
   BulkCommandResult,
   Fleet,
@@ -31,6 +33,7 @@ import type {
   User,
   VirtualDevice,
   VirtualDeviceRequest,
+  Weather,
 } from "./types";
 
 const V1 = "/api/v1";
@@ -58,8 +61,9 @@ export const cropApi = {
   list: () => request<Crop[]>(`${V1}/crops`),
   get: (id: string) => request<Crop>(`${V1}/crops/${id}`),
   create: (data: CropCreateRequest) => request<CropCreated>(`${V1}/crops`, { method: "POST", body: data }),
-  update: (id: string, data: { name: string; type: CropType; form: CropForm }) =>
-    request<Crop>(`${V1}/crops/${id}`, { method: "PUT", body: data }),
+  update: (id: string, data: CropUpdateRequest) => request<Crop>(`${V1}/crops/${id}`, { method: "PUT", body: data }),
+  /** Clima actual del lugar del cultivo; undefined si no tiene lugar o no está disponible. */
+  weather: (id: string) => request<Weather | undefined>(`${V1}/crops/${id}/weather`),
   remove: (id: string) => request<void>(`${V1}/crops/${id}`, { method: "DELETE" }),
   setAutomation: (id: string, enabled: boolean) =>
     request<Crop>(`${V1}/crops/${id}/automation`, { method: "PUT", body: { enabled } }),
@@ -129,6 +133,16 @@ export const channelApi = {
     request<ChannelLink>(`${V1}/channels/links/${linkId}`, { method: "PUT", body }),
   test: (linkId: string) => request<void>(`${V1}/channels/links/${linkId}/test`, { method: "POST" }),
   unlink: (linkId: string) => request<void>(`${V1}/channels/links/${linkId}`, { method: "DELETE" }),
+};
+
+export const cropChannelApi = {
+  list: (cropId: string) => request<CropChannel[]>(`${V1}/crops/${cropId}/channels`),
+  update: (cropId: string, type: ChannelType, body: CropChannelUpdate) =>
+    request<CropChannel>(`${V1}/crops/${cropId}/channels/${type.toLowerCase()}`, { method: "PUT", body }),
+  share: (cropId: string, type: ChannelType) =>
+    request<LinkCode>(`${V1}/crops/${cropId}/channels/${type.toLowerCase()}/recipients`, { method: "POST" }),
+  removeRecipient: (cropId: string, type: ChannelType, recipientId: string) =>
+    request<void>(`${V1}/crops/${cropId}/channels/${type.toLowerCase()}/recipients/${recipientId}`, { method: "DELETE" }),
 };
 
 export const virtualDeviceApi = {
