@@ -62,7 +62,7 @@ export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogP
 
   function openCrop(crop: Crop) {
     close();
-    navigate(`/app/crops/${crop.id}?tab=live`);
+    navigate(`/app/crops/${crop.id}`);
   }
 
   async function create(event: FormEvent) {
@@ -190,7 +190,7 @@ export function CreateCropDialog({ open, onClose, onCreated }: CreateCropDialogP
               <ModePicker value={mode} onChange={setMode} />
               {mode === "WEATHER" && <LocationPicker value={location} onChange={setLocation} />}
               {mode === "MANUAL" && (
-                <p className="text-xs text-muted">Empieza con los valores típicos de la especie; muévelos luego en Cultivo en vivo.</p>
+                <p className="text-xs text-muted">Empieza con los valores típicos de la especie; muévelos luego en la pestaña Simulación.</p>
               )}
             </div>
           )}

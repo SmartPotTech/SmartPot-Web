@@ -61,7 +61,7 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
           {Object.entries(CROP_TYPES).map(([value, info]) => <option key={value} value={value}>{info.label}</option>)}
         </SelectField>
         <SelectField label="Forma del cultivo" value={form} onChange={(event) => setForm(event.target.value as CropForm)}
-          hint={`${CROP_FORMS[form].hint} Cambia cómo se ilustra en Cultivo en vivo.`}>
+          hint={`${CROP_FORMS[form].hint} Cambia cómo se ilustra el cultivo.`}>
           {Object.entries(CROP_FORMS).map(([value, info]) => <option key={value} value={value}>{info.label}</option>)}
         </SelectField>
         <div className="rounded-xl bg-surface px-3 py-2 text-sm">
