@@ -49,7 +49,7 @@ export function formatDuration(seconds: number | null | undefined): string {
   return `${(seconds / 3600).toLocaleString("es-CO", { maximumFractionDigits: 1 })} h`;
 }
 
-/** «Encender bomba de agua por 15 s», «Apagar luz de cultivo». */
+/** «Encender bomba de agua por 15 s», «Apagar luz ultravioleta». */
 export function describeAction(actuator: ActuatorType, action: CommandAction, durationSeconds?: number | null): string {
   const verb = action === "ACTIVATE" ? "Encender" : "Apagar";
   const duration = action === "ACTIVATE" && durationSeconds ? ` por ${formatDuration(durationSeconds)}` : "";
