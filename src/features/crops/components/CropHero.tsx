@@ -3,9 +3,9 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { ACTUATORS, CROP_FORMS, CROP_TYPES } from "../../../lib/catalog";
+import { ACTUATORS, CROP_FORMS, CROP_TYPES, describePlacement } from "../../../lib/catalog";
 import { formatMetric, timeAgo } from "../../../lib/format";
-import type { Actuator, ActuatorType, Command, Crop, VirtualDevice } from "../../../lib/api/types";
+import type { Actuator, ActuatorType, Command, Crop, VirtualDevice, Weather } from "../../../lib/api/types";
 import { isDaylight, liveStatus, runningActuators, vigorOf } from "../live";
 import { CropScene } from "./scene/CropScene";
 
@@ -24,6 +24,8 @@ interface CropHeroProps {
   commands: Command[];
   /** Solo en los virtuales: estado de la simulación (clima, conexión y actuadores del simulador). */
   simulation?: VirtualDevice | null;
+  /** Clima actual del lugar del cultivo, si tiene ubicación. */
+  weather?: Weather | null;
   onOpenTab: (tab: string) => void;
 }
 
@@ -44,10 +46,11 @@ function Unlit({ icon, title, children, link }: { icon: ReactNode; title: string
 }
 
 /**
- * La ilustración del cultivo, fija sobre todas sus secciones: su forma con la especie, el entorno y cada actuador
- * encendido o apagado. Solo muestra; las órdenes se dan en Control. Si el cultivo no está conectado no se dibuja.
+ * La ilustración del cultivo, fija sobre todas sus secciones: su forma con la especie, su lugar (bajo techo o al
+ * aire libre, con el clima y la sombra) y cada actuador encendido o apagado. Solo muestra; las órdenes se dan en
+ * Control. Si el cultivo no está conectado no se dibuja.
  */
-export function CropHero({ crop, actuators, commands, simulation, onOpenTab }: CropHeroProps) {
+export function CropHero({ crop, actuators, commands, simulation, weather: outside, onOpenTab }: CropHeroProps) {
   const [now, setNow] = useState(() => Date.now());
 
   // Los encendidos por tiempo se apagan solos: la escena se revisa cada pocos segundos.
@@ -59,13 +62,21 @@ export function CropHero({ crop, actuators, commands, simulation, onOpenTab }: C
   const virtual = crop.kind === "VIRTUAL";
   const status = liveStatus(crop, simulation);
   const measures = crop.latestReading?.measures ?? simulation?.lastReading ?? undefined;
-  const weather = simulation?.active && simulation.mode === "WEATHER" ? simulation.weather : null;
+  const simulated = simulation?.active && simulation.mode === "WEATHER" ? simulation.weather : null;
+  const weather = simulated ?? outside ?? null;
+  const placement = crop.placement ?? null;
+  // Sin lugar definido, el cultivo virtual que sigue un clima está al aire libre; el resto se dibuja bajo techo.
+  const setting = placement?.setting ?? (simulated ? "OUTDOOR" : null);
+  const outdoor = setting === "OUTDOOR";
   const running = runningActuators(actuators, commands, simulation?.activeActuators ?? [], now);
   const day = isDaylight(weather, measures);
   const connected = status === "live" || status === "waiting";
   const species = `${CROP_TYPES[crop.type].label} ${CROP_FORMS[crop.form].phrase}`;
   const on = actuators.filter((actuator) => running.has(actuator.type));
-  const place = weather ? `${weather.label.toLowerCase()} en ${simulation?.location?.name ?? "el lugar elegido"}` : "bajo techo";
+  const described = describePlacement(placement);
+  const where = described ?? (outdoor ? "al aire libre" : "lugar sin definir");
+  const scenery = described ?? (outdoor ? "al aire libre" : "bajo techo");
+  const place = outdoor && weather ? `${scenery}, ${weather.label.toLowerCase()}` : scenery;
   const label = `${species}, ${place}, ${day ? "de día" : "de noche"}; ${on.length > 0
     ? `encendidos: ${on.map((actuator) => ACTUATORS[actuator.type].label.toLowerCase()).join(", ")}`
     : "actuadores apagados"}`;
@@ -77,8 +88,8 @@ export function CropHero({ crop, actuators, commands, simulation, onOpenTab }: C
           {connected ? (
             <>
               <CropScene form={crop.form} type={crop.type} installed={actuators.map((actuator) => actuator.type)}
-                running={running} condition={weather?.condition} isDay={day} vigor={vigorOf(crop.health?.level)}
-                moisture={measures?.soilMoisture} label={label} />
+                running={running} condition={weather?.condition} setting={setting} exposure={placement?.exposure}
+                isDay={day} vigor={vigorOf(crop.health?.level)} moisture={measures?.soilMoisture} label={label} />
               {status === "waiting" && (
                 <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-leaf-800 shadow">
                   Esperando la primera lectura…
@@ -108,23 +119,31 @@ export function CropHero({ crop, actuators, commands, simulation, onOpenTab }: C
 
         <div className="space-y-4 border-t border-line p-5 md:border-l md:border-t-0">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-leaf-700">{virtual ? "Cultivo virtual" : "Cultivo real"}</p>
+            {virtual && <p className="text-xs font-semibold uppercase tracking-wide text-leaf-700">Cultivo virtual</p>}
             <p className="mt-0.5 font-display text-lg font-semibold">{species}</p>
+            <p className="mt-1 text-sm text-muted">
+              {where.charAt(0).toUpperCase() + where.slice(1)}
+              {!placement?.setting && (
+                <>
+                  {" · "}
+                  <button type="button" onClick={() => onOpenTab("settings")}
+                    className="font-semibold text-water-700 hover:underline">Indicar dónde está</button>
+                </>
+              )}
+            </p>
             {connected && (
               <p className="mt-1 text-sm text-muted">
-                {weather ? (
+                {weather && (
                   <>
-                    {weather.label} en <strong className="text-ink">{simulation?.location?.name}</strong> ·{" "}
-                    {weather.temperature.toFixed(1)} °C · humedad {Math.round(weather.humidity)} %
+                    Afuera: {weather.label.toLowerCase()} · {weather.temperature.toFixed(1)} °C · humedad{" "}
+                    {Math.round(weather.humidity)} %
                     {weather.precipitation > 0 && ` · lluvia ${weather.precipitation.toFixed(1)} mm`}
-                  </>
-                ) : (
-                  <>
-                    Bajo techo · {day ? "de día" : "de noche"}
-                    {measures?.brightness != null && ` · luz ${formatMetric("brightness", measures.brightness)}`}
-                    {measures?.temperature != null && ` · ${formatMetric("temperature", measures.temperature)}`}
+                    {" · "}
                   </>
                 )}
+                {day ? "de día" : "de noche"}
+                {measures?.brightness != null && ` · luz ${formatMetric("brightness", measures.brightness)}`}
+                {!weather && measures?.temperature != null && ` · ${formatMetric("temperature", measures.temperature)}`}
               </p>
             )}
             {simulation?.weatherError && <p className="mt-1 text-xs text-clay-600">{simulation.weatherError}</p>}
