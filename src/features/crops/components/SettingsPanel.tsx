@@ -1,4 +1,4 @@
-import { Save, Trash2 } from "lucide-react";
+import { MapPinned, Save, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "../../../components/ui/Button";
@@ -8,7 +8,9 @@ import { Dialog } from "../../../components/ui/Dialog";
 import { ApiError } from "../../../lib/api/client";
 import { cropApi } from "../../../lib/api/services";
 import { CROP_FORMS, CROP_KINDS, CROP_TYPES } from "../../../lib/catalog";
-import type { Crop, CropForm, CropType } from "../../../lib/api/types";
+import type { Crop, CropForm, CropType, Placement } from "../../../lib/api/types";
+import { CropNotifications } from "./CropNotifications";
+import { PlacementPicker } from "./PlacementPicker";
 
 export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: Crop) => void }) {
   const navigate = useNavigate();
@@ -20,6 +22,22 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
   const [deleting, setDeleting] = useState(false);
   const [confirmName, setConfirmName] = useState("");
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<Placement>(crop.placement ?? {});
+  const [placementMessage, setPlacementMessage] = useState<{ tone: "success" | "danger"; text: string } | null>(null);
+  const [placing, setPlacing] = useState(false);
+
+  async function savePlacement() {
+    setPlacing(true);
+    setPlacementMessage(null);
+    try {
+      onSaved(await cropApi.update(crop.id, { name: crop.name, type: crop.type, form: crop.form, placement }));
+      setPlacementMessage({ tone: "success", text: "Lugar guardado: la ilustración y el asistente ya lo usan" });
+    } catch (caught) {
+      setPlacementMessage({ tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo guardar" });
+    } finally {
+      setPlacing(false);
+    }
+  }
 
   async function save(event: FormEvent) {
     event.preventDefault();
@@ -29,7 +47,7 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
     }
     setSaving(true);
     try {
-      onSaved(await cropApi.update(crop.id, { name: name.trim(), type, form }));
+      onSaved(await cropApi.update(crop.id, { name: name.trim(), type, form, placement: crop.placement ?? undefined }));
       setMessage({ tone: "success", text: "Cambios guardados" });
     } catch (caught) {
       setMessage({ tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo guardar" });
@@ -70,6 +88,23 @@ export function SettingsPanel({ crop, onSaved }: { crop: Crop; onSaved: (crop: C
         </div>
         <Button type="submit" icon={<Save size={16} />} loading={saving}>Guardar cambios</Button>
       </form>
+
+      <section className="card space-y-4 p-5" aria-labelledby="placement-title">
+        <div>
+          <h3 id="placement-title" className="flex items-center gap-2 font-semibold">
+            <MapPinned size={16} className="text-leaf-700" /> Dónde está
+          </h3>
+          <p className="text-sm text-muted">
+            Cambia cómo se ilustra y lo que recomienda el asistente{crop.kind === "VIRTUAL"
+              ? "; en un cultivo virtual también cambia el clima que simula" : ""}.
+          </p>
+        </div>
+        {placementMessage && <Alert tone={placementMessage.tone}>{placementMessage.text}</Alert>}
+        <PlacementPicker type={crop.type} value={placement} onChange={setPlacement} />
+        <Button icon={<Save size={16} />} loading={placing} onClick={() => void savePlacement()}>Guardar lugar</Button>
+      </section>
+
+      <CropNotifications crop={crop} />
 
       <section className="card border-danger-500/30 p-5">
         <h3 className="font-semibold text-danger-600">Eliminar cultivo</h3>
