@@ -11,15 +11,16 @@
 SmartPot-Web es la **aplicación web progresiva (PWA)** de SmartPot, publicada en [smartpot.app](https://smartpot.app). Se instala en Android, iOS y escritorio, y permite:
 
 - Ver todos los cultivos juntos en el **panel general**: salud de cada uno, comparación de una variable entre cultivos (6 h, 24 h o 7 días), tabla con la última lectura frente al rango ideal y el análisis del asistente sobre toda la cuenta (problemas compartidos del entorno, grupos con condiciones parecidas y acciones en bloque).
-- Usar el **control general** para activar el modo automático o enviar la misma orden (regar, ventilar, luz) a varias macetas a la vez.
+- Usar el **control general** para activar el modo automático o enviar la misma orden (regar, ventilar, luz) a varios cultivos a la vez.
 - Revisar las **acciones**: las que sugiere el asistente para varios cultivos y el historial de todas las órdenes, filtrado por estado y origen.
-- Crear cultivos de seis especies y conectar su maceta con las credenciales MQTT que entrega la API.
+- Crear cultivos **reales** (un ESP32 con el firmware, físico o simulado en Wokwi, con su guía de conexión) o **virtuales** (los simula SmartPot), de seis especies y cuatro formas: maceta, tubos NFT, torre vertical o balsa flotante. El tipo no cambia después.
+- Ver cada cultivo **en vivo**: su forma y su planta con el color de su salud, el entorno (interior o el clima del lugar) y cada actuador encendido o apagado, con su botón. Si no está conectado, no se ilustra.
 - Ver las lecturas en tiempo real, comparadas con el rango ideal de la especie, e historiales de 6 h, 24 h o 7 días exportables a CSV.
-- Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico, conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas, lo **aprendido de macetas reales** (estado de operación, lectura habitual o no, riego o calor probables en la próxima hora y sustrato esperado) y acciones sugeridas.
+- Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico, conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas, lo **aprendido de cultivos reales** (estado de operación, lectura habitual o no, riego o calor probables en la próxima hora y sustrato esperado) y acciones sugeridas.
 - Ver en **Aprendizaje** cómo mejora el asistente con cada lectura: calidad de los datos, comparación de modelos con su puntaje frente a la línea base, estados típicos de cada especie y detector de lecturas poco habituales.
-- Encender una **maceta virtual** siempre activa para un cultivo: con el clima real de un lugar (con su escena de sol, nubes, lluvia o noche), con medidores manuales o con el ciclo de día y noche de la especie.
+- Controlar la **simulación** de un cultivo virtual: el clima real de un lugar (con su escena de sol, nubes, lluvia o noche), medidores manuales o el ciclo de día y noche de la especie; pausarla y reanudarla.
 - Vincular **Telegram** desde el perfil para recibir las alertas elegidas fuera de la app.
-- Encender y apagar la bomba, la luz de cultivo y el ventilador, y activar el **modo automático** del agente.
+- Encender y apagar la bomba, la luz de cultivo, el ventilador, el humidificador y los dosificadores, y activar el **modo automático** del agente.
 - Recibir alertas del cultivo, del dispositivo y del asistente.
 
 La página de inicio es pública e indexable; la aplicación vive bajo `/app` y no se indexa.
@@ -48,7 +49,7 @@ SmartPot-Web/
 │   │   ├── overview/           # Panel general: ranking, comparativas y análisis de la IA
 │   │   ├── control/            # Control general: modo automático y órdenes en bloque
 │   │   ├── actions/            # Acciones sugeridas e historial de todos los cultivos
-│   │   ├── crops/              # Lista y detalle: resumen, asistente, control, historial, dispositivo, maceta virtual y ajustes
+│   │   ├── crops/              # Creación real o virtual, cultivo en vivo, resumen, asistente, control, historial, dispositivo y ajustes
 │   │   ├── learning/           # Aprendizaje de la IA: calidad, comparación de modelos, estados y atípicos
 │   │   ├── landing/            # Página pública y preguntas frecuentes
 │   │   ├── notifications/      # Alertas
@@ -71,7 +72,7 @@ SmartPot-Web/
 | `leaf-500` | `#00B074` | Verde de marca |
 | `water-500` | `#2D9CDB` | Agua, información y señal del logo |
 | `sun-500` | `#F2B632` | Luz y advertencias |
-| `clay-500` | `#D9734E` | Maceta y temperatura |
+| `clay-500` | `#D9734E` | Maceta de la ilustración y temperatura |
 | `danger-500` | `#D64545` | Errores |
 | `ink` / `muted` / `line` / `surface` | `#17261F` / `#5B6B63` / `#D5E3DC` / `#F2F7F4` | Texto, bordes y superficies |
 
@@ -88,9 +89,9 @@ Las comparativas entre cultivos usan una paleta categórica de 8 colores en orde
 
 ## Seguridad
 
-- CSP estricta (`script-src 'self'`, `style-src 'self'`, `connect-src` limitado a la API), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy` (solo la geolocalización del propio sitio, para ubicar la maceta virtual; nunca se envía sin que la persona toque «Usar mi ubicación»).
+- CSP estricta (`script-src 'self'`, `style-src 'self'`, `connect-src` limitado a la API), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy` (solo la geolocalización del propio sitio, para ubicar un cultivo virtual en modo clima; nunca se envía sin que la persona toque «Usar mi ubicación»).
 - El token JWT se guarda en `localStorage` solo si el usuario marca «Mantener sesión iniciada»; si no, en `sessionStorage`. Un 401 cierra la sesión.
-- La clave del dispositivo se muestra una sola vez, al crear el cultivo o al rotarla.
+- La clave del dispositivo se muestra una sola vez, al crear un cultivo real o al rotarla.
 
 ## Guía de Instalación
 
@@ -117,7 +118,7 @@ pnpm test
 pnpm build
 ```
 
-Las pruebas cubren el cliente HTTP y sus errores en español, la sesión, las validaciones, el ingreso, los componentes del cultivo, el panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, la escena de la maceta virtual y los requisitos de SEO y PWA.
+Las pruebas cubren el cliente HTTP y sus errores en español, la sesión, las validaciones, el ingreso, los componentes del cultivo, el panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, el cultivo en vivo (formas, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
 
 ### Imagen Docker
 
@@ -141,10 +142,10 @@ pnpm icons
 
 ## Documentación
 
-La PWA es la cara de la plataforma: todo lo que muestra viene de la API. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma completa en una sola imagen ampliable:
+La PWA es la cara de la plataforma: todo lo que muestra viene de la API. Su documentación propia está en [`docs/`](docs/SmartPot_Web_Documentation.md) (también en [DOCX](docs/SmartPot_Web_Documentation.docx) y [PDF](docs/SmartPot_Web_Documentation.pdf)), con sus diagramas en [`docs/diagrams`](docs/diagrams): el general del componente y los de creación de un cultivo, cultivo en vivo y sesión y caché. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma completa en una sola imagen ampliable:
 
 - [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_07_User_Journey.svg): cada pantalla, las rutas de la API que llama y el servicio que responde
-- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA a la maceta
+- [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA al dispositivo
 - [Arquitectura completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_01_Architecture.svg): dónde vive la PWA dentro de la plataforma
 
 ## Licencia
