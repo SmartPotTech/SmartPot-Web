@@ -18,7 +18,7 @@ const PINS = [
   ["TDS (nutrientes)", "GPIO 32"],
   ["Humedad del sustrato", "GPIO 33"],
   ["Bomba de agua", "GPIO 19"],
-  ["Luz de cultivo", "GPIO 18"],
+  ["Luz ultravioleta", "GPIO 18"],
   ["Ventilador", "GPIO 5"],
   ["Pantalla LCD I2C", "SCL 16 · SDA 17"],
 ];
