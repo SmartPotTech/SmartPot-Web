@@ -1,5 +1,5 @@
 import { ArrowLeft, FileDown } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { Button } from "../../components/ui/Button";
 import { Alert, Badge } from "../../components/ui/Feedback";
@@ -10,7 +10,7 @@ import { ApiError } from "../../lib/api/client";
 import { actuatorApi, commandApi, cropApi, insightApi, readingApi, virtualDeviceApi } from "../../lib/api/services";
 import { CROP_FORMS, CROP_TYPES, HEALTH, METRICS, PRIMARY_METRICS } from "../../lib/catalog";
 import { formatMetric, timeAgo } from "../../lib/format";
-import type { CropKind, MetricKey, VirtualDevice } from "../../lib/api/types";
+import type { CropKind, MetricKey, VirtualDevice, Weather } from "../../lib/api/types";
 import { ControlPanel } from "./components/ControlPanel";
 import { DevicePanel } from "./components/DevicePanel";
 import { CropHero } from "./components/CropHero";
@@ -41,6 +41,9 @@ const RANGES = [
   { hours: 168, label: "7 días" },
 ];
 
+/** Tras una orden, el estado se vuelve a pedir en estos momentos para ver pronto la confirmación del dispositivo. */
+const FOLLOW_UP_MS = [700, 2_000, 4_500];
+
 export default function CropDetailPage() {
   const { cropId = "" } = useParams();
   const [params, setParams] = useSearchParams();
@@ -56,11 +59,31 @@ export default function CropDetailPage() {
   const tabs = TABS.filter((item) => !item.only || !crop.data || item.only === crop.data.kind);
   const tab = tabs.find((item) => item.id === wanted)?.id ?? "summary";
   const isVirtual = crop.data?.kind === "VIRTUAL";
-  // La ilustración está sobre todas las secciones: actuadores y órdenes se refrescan siempre.
-  const actuators = useResource(() => actuatorApi.list(cropId), [cropId], 10_000);
-  const commands = useResource(() => commandApi.list(cropId), [cropId], tab === "control" ? 5_000 : 10_000);
+  // La ilustración está sobre todas las secciones: actuadores y órdenes se refrescan siempre, también lo que decide
+  // el agente de IA por su cuenta.
+  const actuators = useResource(() => actuatorApi.list(cropId), [cropId], 4_000);
+  const commands = useResource(() => commandApi.list(cropId), [cropId], 4_000);
   const simulation = useResource<VirtualDevice | null>(
-    () => (isVirtual ? virtualDeviceApi.get(cropId) : Promise.resolve(null)), [cropId, isVirtual], isVirtual ? 10_000 : undefined);
+    () => (isVirtual ? virtualDeviceApi.get(cropId) : Promise.resolve(null)), [cropId, isVirtual], isVirtual ? 8_000 : undefined);
+  const location = crop.data?.placement?.location;
+  const locationKey = location ? `${location.latitude},${location.longitude}` : "";
+  const weather = useResource<Weather | null>(
+    () => (locationKey ? cropApi.weather(cropId).then((value) => value ?? null) : Promise.resolve(null)),
+    [cropId, locationKey], locationKey ? 600_000 : undefined);
+  const followUps = useRef<number[]>([]);
+  const reloadActuators = actuators.reload;
+  const reloadCommands = commands.reload;
+  const reloadSimulation = simulation.reload;
+  const refreshSoon = useCallback(() => {
+    followUps.current.forEach((timer) => window.clearTimeout(timer));
+    followUps.current = FOLLOW_UP_MS.map((delay) => window.setTimeout(() => {
+      void reloadActuators();
+      void reloadCommands();
+      if (isVirtual) void reloadSimulation();
+    }, delay));
+    void reloadCommands();
+  }, [reloadActuators, reloadCommands, reloadSimulation, isVirtual]);
+  useEffect(() => () => followUps.current.forEach((timer) => window.clearTimeout(timer)), []);
   const insight = useResource(() => (tab === "assistant" ? insightApi.get(cropId) : Promise.resolve(undefined)),
     [cropId, tab === "assistant"]);
   const profiles = useCropProfiles();
@@ -111,7 +134,7 @@ export default function CropDetailPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge tone={virtual ? "info" : "success"}>{virtual ? "Virtual" : "Real"}</Badge>
+            {virtual && <Badge tone="info">Virtual</Badge>}
             {current.health && (
               <Badge tone={HEALTH[current.health.level]?.tone ?? "neutral"}>
                 Salud {Math.round(current.health.index)}/100 · {current.health.label}
@@ -122,7 +145,7 @@ export default function CropDetailPage() {
       </div>
 
       <CropHero crop={current} actuators={actuators.data ?? []} commands={commands.data ?? []}
-        simulation={simulation.data} onOpenTab={openTab} />
+        simulation={simulation.data} weather={weather.data} onOpenTab={openTab} />
 
       <nav className="-mx-4 flex gap-1 overflow-x-auto border-b border-line px-4" aria-label="Secciones del cultivo">
         {tabs.map((item) => (
@@ -172,17 +195,14 @@ export default function CropDetailPage() {
           onRefresh={() => void insight.reload()}
           onRunAction={async (action, actuator) => {
             await commandApi.send(cropId, actuator.id, action.action, action.durationSeconds);
-            void commands.reload();
-          }} />
+            refreshSoon();
+          }} onOpenTab={openTab} />
       )}
 
       {tab === "control" && (
         <ControlPanel crop={current} actuators={actuators.data ?? []} commands={commands.data ?? []}
           onAutomation={async (enabled) => crop.setData(await cropApi.setAutomation(cropId, enabled))}
-          onChanged={() => {
-            void actuators.reload();
-            void commands.reload();
-          }} />
+          onChanged={refreshSoon} />
       )}
 
       {tab === "history" && (
@@ -221,9 +241,12 @@ export default function CropDetailPage() {
         simulation.data ? (
           simulation.data.available ? (
             // La llave reinicia el formulario con lo guardado cada vez que cambia la configuración.
-            <SimulationPanel key={`${simulation.data.active}-${simulation.data.updatedAt ?? ""}`} cropId={cropId}
-              simulation={simulation.data} profile={profile} onSaved={(saved) => simulation.setData(saved)}
-              onPaused={() => void simulation.reload()} />
+            <SimulationPanel key={`${simulation.data.active}-${simulation.data.updatedAt ?? ""}`} crop={current}
+              simulation={simulation.data} profile={profile} onSaved={(saved) => {
+                simulation.setData(saved);
+                void crop.reload();
+              }}
+              onPaused={() => void simulation.reload()} onOpenTab={openTab} />
           ) : (
             <Alert tone="info" title="El simulador no está disponible">
               Este servidor no tiene el simulador de cultivos virtuales encendido. La configuración sigue guardada.
