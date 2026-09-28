@@ -25,6 +25,7 @@ export function runningActuators(actuators: Actuator[], commands: Command[],
   const running = new Set<ActuatorType>();
   for (const actuator of actuators) {
     if (actuator.active) running.add(actuator.type);
+    if (actuator.runningUntil && Date.parse(actuator.runningUntil) > now) running.add(actuator.type);
     const last = latest.get(actuator.type);
     if (last?.action === "ACTIVATE" && last.status === "EXECUTED" && last.durationSeconds) {
       const started = Date.parse(last.completedAt ?? last.sentAt ?? last.createdAt);
@@ -43,6 +44,17 @@ export function isDaylight(weather: Weather | null | undefined, measures: Measur
   if (measures?.brightness != null) return measures.brightness >= 150;
   const hour = now.getHours();
   return hour >= 6 && hour < 18;
+}
+
+/** La orden que espera la confirmación del dispositivo para cada actuador. */
+export function pendingCommands(commands: Command[]): Map<ActuatorType, Command> {
+  const pending = new Map<ActuatorType, Command>();
+  for (const command of commands) {
+    if ((command.status === "PENDING" || command.status === "SENT") && !pending.has(command.actuatorType)) {
+      pending.set(command.actuatorType, command);
+    }
+  }
+  return pending;
 }
 
 export type LiveStatus = "live" | "waiting" | "offline" | "paused" | "unavailable";
