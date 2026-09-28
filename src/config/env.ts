@@ -1,7 +1,7 @@
 declare global {
-  interface Window {
-    SMARTPOT_CONFIG?: { apiUrl?: string };
-  }
+    interface Window {
+        SMARTPOT_CONFIG?: { apiUrl?: string };
+    }
 }
 
 // La URL de la API llega en /config.js, que el contenedor genera al arrancar.
