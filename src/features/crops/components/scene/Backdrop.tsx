@@ -1,4 +1,4 @@
-import type { WeatherCondition } from "../../../../lib/api/types";
+import type { PlacementSetting, SunExposure, WeatherCondition } from "../../../../lib/api/types";
 
 export const WIDTH = 360;
 export const HEIGHT = 220;
@@ -104,10 +104,18 @@ function Outdoor({ id, condition, isDay }: { id: string; condition: WeatherCondi
   );
 }
 
-/** Interior: pared, ventana con el cielo del momento y piso. */
-function Indoor({ id, isDay }: { id: string; isDay: boolean }) {
+/**
+ * Interior: pared, piso y una ventana con el cielo de afuera. Con ventana soleada entra un haz de sol hasta el
+ * cultivo; sin luz natural la cortina queda cerrada.
+ */
+function Indoor({ id, isDay, condition, exposure }: { id: string; isDay: boolean; condition?: WeatherCondition | null;
+  exposure?: SunExposure | null }) {
   const wall = isDay ? ["#EEFAF4", "#DDF5EA"] : ["#0B3D2B", "#06281C"];
-  const glass = isDay ? "#E3F2FB" : "#1F6FA0";
+  const [sky] = skyFor(condition ?? "MOSTLY_CLEAR", isDay);
+  const frame = isDay ? "#D5E3DC" : "#0A5A3C";
+  const sunny = isDay && (!condition || ["CLEAR", "MOSTLY_CLEAR", "PARTLY_CLOUDY"].includes(condition));
+  const wet = condition === "RAIN" || condition === "STORM" || condition === "DRIZZLE";
+  const closed = exposure === "SHADE";
   return (
     <g data-backdrop="indoor">
       <defs>
@@ -117,17 +125,86 @@ function Indoor({ id, isDay }: { id: string; isDay: boolean }) {
         </linearGradient>
       </defs>
       <rect width={WIDTH} height={HEIGHT} fill={`url(#${id}-wall)`} />
-      <g transform="translate(282 18)">
-        <rect width="62" height="54" rx="4" fill={glass} stroke={isDay ? "#D5E3DC" : "#0A5A3C"} strokeWidth="4" />
-        <line x1="31" y1="0" x2="31" y2="54" stroke={isDay ? "#D5E3DC" : "#0A5A3C"} strokeWidth="3" />
-        {isDay ? <circle cx="46" cy="16" r="7" fill="#F2B632" /> : <Moon x={46} y={16} sky={glass} />}
+      <g transform="translate(282 18)" data-window={closed ? "closed" : "open"}>
+        <rect width="62" height="54" rx="4" fill={sky} stroke={frame} strokeWidth="4" />
+        {isDay && sunny && !closed && <circle cx="46" cy="16" r="7" fill="#F2B632" />}
+        {!isDay && !closed && <Moon x={46} y={16} sky={sky} />}
+        {isDay && !sunny && !closed && <Cloud x={24} y={16} scale={0.45} dark={wet} />}
+        {wet && !closed && (
+          <g stroke="#2D9CDB" strokeWidth="1.5" strokeLinecap="round">
+            {[8, 20, 38, 50].map((x) => <line key={x} x1={x} y1={30} x2={x - 3} y2={38} />)}
+          </g>
+        )}
+        <line x1="31" y1="0" x2="31" y2="54" stroke={frame} strokeWidth="3" />
+        {closed && (
+          <g data-curtain>
+            <rect x="-2" y="-2" width="66" height="58" rx="3" fill="#D9734E" opacity="0.85" />
+            {[10, 22, 34, 46, 58].map((x) => <line key={x} x1={x} y1="-2" x2={x} y2="56" stroke="#B85A38" strokeWidth="2" />)}
+          </g>
+        )}
       </g>
+      {exposure === "FULL_SUN" && isDay && sunny && (
+        <polygon data-sunbeam points="284,70 344,72 250,200 140,200" fill="#F2B632" opacity="0.14" />
+      )}
       <rect x="0" y={GROUND} width={WIDTH} height={HEIGHT - GROUND} fill={isDay ? "#D5E3DC" : "#0A5A3C"} />
     </g>
   );
 }
 
+interface BackdropProps {
+  id: string;
+  /** Clima del lugar: afuera pinta el cielo; adentro, lo que se ve por la ventana. */
+  condition?: WeatherCondition | null;
+  isDay: boolean;
+  /** Sin lugar definido, un clima conocido significa aire libre y su ausencia, interior. */
+  setting?: PlacementSetting | null;
+  exposure?: SunExposure | null;
+}
+
 /** El id prefija los degradados: varias escenas en la misma página no deben compartirlos. */
-export function Backdrop({ id, condition, isDay }: { id: string; condition?: WeatherCondition | null; isDay: boolean }) {
-  return condition ? <Outdoor id={id} condition={condition} isDay={isDay} /> : <Indoor id={id} isDay={isDay} />;
+export function Backdrop({ id, condition, isDay, setting, exposure }: BackdropProps) {
+  const outdoor = setting ? setting === "OUTDOOR" : Boolean(condition);
+  return outdoor
+    ? <Outdoor id={id} condition={condition ?? (isDay ? "MOSTLY_CLEAR" : "CLEAR")} isDay={isDay} />
+    : <Indoor id={id} isDay={isDay} condition={condition} exposure={exposure} />;
+}
+
+/**
+ * Lo que da sombra al aire libre, encima del cultivo: una malla sobre una pérgola en media sombra, o la copa de un
+ * árbol en sombra. Tiñe la escena para que se note que la planta recibe menos sol.
+ */
+export function Shelter({ setting, exposure, isDay }: { setting?: PlacementSetting | null;
+  exposure?: SunExposure | null; isDay: boolean }) {
+  if (setting !== "OUTDOOR" || !exposure || exposure === "FULL_SUN") return null;
+  const tint = isDay ? "#06281C" : "#000000";
+  if (exposure === "PARTIAL_SUN") {
+    return (
+      <g data-shade="PARTIAL_SUN">
+        <rect x="0" y="0" width={WIDTH} height={GROUND} fill={tint} opacity="0.07" />
+        <rect x="10" y="10" width="5" height={GROUND - 10} fill="#B85A38" />
+        <rect x="345" y="10" width="5" height={GROUND - 10} fill="#B85A38" />
+        <rect x="6" y="6" width="348" height="8" rx="2" fill="#067A52" opacity="0.75" />
+        <g stroke="#0B3D2B" strokeWidth="1" opacity="0.5">
+          {Array.from({ length: 34 }, (_, i) => <line key={i} x1={10 + i * 10} y1="6" x2={10 + i * 10} y2="14" />)}
+        </g>
+      </g>
+    );
+  }
+  return (
+    <g data-shade="SHADE">
+      <rect x="0" y="0" width={WIDTH} height={GROUND} fill={tint} opacity="0.16" />
+      <rect x="18" y="40" width="14" height={GROUND - 40} rx="3" fill="#B85A38" />
+      <g fill="#067A52">
+        <circle cx="30" cy="30" r="40" />
+        <circle cx="95" cy="16" r="34" />
+        <circle cx="160" cy="6" r="30" />
+        <circle cx="220" cy="-4" r="28" />
+      </g>
+      <g fill="#00B074" opacity="0.5">
+        <circle cx="50" cy="20" r="18" />
+        <circle cx="120" cy="8" r="14" />
+      </g>
+      <ellipse cx="180" cy={GROUND + 6} rx="170" ry="8" fill="#06281C" opacity="0.18" />
+    </g>
+  );
 }
