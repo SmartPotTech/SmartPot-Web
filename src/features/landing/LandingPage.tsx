@@ -14,7 +14,7 @@ const FEATURES = [
   { icon: BrainCircuit, title: "Asistente de inteligencia artificial",
     text: "Un sistema experto, lógica difusa y modelos de aprendizaje automático diagnostican tu cultivo y te dicen qué hacer." },
   { icon: Bot, title: "Automatización con un agente",
-    text: "Activa el modo automático y el agente riega, ventila o enciende la luz de cultivo cuando hace falta." },
+    text: "Activa el modo automático y el agente riega, ventila o enciende la luz ultravioleta cuando hace falta." },
   { icon: Gauge, title: "Índice de salud",
     text: "Un puntaje de 0 a 100 resume el estado de cada planta para que sepas de un vistazo cuál necesita atención." },
   { icon: FileDown, title: "Historial y exportación",
