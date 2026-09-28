@@ -1,10 +1,11 @@
-import { BrainCircuit, CircleHelp, Minus, Play, RefreshCw, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
+import { BrainCircuit, CircleHelp, MapPinned, Minus, Play, RefreshCw, Sparkles, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { Alert, Badge } from "../../../components/ui/Feedback";
-import { METRICS } from "../../../lib/catalog";
+import { describePlacement, METRICS } from "../../../lib/catalog";
 import { describeAction, formatHoursAhead, formatMetric, timeAgo } from "../../../lib/format";
-import type { Actuator, Insight } from "../../../lib/api/types";
+import { ApiError } from "../../../lib/api/client";
+import type { Actuator, Insight, PlacementAdvice } from "../../../lib/api/types";
 import { HealthGauge } from "./HealthGauge";
 import { LearningCard } from "./LearningCard";
 
@@ -15,13 +16,41 @@ interface InsightPanelProps {
   actuators: Actuator[];
   onRefresh: () => void;
   onRunAction: (action: Insight["actions"][number], actuator: Actuator) => Promise<void>;
+  onOpenTab?: (tab: string) => void;
+}
+
+const PLACEMENT_TONE = {
+  OK: "border-leaf-500/30 bg-leaf-50",
+  UNKNOWN: "border-line bg-surface",
+  TIP: "border-water-500/30 bg-water-100",
+  MOVE: "border-sun-500/40 bg-sun-100",
+} as const;
+
+/** El consejo de lugar: la planta puede estar donde se quiera, pero el asistente sube el tono si su salud lo sufre. */
+function PlacementCard({ advice, onOpenTab }: { advice: PlacementAdvice; onOpenTab?: (tab: string) => void }) {
+  const ideal = describePlacement({ setting: advice.idealSetting, exposure: advice.idealExposure });
+  return (
+    <section className={`rounded-2xl border p-5 ${PLACEMENT_TONE[advice.level]}`} aria-label="Lugar del cultivo">
+      <p className="flex items-center gap-2 text-sm font-semibold text-leaf-800"><MapPinned size={16} /> {advice.title}</p>
+      <p className="mt-1 text-sm">{advice.message}</p>
+      <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
+        {advice.level !== "OK" && ideal && <span>Lugar ideal: {ideal}</span>}
+        {advice.level !== "OK" && onOpenTab && (
+          <button type="button" onClick={() => onOpenTab("settings")} className="font-semibold text-water-700 hover:underline">
+            {advice.level === "UNKNOWN" ? "Indicar dónde está" : "Cambiar el lugar"}
+          </button>
+        )}
+      </div>
+    </section>
+  );
 }
 
 const SEVERITY = { OK: "success", WARNING: "warning", CRITICAL: "danger" } as const;
 const STATUS_TEXT = { LOW: "Bajo", OPTIMAL: "Ideal", HIGH: "Alto", REST: "Descanso" } as const;
 
-export function InsightPanel({ insight, error, loading, actuators, onRefresh, onRunAction }: InsightPanelProps) {
+export function InsightPanel({ insight, error, loading, actuators, onRefresh, onRunAction, onOpenTab }: InsightPanelProps) {
   const [running, setRunning] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   if (error && !insight) {
     return <Alert tone="info" title="El asistente todavía no puede evaluar">{error}</Alert>;
@@ -48,9 +77,12 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
         </div>
       </section>
 
+      {insight.placement && <PlacementCard advice={insight.placement} onOpenTab={onOpenTab} />}
+
       {insight.actions.length > 0 && (
         <section className="card p-5">
           <h3 className="font-semibold">Acciones sugeridas por el agente</h3>
+          {actionError && <div className="mt-3"><Alert tone="danger">{actionError}</Alert></div>}
           <ul className="mt-3 divide-y divide-line">
             {insight.actions.map((action) => {
               const actuator = actuators.find((item) => item.type === action.actuator);
@@ -67,8 +99,11 @@ export function InsightPanel({ insight, error, loading, actuators, onRefresh, on
                     <Button size="sm" variant="secondary" icon={<Play size={14} />} loading={running === key}
                       onClick={async () => {
                         setRunning(key);
+                        setActionError(null);
                         try {
                           await onRunAction(action, actuator);
+                        } catch (caught) {
+                          setActionError(caught instanceof ApiError ? caught.message : "No se pudo ejecutar la acción");
                         } finally {
                           setRunning(null);
                         }
