@@ -3,6 +3,8 @@ export type CropType = "TOMATO" | "LETTUCE" | "STRAWBERRY" | "BASIL" | "SPINACH"
 export type CropKind = "REAL" | "VIRTUAL";
 /** Forma del sistema hidropónico: maceta, tubos NFT, torre vertical o balsa flotante. */
 export type CropForm = "POT" | "NFT" | "TOWER" | "RAFT";
+export type PlacementSetting = "INDOOR" | "OUTDOOR";
+export type SunExposure = "FULL_SUN" | "PARTIAL_SUN" | "SHADE";
 export type ActuatorType = "WATER_PUMP" | "UV_LIGHT" | "FAN" | "HUMIDIFIER" | "NUTRIENT_DOSER" | "PH_DOSER";
 export type CommandAction = "ACTIVATE" | "DEACTIVATE";
 export type CommandStatus = "PENDING" | "SENT" | "EXECUTED" | "FAILED" | "EXPIRED";
@@ -41,12 +43,26 @@ export interface CropHealth {
   evaluatedAt: string;
 }
 
+export interface GeoLocation {
+  name: string;
+  latitude: number;
+  longitude: number;
+}
+
+/** Dónde está el cultivo; cualquiera de sus partes puede faltar. */
+export interface Placement {
+  setting?: PlacementSetting | null;
+  exposure?: SunExposure | null;
+  location?: GeoLocation | null;
+}
+
 export interface Crop {
   id: string;
   name: string;
   type: CropType;
   kind: CropKind;
   form: CropForm;
+  placement?: Placement | null;
   automationEnabled: boolean;
   device: { online: boolean; lastSeenAt: string | null; keyRotatedAt: string | null };
   health: CropHealth | null;
@@ -76,15 +92,27 @@ export interface CropCreateRequest {
   type: CropType;
   kind: CropKind;
   form: CropForm;
+  placement?: Placement;
   /** Solo para los virtuales: cómo arranca la simulación. */
   virtual?: VirtualDeviceRequest;
+}
+
+export interface CropUpdateRequest {
+  name: string;
+  type: CropType;
+  form: CropForm;
+  placement?: Placement;
 }
 
 export interface Actuator {
   id: string;
   cropId: string;
   type: ActuatorType;
+  /** Encendido sin límite. */
   active: boolean;
+  /** Encendido ahora, también por una orden con duración (hasta runningUntil). */
+  running?: boolean;
+  runningUntil?: string | null;
   lastChangedAt: string | null;
 }
 
@@ -185,8 +213,19 @@ export interface Insight {
   actions: SuggestedAction[];
   forecasts?: Forecast[];
   learning?: Learning | null;
+  placement?: PlacementAdvice | null;
   summary: string;
   evaluatedAt: string;
+}
+
+/** Si el lugar le sirve a la especie: OK, UNKNOWN (sin lugar), TIP (no es el ideal) o MOVE (ya afecta su salud). */
+export interface PlacementAdvice {
+  level: "OK" | "UNKNOWN" | "TIP" | "MOVE";
+  title: string;
+  message: string;
+  lightNeed: SunExposure;
+  idealSetting: PlacementSetting;
+  idealExposure: SunExposure;
 }
 
 /** Lo aprendido de las lecturas reales de la especie; source BASE mientras no hay modelos entrenados. */
@@ -246,9 +285,13 @@ export interface LearningStatus {
 
 export type NotificationType = AppNotification["type"];
 
+export type ChannelType = "TELEGRAM";
+
 export interface ChannelLink {
   id: string;
-  type: "TELEGRAM";
+  type: ChannelType;
+  /** En Telegram, el id del chat. */
+  address?: string | null;
   displayName?: string | null;
   enabled: boolean;
   events: NotificationType[];
@@ -257,15 +300,43 @@ export interface ChannelLink {
 }
 
 export interface ChannelOption {
-  type: "TELEGRAM";
+  type: ChannelType;
   name: string;
+  description?: string | null;
   available: boolean;
   handle?: string | null;
+  /** Si el servidor no ofrece el canal: las variables que le faltan. */
+  requirements?: string[];
   link?: ChannelLink | null;
 }
 
+export type Delivery = "INSTANT" | "DIGEST";
+
+/** Avisos de un cultivo por un canal; la sección solo se muestra si el canal está disponible y vinculado. */
+export interface CropChannel {
+  type: ChannelType;
+  name: string;
+  available: boolean;
+  linked: boolean;
+  enabled: boolean;
+  events: NotificationType[];
+  delivery: Delivery;
+  digestHours: number;
+  dailySummaryAt?: string | null;
+  recipients: { id: string; displayName?: string | null; addedAt?: string | null }[];
+}
+
+export interface CropChannelUpdate {
+  enabled?: boolean;
+  events?: NotificationType[];
+  delivery?: Delivery;
+  digestHours?: number;
+  /** Vacío apaga el resumen diario. */
+  dailySummaryAt?: string;
+}
+
 export interface LinkCode {
-  type: "TELEGRAM";
+  type: ChannelType;
   code: string;
   url: string;
   expiresAt: string;
