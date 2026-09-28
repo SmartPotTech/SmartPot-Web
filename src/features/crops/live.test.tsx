@@ -6,7 +6,7 @@ import { cropApi } from "../../lib/api/services";
 import type { Actuator, ActuatorType, Command, Crop, VirtualDevice } from "../../lib/api/types";
 import { ConnectionGuide } from "./components/ConnectionGuide";
 import { CreateCropDialog } from "./components/CreateCropDialog";
-import { LivePanel } from "./components/LivePanel";
+import { CropHero } from "./components/CropHero";
 import { CropScene, type CropSceneProps } from "./components/scene/CropScene";
 import { liveStatus, runningActuators } from "./live";
 
@@ -100,24 +100,48 @@ describe("cultivo en vivo", () => {
     expect(liveStatus({ ...CROP, latestReading: null })).toBe("waiting");
   });
 
-  it("un cultivo real desconectado no se ilustra y lleva a la guía", async () => {
-    const onOpenDevice = vi.fn();
-    render(<LivePanel crop={{ ...CROP, device: { ...CROP.device, online: false } }} profile={undefined}
-      actuators={[actuator("WATER_PUMP")]} commands={[]} onChanged={vi.fn()} onOpenDevice={onOpenDevice} />);
-    expect(await screen.findByText("Tu cultivo no está conectado")).toBeInTheDocument();
-    expect(screen.queryByRole("img")).toBeNull();
-    expect(screen.getByRole("button", { name: /1\d s|15 s/ })).toBeDisabled();
-    await userEvent.click(screen.getByRole("button", { name: "Ver cómo conectarlo" }));
-    expect(onOpenDevice).toHaveBeenCalled();
+  it("dibuja la especie de cada cultivo en todas las formas", () => {
+    const species = ["LETTUCE", "TOMATO", "STRAWBERRY", "BASIL", "SPINACH", "PEPPER"] as const;
+    for (const type of species) {
+      for (const form of ["POT", "NFT", "TOWER", "RAFT"] as const) {
+        const { container, unmount } = scene({ form, type });
+        const plants = [...container.querySelectorAll("[data-plant]")].map((plant) => plant.getAttribute("data-plant"));
+        expect(plants.length).toBeGreaterThan(0);
+        expect(new Set(plants)).toEqual(new Set([type]));
+        unmount();
+      }
+    }
   });
 
-  it("un cultivo real conectado se ilustra con su forma y estado", async () => {
-    render(<LivePanel crop={CROP} profile={undefined} actuators={[actuator("UV_LIGHT", true), actuator("FAN")]}
-      commands={[]} onChanged={vi.fn()} onOpenDevice={vi.fn()} />);
-    expect(await screen.findByRole("img", { name: /Lechuga en tubos NFT, bajo techo, de día; encendidos: luz de cultivo/ }))
+  it("un cultivo real desconectado no se ilustra y lleva a la guía", async () => {
+    const onOpenTab = vi.fn();
+    render(<CropHero crop={{ ...CROP, device: { ...CROP.device, online: false } }} actuators={[actuator("WATER_PUMP")]}
+      commands={[]} onOpenTab={onOpenTab} />);
+    expect(screen.getByText("Tu cultivo no está conectado")).toBeInTheDocument();
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.getByText("· apagado")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Ver cómo conectarlo" }));
+    expect(onOpenTab).toHaveBeenCalledWith("device");
+  });
+
+  it("la ilustración muestra el estado sin botones de acción", () => {
+    render(<CropHero crop={CROP} actuators={[actuator("UV_LIGHT", true), actuator("FAN")]} commands={[]}
+      onOpenTab={vi.fn()} />);
+    expect(screen.getByRole("img", { name: /Lechuga en tubos NFT, bajo techo, de día; encendidos: luz de cultivo/ }))
       .toBeInTheDocument();
-    expect(screen.getByText("Encendido")).toBeInTheDocument();
-    expect(screen.getByText("Apagado")).toBeInTheDocument();
+    expect(screen.getByText("· encendido")).toBeInTheDocument();
+    expect(screen.getByText("· apagado")).toBeInTheDocument();
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("un cultivo virtual en pausa lleva a su simulación", async () => {
+    const onOpenTab = vi.fn();
+    const paused = { available: true, active: false, connected: false, running: false, activeActuators: [] } as unknown as VirtualDevice;
+    render(<CropHero crop={{ ...CROP, kind: "VIRTUAL" }} actuators={[]} commands={[]} simulation={paused}
+      onOpenTab={onOpenTab} />);
+    expect(screen.getByText("La simulación está en pausa")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Ir a Simulación" }));
+    expect(onOpenTab).toHaveBeenCalledWith("simulation");
   });
 });
 
