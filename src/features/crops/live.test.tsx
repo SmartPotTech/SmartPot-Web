@@ -2,9 +2,13 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { cropApi } from "../../lib/api/services";
-import type { Actuator, ActuatorType, Command, Crop, VirtualDevice } from "../../lib/api/types";
+import { commandApi, cropApi, cropChannelApi, virtualDeviceApi } from "../../lib/api/services";
+import type { Actuator, ActuatorType, Command, Crop, Insight, VirtualDevice } from "../../lib/api/types";
 import { ConnectionGuide } from "./components/ConnectionGuide";
+import { ControlPanel } from "./components/ControlPanel";
+import { CropNotifications } from "./components/CropNotifications";
+import { InsightPanel } from "./components/InsightPanel";
+import { SimulationPanel } from "./components/SimulationPanel";
 import { CreateCropDialog } from "./components/CreateCropDialog";
 import { CropHero } from "./components/CropHero";
 import { CropScene, type CropSceneProps } from "./components/scene/CropScene";
@@ -13,6 +17,8 @@ import { liveStatus, runningActuators } from "./live";
 vi.mock("../../lib/api/services", () => ({
   cropApi: { create: vi.fn() },
   commandApi: { send: vi.fn() },
+  actuatorApi: { add: vi.fn(), remove: vi.fn() },
+  cropChannelApi: { list: vi.fn(), update: vi.fn(), share: vi.fn(), removeRecipient: vi.fn() },
   virtualDeviceApi: { get: vi.fn(), configure: vi.fn(), pause: vi.fn(), places: vi.fn() },
 }));
 
@@ -78,6 +84,23 @@ describe("cultivo en vivo", () => {
     expect(container.querySelector('[data-backdrop="indoor"]')).not.toBeNull();
   });
 
+  it("dibuja el lugar: bajo techo con su ventana, media sombra o sombra al aire libre", () => {
+    const { container, rerender } = scene({ setting: "INDOOR", exposure: "FULL_SUN", condition: "CLEAR" });
+    expect(container.querySelector('[data-backdrop="indoor"]')).not.toBeNull();
+    expect(container.querySelector("[data-sunbeam]")).not.toBeNull();
+    rerender(<CropScene form="POT" type="TOMATO" installed={[]} running={new Set()} isDay vigor="healthy"
+      setting="INDOOR" exposure="SHADE" label="Sin luz" />);
+    expect(container.querySelector("[data-curtain]")).not.toBeNull();
+    expect(container.querySelector("[data-sunbeam]")).toBeNull();
+    rerender(<CropScene form="POT" type="TOMATO" installed={[]} running={new Set()} isDay vigor="healthy"
+      setting="OUTDOOR" exposure="PARTIAL_SUN" label="Media sombra" />);
+    expect(container.querySelector('[data-backdrop="outdoor"]')).not.toBeNull();
+    expect(container.querySelector('[data-shade="PARTIAL_SUN"]')).not.toBeNull();
+    rerender(<CropScene form="POT" type="TOMATO" installed={[]} running={new Set()} isDay vigor="healthy"
+      setting="OUTDOOR" exposure="SHADE" label="Sombra" />);
+    expect(container.querySelector('[data-shade="SHADE"]')).not.toBeNull();
+  });
+
   it("sabe qué actuadores siguen encendidos", () => {
     const actuators = [actuator("UV_LIGHT", true), actuator("WATER_PUMP"), actuator("FAN"), actuator("HUMIDIFIER")];
     const commands = [
@@ -124,14 +147,29 @@ describe("cultivo en vivo", () => {
     expect(onOpenTab).toHaveBeenCalledWith("device");
   });
 
-  it("la ilustración muestra el estado sin botones de acción", () => {
-    render(<CropHero crop={CROP} actuators={[actuator("UV_LIGHT", true), actuator("FAN")]} commands={[]}
+  it("la ilustración muestra el estado sin botones de acción y sin decir que es real", () => {
+    const placed: Crop = { ...CROP, placement: { setting: "OUTDOOR", exposure: "PARTIAL_SUN",
+      location: { name: "Medellín", latitude: 6.24, longitude: -75.58 } } };
+    render(<CropHero crop={placed} actuators={[actuator("UV_LIGHT", true), actuator("FAN")]} commands={[]}
+      weather={{ temperature: 24, humidity: 60, cloudCover: 10, radiation: 700, precipitation: 0, pressure: 850,
+        windSpeed: 3, isDay: true, code: 1, condition: "MOSTLY_CLEAR", label: "Mayormente despejado", observedAt: "" }}
       onOpenTab={vi.fn()} />);
-    expect(screen.getByRole("img", { name: /Lechuga en tubos NFT, bajo techo, de día; encendidos: luz de cultivo/ }))
+    expect(screen.getByRole("img", { name: /Lechuga en tubos NFT, al aire libre en media sombra en Medellín, mayormente despejado, de día; encendidos: luz ultravioleta/ }))
       .toBeInTheDocument();
+    expect(screen.getByText("Al aire libre en media sombra en Medellín")).toBeInTheDocument();
+    expect(screen.getByText(/Afuera: mayormente despejado/)).toBeInTheDocument();
     expect(screen.getByText("· encendido")).toBeInTheDocument();
     expect(screen.getByText("· apagado")).toBeInTheDocument();
+    expect(screen.queryByText(/Cultivo real/)).toBeNull();
     expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("sin lugar invita a indicarlo en Ajustes", async () => {
+    const onOpenTab = vi.fn();
+    render(<CropHero crop={CROP} actuators={[]} commands={[]} onOpenTab={onOpenTab} />);
+    expect(screen.getByText(/Lugar sin definir/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Indicar dónde está" }));
+    expect(onOpenTab).toHaveBeenCalledWith("settings");
   });
 
   it("un cultivo virtual en pausa lleva a su simulación", async () => {
@@ -169,10 +207,14 @@ describe("crear un cultivo", () => {
     await userEvent.type(screen.getByLabelText("Nombre"), "Fresas del patio");
     await userEvent.click(screen.getByRole("radio", { name: "Torre vertical" }));
     expect(screen.getByRole("img", { name: /torre vertical/ })).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("radio", { name: /Al aire libre/ }));
+    await userEvent.click(screen.getByRole("radio", { name: /Pleno sol/ }));
+    expect(screen.getByText(/La lechuga prefiere media sombra/)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Crear cultivo" }));
 
     expect(cropApi.create).toHaveBeenCalledWith({ name: "Fresas del patio", type: "LETTUCE", kind: "VIRTUAL",
-      form: "TOWER", virtual: { mode: "AUTO" } });
+      form: "TOWER", placement: { setting: "OUTDOOR", exposure: "FULL_SUN" }, virtual: { mode: "AUTO" } });
     expect(onCreated).toHaveBeenCalled();
     expect(screen.queryByText(/Conecta tu dispositivo/)).toBeNull();
   });
@@ -192,6 +234,120 @@ describe("crear un cultivo", () => {
     expect(screen.getByText("clave-secreta-0001")).toBeInTheDocument();
     expect(screen.getByText("Arma el circuito")).toBeInTheDocument();
     expect(vi.mocked(cropApi.create).mock.calls[0]?.[0]).not.toHaveProperty("virtual");
+  });
+});
+
+describe("control con switches", () => {
+  beforeEach(() => vi.mocked(commandApi.send).mockReset().mockResolvedValue({} as Command));
+
+  it("un actuador apagado solo se puede encender y uno encendido solo apagar", async () => {
+    render(<ControlPanel crop={CROP} actuators={[actuator("WATER_PUMP"), actuator("UV_LIGHT", true)]} commands={[]}
+      onAutomation={vi.fn()} onChanged={vi.fn()} />);
+    const pump = screen.getByRole("switch", { name: "Bomba de agua" });
+    const light = screen.getByRole("switch", { name: "Luz ultravioleta" });
+    expect(pump).toHaveAttribute("aria-checked", "false");
+    expect(light).toHaveAttribute("aria-checked", "true");
+    expect(screen.queryByRole("button", { name: "Apagar" })).toBeNull();
+
+    await userEvent.selectOptions(screen.getByLabelText("Duración de Bomba de agua"), "30");
+    await userEvent.click(pump);
+    expect(commandApi.send).toHaveBeenLastCalledWith("c1", "a-WATER_PUMP", "ACTIVATE", 30);
+    expect(pump).toBeDisabled();
+    expect(screen.getByText(/Encendiendo… esperando al dispositivo/)).toBeInTheDocument();
+
+    await userEvent.click(light);
+    expect(commandApi.send).toHaveBeenLastCalledWith("c1", "a-UV_LIGHT", "DEACTIVATE", undefined);
+  });
+
+  it("una orden en curso bloquea el switch y sin conexión no se controla", () => {
+    const { unmount } = render(<ControlPanel crop={CROP} actuators={[actuator("FAN")]}
+      commands={[command("FAN", { status: "SENT", completedAt: null })]} onAutomation={vi.fn()} onChanged={vi.fn()} />);
+    expect(screen.getByRole("switch", { name: "Ventilador" })).toBeDisabled();
+    expect(screen.getByRole("switch", { name: "Ventilador" })).toHaveAttribute("aria-checked", "true");
+    unmount();
+    render(<ControlPanel crop={{ ...CROP, device: { ...CROP.device, online: false } }} actuators={[actuator("FAN")]}
+      commands={[]} onAutomation={vi.fn()} onChanged={vi.fn()} />);
+    expect(screen.getByRole("switch", { name: "Ventilador" })).toBeDisabled();
+  });
+
+  it("un encendido por tiempo muestra cuánto le queda", () => {
+    render(<ControlPanel crop={CROP} actuators={[{ ...actuator("WATER_PUMP"), running: true,
+      runningUntil: new Date(Date.now() + 12_000).toISOString() }]} commands={[]} onAutomation={vi.fn()}
+      onChanged={vi.fn()} />);
+    expect(screen.getByRole("switch", { name: "Bomba de agua" })).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByText(/se apaga en 1[12] s/)).toBeInTheDocument();
+  });
+});
+
+describe("simulación", () => {
+  const simulation = { cropId: "c1", available: true, active: true, running: true, connected: true, mode: "AUTO",
+    intervalSeconds: 30, lastPublishedAt: new Date().toISOString(), activeActuators: [] } as unknown as VirtualDevice;
+  const virtual: Crop = { ...CROP, kind: "VIRTUAL" };
+
+  it("separa el estado con pausar y reanudar de la configuración", async () => {
+    vi.mocked(virtualDeviceApi.pause).mockResolvedValue(undefined);
+    vi.mocked(virtualDeviceApi.configure).mockResolvedValue(simulation);
+    const onPaused = vi.fn();
+    const { unmount } = render(<SimulationPanel crop={virtual} simulation={simulation} profile={undefined}
+      onSaved={vi.fn()} onPaused={onPaused} onOpenTab={vi.fn()} />);
+    expect(screen.getByText("Simulación en marcha")).toBeInTheDocument();
+    expect(screen.getByText("Cómo se simula")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Pausar" }));
+    expect(onPaused).toHaveBeenCalled();
+    expect(virtualDeviceApi.configure).not.toHaveBeenCalled();
+    unmount();
+
+    render(<SimulationPanel crop={virtual} simulation={{ ...simulation, active: false }} profile={undefined}
+      onSaved={vi.fn()} onPaused={vi.fn()} onOpenTab={vi.fn()} />);
+    expect(screen.getByText("Simulación en pausa")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("radio", { name: /Manual/ }));
+    await userEvent.click(screen.getByRole("button", { name: "Reanudar" }));
+    expect(virtualDeviceApi.configure).toHaveBeenCalledWith("c1", { mode: "AUTO", intervalSeconds: 30 });
+  });
+});
+
+describe("avisos del cultivo", () => {
+  it("no muestra la sección de una aplicación sin vincular", async () => {
+    vi.mocked(cropChannelApi.list).mockResolvedValue([{ type: "TELEGRAM", name: "Telegram", available: true,
+      linked: false, enabled: true, events: ["ALERT"], delivery: "INSTANT", digestHours: 6, recipients: [] }]);
+    render(<MemoryRouter><CropNotifications crop={CROP} /></MemoryRouter>);
+    expect(await screen.findByText(/Vincula una aplicación/)).toBeInTheDocument();
+    expect(screen.queryByText("Avisos por Telegram")).toBeNull();
+  });
+
+  it("con Telegram vinculado elige qué avisar, el resumen y con quién compartir", async () => {
+    vi.mocked(cropChannelApi.list).mockResolvedValue([{ type: "TELEGRAM", name: "Telegram", available: true,
+      linked: true, enabled: true, events: ["ALERT"], delivery: "INSTANT", digestHours: 6,
+      recipients: [{ id: "r1", displayName: "@ana", addedAt: null }] }]);
+    vi.mocked(cropChannelApi.update).mockResolvedValue({} as never);
+    render(<MemoryRouter><CropNotifications crop={CROP} /></MemoryRouter>);
+
+    expect(await screen.findByText("Avisos por Telegram")).toBeInTheDocument();
+    expect(screen.getByText("@ana")).toBeInTheDocument();
+    await userEvent.click(screen.getByLabelText("Acciones del asistente"));
+    await userEvent.click(screen.getByLabelText(/Un resumen cada/));
+    await userEvent.selectOptions(screen.getByLabelText("Horas entre resúmenes"), "3");
+    await userEvent.click(screen.getByLabelText(/Resumen diario/));
+    await userEvent.click(screen.getByRole("button", { name: "Guardar avisos" }));
+
+    expect(cropChannelApi.update).toHaveBeenCalledWith("c1", "TELEGRAM", { enabled: true, events: ["ALERT", "AI"],
+      delivery: "DIGEST", digestHours: 3, dailySummaryAt: "07:00" });
+  });
+});
+
+describe("consejo de lugar", () => {
+  it("pide mover el cultivo cuando el lugar ya afecta su salud", async () => {
+    const onOpenTab = vi.fn();
+    const insight = { cropType: "LETTUCE", health: { index: 55, level: "FAIR", label: "Regular" }, diagnosis: [],
+      conclusions: [], predictions: [], actions: [], summary: "Tu lechuga está regular.", evaluatedAt: "",
+      placement: { level: "MOVE", title: "Le sobra sol", message: "Está al aire libre a pleno sol y el calor ya se nota.",
+        lightNeed: "PARTIAL_SUN", idealSetting: "OUTDOOR", idealExposure: "PARTIAL_SUN" } } as unknown as Insight;
+    render(<InsightPanel insight={insight} error={null} loading={false} actuators={[]} onRefresh={vi.fn()}
+      onRunAction={vi.fn()} onOpenTab={onOpenTab} />);
+    expect(screen.getByText("Le sobra sol")).toBeInTheDocument();
+    expect(screen.getByText(/Lugar ideal: al aire libre en media sombra/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Cambiar el lugar" }));
+    expect(onOpenTab).toHaveBeenCalledWith("settings");
   });
 });
 
