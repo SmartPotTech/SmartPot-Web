@@ -7,11 +7,14 @@ import { ChannelRow } from "./NotificationChannels";
 const handlers = () => ({ onLink: vi.fn(), onRefresh: vi.fn(), onUpdate: vi.fn(), onTest: vi.fn(), onUnlink: vi.fn() });
 
 describe("canales de notificación", () => {
-  it("avisa cuando el servidor no tiene el bot configurado", () => {
-    render(<ChannelRow option={{ type: "TELEGRAM", name: "Telegram", available: false }} code={null} busy={null}
-      {...handlers()} />);
-    expect(screen.getByText(/no tiene configurado el bot de Telegram/)).toBeInTheDocument();
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  it("muestra en gris la aplicación que el servidor no ofrece, con el detalle técnico", () => {
+    render(<ChannelRow option={{ type: "TELEGRAM", name: "Telegram", available: false,
+      requirements: ["TELEGRAM_BOT_TOKEN", "TELEGRAM_BOT_USERNAME"] }} code={null} busy={null} {...handlers()} />);
+    expect(screen.getByText("No disponible")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Vincular Telegram" })).toBeDisabled();
+    expect(screen.getByText("Detalle técnico")).toBeInTheDocument();
+    expect(screen.getByText("TELEGRAM_BOT_TOKEN")).toBeInTheDocument();
+    expect(screen.getByText("TELEGRAM_BOT_USERNAME")).toBeInTheDocument();
   });
 
   it("ofrece vincular y muestra el código de respaldo", async () => {
@@ -29,10 +32,12 @@ describe("canales de notificación", () => {
   it("permite elegir qué avisos recibir, probar y desvincular", async () => {
     const actions = handlers();
     const option: ChannelOption = { type: "TELEGRAM", name: "Telegram", available: true, handle: "@SmartPotBot",
-      link: { id: "l1", type: "TELEGRAM", displayName: "@sebas", enabled: true, events: ["ALERT", "DEVICE"] } };
+      link: { id: "l1", type: "TELEGRAM", address: "123456789", displayName: "@sebas", enabled: true,
+        events: ["ALERT", "DEVICE"] } };
     render(<ChannelRow option={option} code={null} busy={null} {...actions} />);
 
     expect(screen.getByText(/Vinculado a @sebas/)).toBeInTheDocument();
+    expect(screen.getByText("123456789")).toBeInTheDocument();
     await userEvent.click(screen.getByLabelText("Acciones del asistente"));
     expect(actions.onUpdate).toHaveBeenCalledWith(option.link, { events: ["ALERT", "DEVICE", "AI"] });
     await userEvent.click(screen.getByLabelText("Alertas del cultivo"));
