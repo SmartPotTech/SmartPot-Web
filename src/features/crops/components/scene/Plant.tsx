@@ -81,6 +81,19 @@ function Leaflets({ x, y, angle, color }: { x: number; y: number; angle: number;
   );
 }
 
+/** Flor de cinco pétalos: amarilla en el tomate, blanca en la fresa. */
+function Flower({ x, y, petals }: { x: number; y: number; petals: string }) {
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      {[0, 72, 144, 216, 288].map((angle) => (
+        <ellipse key={angle} cx="0" cy="-2.6" rx="1.6" ry="2.6" fill={petals} stroke="#D5E3DC" strokeWidth="0.4"
+          transform={`rotate(${angle})`} />
+      ))}
+      <circle r="1.3" fill="#C98D12" />
+    </g>
+  );
+}
+
 function Tomato({ colors, droop }: SpeciesProps) {
   return (
     <g>
@@ -90,12 +103,14 @@ function Tomato({ colors, droop }: SpeciesProps) {
       <Leaflets x={2} y={-32} angle={60 + droop} color={colors.mid} />
       <Leaflets x={-1} y={-48} angle={-55 - droop} color={colors.light} />
       <Leaflets x={1} y={-62} angle={30} color={colors.mid} />
-      {([[-8, -26], [12, -42], [-6, -52]] as const).map(([x, y]) => (
-        <g key={`${x}${y}`}>
-          <circle cx={x} cy={y} r="5.5" fill="#D9734E" />
+      {([[-8, -26], [-1, -22], [12, -42], [-6, -52]] as const).map(([x, y]) => (
+        <g key={`${x}${y}`} data-fruit="tomato">
+          <circle cx={x} cy={y} r="5.5" fill="#D64545" />
+          <circle cx={x - 1.8} cy={y - 1.8} r="1.4" fill="#FBE4E4" opacity="0.8" />
           <path d={`M${x - 3} ${y - 5} L${x} ${y - 3} L${x + 3} ${y - 5}`} fill="none" stroke={colors.dark} strokeWidth="1.5" />
         </g>
       ))}
+      <Flower x={6} y={-60} petals="#F2B632" />
     </g>
   );
 }
@@ -109,8 +124,9 @@ function Strawberry({ colors, droop }: SpeciesProps) {
           <Leaflets x={0} y={-20} angle={0} color={alternate(colors, i)} />
         </g>
       ))}
+      <Flower x={0} y={-30} petals="#FFFFFF" />
       {([[-20, -9], [19, -6]] as const).map(([x, y]) => (
-        <g key={x}>
+        <g key={x} data-fruit="strawberry">
           <path d={`M${x - 5} ${y - 4} Q${x} ${y + 12} ${x + 5} ${y - 4} Q${x} ${y - 8} ${x - 5} ${y - 4} Z`} fill="#D64545" />
           <path d={`M${x - 4} ${y - 6} L${x} ${y - 3} L${x + 4} ${y - 6}`} fill="none" stroke={colors.dark} strokeWidth="1.5" />
           <circle cx={x - 1.5} cy={y} r="0.7" fill="#FDF4DD" />
@@ -129,8 +145,14 @@ function Pepper({ colors, droop }: SpeciesProps) {
         <ellipse key={y} cx={x} cy={y} rx="5" ry="10" fill={alternate(colors, i)}
           transform={`rotate(${angle + Math.sign(angle) * droop} ${x} ${y})`} />
       ))}
-      <path d="M-6 -30 C-12 -24 -10 -12 -6 -8 C-2 -12 -2 -24 -6 -30 Z" fill="#F2B632" />
-      <path d="M7 -40 C1 -34 3 -22 7 -18 C11 -22 11 -34 7 -40 Z" fill="#D9734E" />
+      <g data-fruit="pepper">
+        <path d="M-6 -30 C-13 -26 -11 -12 -6 -7 C-1 -12 1 -26 -6 -30 Z" fill="#F2B632" />
+        <path d="M-6 -30 L-6 -34" stroke={colors.dark} strokeWidth="1.6" strokeLinecap="round" />
+      </g>
+      <g data-fruit="pepper">
+        <path d="M7 -40 C0 -36 2 -22 7 -17 C12 -22 14 -36 7 -40 Z" fill="#D64545" />
+        <path d="M7 -40 L7 -44" stroke={colors.dark} strokeWidth="1.6" strokeLinecap="round" />
+      </g>
     </g>
   );
 }
