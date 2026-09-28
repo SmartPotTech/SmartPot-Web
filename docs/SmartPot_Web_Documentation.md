@@ -3,7 +3,7 @@ eyebrow: Documentación del componente
 titulo: SmartPot-Web
 acento: Web
 subtitulo: La aplicación de SmartPot
-bajada: PWA instalable: panel general, creación de cultivos reales o virtuales, cultivo en vivo ilustrado con cada actuador, asistente de IA, control, aprendizaje, alertas y Telegram, con su seguridad, configuración y pruebas.
+bajada: PWA instalable: panel general, creación de cultivos reales o virtuales, ilustración de cada cultivo con su especie y sus actuadores, asistente de IA, control, aprendizaje, alertas y Telegram, con su seguridad, configuración y pruebas.
 documento: SmartPot-Web
 version: 1.0 · septiembre 2026
 equipo: SmartPotTech
@@ -19,7 +19,7 @@ proyecto: smartpot.app
 | Proyecto | SmartPot · [smartpot.app](https://smartpot.app) |
 | Componente | [SmartPot-Web](https://github.com/SmartPotTech/SmartPot-Web) |
 | Versión | 1.0 · septiembre 2026 |
-| Alcance | Pantallas, creación de cultivos, cultivo en vivo, sesión, caché, identidad visual, seguridad web, configuración y pruebas |
+| Alcance | Pantallas, creación de cultivos, ilustración del cultivo, sesión, caché, identidad visual, seguridad web, configuración y pruebas |
 | Documentación de la plataforma | [Documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md), [recorrido del proyecto](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Project_Journey.md), [ciclo de vida](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Software_Lifecycle.md) y [diagramas generales](https://github.com/SmartPotTech/.github/blob/main/docs/README.md#diagramas-generales) |
 | Mantenimiento | Se genera desde `docs/` de este repositorio con las herramientas de `.github/docs/tools`; se actualiza con cada cambio del componente |
 
@@ -36,7 +36,7 @@ SmartPot-Web es lo que ve la persona: una página pública que explica SmartPot 
 | Inicio público | Presentación, funciones, especies y preguntas frecuentes; indexable |
 | Panel general | Salud de cada cultivo, comparación de una variable, últimas lecturas y análisis de la IA de toda la cuenta |
 | Mis cultivos | Tarjetas con tipo, especie, forma, estado y salud; asistente de creación |
-| Detalle | Resumen, cultivo en vivo, asistente IA, control, historial, dispositivo (solo reales) y ajustes |
+| Detalle | La ilustración del cultivo sobre todas las secciones: resumen, asistente IA, control, historial, dispositivo (reales) o simulación (virtuales) y ajustes |
 | Control general y acciones | Modo automático y órdenes en bloque; sugerencias e historial de órdenes |
 | Aprendizaje, alertas y perfil | Lo que aprende la IA, notificaciones, Telegram, datos y contraseña |
 
@@ -57,7 +57,7 @@ flowchart LR
     router["app · React Router 7<br/>landing pública · /app protegida"]
     auth["features/auth<br/>sesión · ingreso · registro · recuperación"]
     overview["features/overview · control · actions<br/>panel general · órdenes en bloque · historial"]
-    crops["features/crops<br/>CreateCropDialog · LivePanel · CropScene<br/>SimulationPanel · ConnectionGuide · DevicePanel"]
+    crops["features/crops<br/>CreateCropDialog · CropHero · CropScene<br/>SimulationPanel · ConnectionGuide · DevicePanel"]
     learning["features/learning · notifications · profile<br/>aprendizaje · alertas · Telegram"]
     landing["features/landing · pwa<br/>FAQ · instalación"]
     lib["lib<br/>api/client · services · types<br/>catalog · format"]
@@ -101,7 +101,7 @@ flowchart TB
   mode -->|"Manual"| postv["POST /crops · kind VIRTUAL · virtual"]
   details --> post["POST /crops · kind REAL"]
   post --> guide["Paso 3 · Conecta tu dispositivo<br/>clave mostrada una sola vez<br/>ESP32 físico o Wokwi con su config.py"]
-  guide --> live(["Cultivo en vivo"])
+  guide --> live(["Detalle del cultivo<br/>con su ilustración"])
   postv --> live
   classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
   classDef water fill:#E3F2FB,stroke:#1F6FA0,color:#17261F
@@ -123,11 +123,11 @@ flowchart TB
 | Forma | Maceta, tubos NFT, torre vertical o balsa flotante; se puede cambiar en Ajustes y solo afecta la ilustración |
 | Vista previa | La escena del cultivo con la especie y la forma elegidas y los actuadores con los que nace |
 | Real | Muestra la clave una sola vez y la guía: circuito y pines, firmware y `config.py` con la red WiFi, o el proyecto de Wokwi con la red `Wokwi-GUEST` |
-| Virtual | Día y noche, clima real (buscador de lugares o ubicación del dispositivo) o manual; abre directo Cultivo en vivo |
+| Virtual | Día y noche, clima real (buscador de lugares o ubicación del dispositivo) o manual; abre el cultivo y su configuración queda en la pestaña Simulación |
 
-## 4. Cultivo en vivo
+## 4. Ilustración del cultivo
 
-<!-- diagrama: SmartPot_Web_02_Live_Scene | titulo=Cómo se dibuja el cultivo en vivo | lamina=H -->
+<!-- diagrama: SmartPot_Web_02_Live_Scene | titulo=Cómo se dibuja la ilustración del cultivo | lamina=H -->
 ```mermaid
 %%{init: {"theme": "base", "fontFamily": "Segoe UI, Arial, sans-serif", "themeVariables": {"fontFamily": "Segoe UI, Arial, sans-serif", "fontSize": "15px", "primaryColor": "#DDF5EA", "primaryTextColor": "#17261F", "primaryBorderColor": "#067A52", "secondaryColor": "#E3F2FB", "secondaryTextColor": "#17261F", "secondaryBorderColor": "#1F6FA0", "tertiaryColor": "#F2F7F4", "tertiaryTextColor": "#17261F", "tertiaryBorderColor": "#D5E3DC", "lineColor": "#5B6B63", "textColor": "#17261F", "mainBkg": "#DDF5EA", "nodeBorder": "#067A52", "clusterBkg": "#F7FAF8", "clusterBorder": "#D5E3DC", "edgeLabelBackground": "#FFFFFF", "actorBkg": "#067A52", "actorBorder": "#0B3D2B", "actorTextColor": "#FFFFFF", "actorLineColor": "#5B6B63", "signalColor": "#17261F", "signalTextColor": "#17261F", "labelBoxBkgColor": "#0B3D2B", "labelBoxBorderColor": "#0B3D2B", "labelTextColor": "#FFFFFF", "loopTextColor": "#0B3D2B", "noteBkgColor": "#FDF4DD", "noteBorderColor": "#C98D12", "noteTextColor": "#17261F", "activationBkgColor": "#DDF5EA", "activationBorderColor": "#067A52", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F2F7F4"}}}%%
 flowchart LR
@@ -145,7 +145,7 @@ flowchart LR
     day["isDaylight<br/>clima · luz medida · hora"]
     vigor["vigorOf<br/>color según la salud"]
   end
-  empty["EmptyState<br/>conectar o reanudar<br/>sin ilustración"]
+  empty["Aviso sin ilustración<br/>ver cómo conectarlo<br/>o ir a Simulación"]
   subgraph scene["CropScene · SVG 360 × 220"]
     direction TB
     backdrop["Backdrop<br/>interior o clima del lugar"]
@@ -183,9 +183,9 @@ flowchart LR
 | Balsa flotante | Estanque con la balsa, raíces en la solución y burbujas desde la piedra difusora |
 | Luz de cultivo | Barra con LED; encendida ilumina las plantas |
 | Ventilador y humidificador | Aspas que giran con corriente de aire; bruma que sube |
-| Plantas | La especie con el color de su salud: verde sano, amarillento en riesgo, ocre crítico |
+| Plantas | La especie tal como es: lechuga en roseta, espinaca de hoja ancha, albahaca de hojas pareadas, tomate con tutor, flores y frutos rojos, fresa con flor blanca y frutos, pimentón rojo y amarillo; las hojas con el color de su salud: verde sano, amarillento en riesgo, ocre crítico |
 
-La escena usa la paleta de SmartPot, anuncia su contenido con `aria-label` (qué se ve y qué está encendido) y sus animaciones se detienen si la persona prefiere menos movimiento. Junto a ella, la lista de actuadores muestra el estado de cada uno con un botón para encenderlo por su tiempo típico o apagarlo. Si el cultivo no está conectado no se ilustra: se explica cómo conectarlo (reales) o se ofrece reanudar la simulación (virtuales). En los virtuales, debajo van los controles de la simulación: modo, lugar, medidores, frecuencia y pausa.
+La escena usa la paleta de SmartPot, anuncia su contenido con `aria-label` (qué se ve y qué está encendido) y sus animaciones se detienen si la persona prefiere menos movimiento. Va encima de todas las secciones del detalle (`CropHero`). Junto a ella, cada actuador aparece como una etiqueta con su estado; no hay botones: las órdenes se dan en Control. Si el cultivo no está conectado no se ilustra: se explica cómo conectarlo (reales) o se lleva a la pestaña Simulación para reanudarla (virtuales). La configuración de la simulación (modo, lugar, medidores, frecuencia y pausa) vive en esa pestaña, que solo aparece en los cultivos virtuales.
 
 <!-- parte: PARTE III | Operación -->
 
@@ -242,7 +242,7 @@ Identidad visual: tokens de la paleta SmartPot en `src/styles/index.css`, tipogr
 
 ## 7. Pruebas
 
-`pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm build`. Las 52 pruebas de Vitest y Testing Library cubren el cliente HTTP y sus errores, la sesión, las validaciones, el ingreso, los componentes del cultivo, el asistente con pronóstico y lo aprendido, la comparación de modelos, Telegram, el panel general, el cultivo en vivo (formas, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
+`pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm build`. Las 54 pruebas de Vitest y Testing Library cubren el cliente HTTP y sus errores, la sesión, las validaciones, el ingreso, los componentes del cultivo, el asistente con pronóstico y lo aprendido, la comparación de modelos, Telegram, el panel general, la ilustración del cultivo (formas, especies, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
 
 ## 8. Operación
 
