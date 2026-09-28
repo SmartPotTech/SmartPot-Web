@@ -44,7 +44,7 @@ describe("timeAgo y greeting", () => {
 describe("acciones y duraciones", () => {
   it("describe las órdenes en lenguaje natural", () => {
     expect(describeAction("WATER_PUMP", "ACTIVATE", 15)).toBe("Encender bomba de agua por 15 s");
-    expect(describeAction("UV_LIGHT", "ACTIVATE", 900)).toBe("Encender luz de cultivo por 15 min");
+    expect(describeAction("UV_LIGHT", "ACTIVATE", 900)).toBe("Encender luz ultravioleta por 15 min");
     expect(describeAction("FAN", "DEACTIVATE", 600)).toBe("Apagar ventilador");
   });
 
