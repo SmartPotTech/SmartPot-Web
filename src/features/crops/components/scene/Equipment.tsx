@@ -58,7 +58,7 @@ export function WaterPump({ x, y, on, pipes, drips = [], bubbles = [] }: { x: nu
   );
 }
 
-/** Barra de luz de cultivo colgada sobre las plantas; encendida ilumina hasta la altura indicada. */
+/** Barra de luz ultravioleta colgada sobre las plantas; encendida ilumina hasta la altura indicada. */
 export function GrowLight({ x, y, width, reach, on, glow }: { x: number; y: number; width: number; reach: number;
   on: boolean; glow: string }) {
   const left = x - width / 2;
