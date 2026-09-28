@@ -1,4 +1,4 @@
-import { BellRing, ExternalLink, Send, Unlink } from "lucide-react";
+import { AppWindow, ExternalLink, Send, Unlink } from "lucide-react";
 import { useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { Alert, Badge } from "../../components/ui/Feedback";
@@ -20,7 +20,11 @@ const EVENTS = Object.keys(EVENT_LABELS) as NotificationType[];
 
 type Message = { tone: "success" | "danger" | "info"; text: string } | null;
 
-/** Canales fuera de la app donde llegan las alertas. Hoy Telegram; el servidor dice cuáles tiene configurados. */
+/**
+ * Aplicaciones donde llegan los avisos fuera de SmartPot. Hoy Telegram; el servidor dice cuáles ofrece y, si falta
+ * configurar una, se ve en gris con lo que necesita. Aquí se vincula el chat y se eligen los avisos por defecto; cada
+ * cultivo afina los suyos en Ajustes.
+ */
 export function NotificationChannels() {
   const channels = useResource(() => channelApi.list(), []);
   const [code, setCode] = useState<LinkCode | null>(null);
@@ -53,9 +57,12 @@ export function NotificationChannels() {
     <section className="card space-y-4 p-5" aria-labelledby="channels-title">
       <div>
         <h2 id="channels-title" className="flex items-center gap-2 text-lg font-semibold">
-          <BellRing size={18} className="text-leaf-700" /> Notificaciones fuera de la app
+          <AppWindow size={18} className="text-leaf-700" /> Aplicaciones
         </h2>
-        <p className="text-sm text-muted">Recibe las alertas de tus cultivos donde ya conversas.</p>
+        <p className="text-sm text-muted">
+          Recibe los avisos de tus cultivos donde ya conversas. Cada cultivo elige en Ajustes qué avisa, cada cuánto y
+          con quién lo compartes.
+        </p>
       </div>
       {message && <Alert tone={message.tone}>{message.text}</Alert>}
       {channels.error && <Alert tone="danger">{channels.error}</Alert>}
@@ -86,9 +93,23 @@ export function ChannelRow({ option, code, busy, onLink, onRefresh, onUpdate, on
   const link = option.link;
   if (!option.available) {
     return (
-      <div className="rounded-xl bg-surface p-4 text-sm">
-        <p className="font-semibold">{option.name}</p>
-        <p className="text-muted">Este servidor todavía no tiene configurado el bot de {option.name}.</p>
+      <div className="rounded-xl border border-dashed border-line bg-surface p-4 text-sm opacity-75" aria-disabled="true">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="font-semibold text-muted">{option.name}</p>
+          <Badge tone="neutral">No disponible</Badge>
+        </div>
+        {option.description && <p className="mt-1 text-muted">{option.description}</p>}
+        <Button size="sm" className="mt-3" disabled>Vincular {option.name}</Button>
+        <details className="mt-3 text-xs text-muted">
+          <summary className="cursor-pointer font-semibold">Detalle técnico</summary>
+          <p className="mt-1">
+            Este servidor aún no ofrece {option.name}. Quien lo administra debe definir{" "}
+            {(option.requirements ?? []).map((name, index, all) => (
+              <span key={name}><code>{name}</code>{index < all.length - 2 ? ", " : index === all.length - 2 ? " y " : ""}</span>
+            ))}{" "}
+            en el entorno de SmartPot-API y reiniciarla.
+          </p>
+        </details>
       </div>
     );
   }
@@ -96,6 +117,7 @@ export function ChannelRow({ option, code, busy, onLink, onRefresh, onUpdate, on
     return (
       <div className="rounded-xl bg-surface p-4">
         <p className="font-semibold">{option.name} <span className="font-normal text-muted">{option.handle}</span></p>
+        {option.description && <p className="mt-1 text-sm text-muted">{option.description}</p>}
         <p className="mt-1 text-sm text-muted">
           Toca «Vincular»: se abrirá {option.name} con un código de un solo uso. Presiona <strong>Iniciar</strong> en el
           chat del bot y listo.
@@ -131,6 +153,7 @@ export function ChannelRow({ option, code, busy, onLink, onRefresh, onUpdate, on
           </p>
           <p className="text-sm text-muted">
             Vinculado a {link.displayName ?? "tu chat"}
+            {link.address && <> · id del chat <code>{link.address}</code></>}
             {link.lastDeliveredAt ? ` · último aviso ${timeAgo(link.lastDeliveredAt)}` : ""}
           </p>
         </div>
@@ -138,7 +161,7 @@ export function ChannelRow({ option, code, busy, onLink, onRefresh, onUpdate, on
           onChange={(enabled) => onUpdate(link, { enabled })} />
       </div>
       <fieldset className="mt-3">
-        <legend className="text-sm font-semibold">Qué quieres recibir</legend>
+        <legend className="text-sm font-semibold">Qué quieres recibir por defecto</legend>
         <div className="mt-2 grid gap-2 sm:grid-cols-2">
           {EVENTS.map((event) => (
             <label key={event} className="flex items-center gap-2 text-sm">
