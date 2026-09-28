@@ -14,7 +14,7 @@ SmartPot-Web es la **aplicación web progresiva (PWA)** de SmartPot, publicada e
 - Usar el **control general** para activar el modo automático o enviar la misma orden (regar, ventilar, luz) a varios cultivos a la vez.
 - Revisar las **acciones**: las que sugiere el asistente para varios cultivos y el historial de todas las órdenes, filtrado por estado y origen.
 - Crear cultivos **reales** (un ESP32 con el firmware, físico o simulado en Wokwi, con su guía de conexión) o **virtuales** (los simula SmartPot), de seis especies y cuatro formas: maceta, tubos NFT, torre vertical o balsa flotante. El tipo no cambia después.
-- Ver cada cultivo **en vivo**: su forma y su planta con el color de su salud, el entorno (interior o el clima del lugar) y cada actuador encendido o apagado, con su botón. Si no está conectado, no se ilustra.
+- Ver cada cultivo **ilustrado** sobre todas sus secciones: su forma y su especie (lechuga, tomate, fresa…) con el color de su salud, el entorno (interior o el clima del lugar) y cada actuador encendido o apagado. La ilustración no tiene botones: las órdenes se dan en Control. Si no está conectado, no se ilustra.
 - Ver las lecturas en tiempo real, comparadas con el rango ideal de la especie, e historiales de 6 h, 24 h o 7 días exportables a CSV.
 - Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico, conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas, lo **aprendido de cultivos reales** (estado de operación, lectura habitual o no, riego o calor probables en la próxima hora y sustrato esperado) y acciones sugeridas.
 - Ver en **Aprendizaje** cómo mejora el asistente con cada lectura: calidad de los datos, comparación de modelos con su puntaje frente a la línea base, estados típicos de cada especie y detector de lecturas poco habituales.
@@ -49,7 +49,7 @@ SmartPot-Web/
 │   │   ├── overview/           # Panel general: ranking, comparativas y análisis de la IA
 │   │   ├── control/            # Control general: modo automático y órdenes en bloque
 │   │   ├── actions/            # Acciones sugeridas e historial de todos los cultivos
-│   │   ├── crops/              # Creación real o virtual, cultivo en vivo, resumen, asistente, control, historial, dispositivo y ajustes
+│   │   ├── crops/              # Creación real o virtual, ilustración, resumen, asistente, control, historial, dispositivo, simulación y ajustes
 │   │   ├── learning/           # Aprendizaje de la IA: calidad, comparación de modelos, estados y atípicos
 │   │   ├── landing/            # Página pública y preguntas frecuentes
 │   │   ├── notifications/      # Alertas
@@ -118,7 +118,7 @@ pnpm test
 pnpm build
 ```
 
-Las pruebas cubren el cliente HTTP y sus errores en español, la sesión, las validaciones, el ingreso, los componentes del cultivo, el panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, el cultivo en vivo (formas, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
+Las pruebas cubren el cliente HTTP y sus errores en español, la sesión, las validaciones, el ingreso, los componentes del cultivo, el panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, la ilustración del cultivo (formas, especies, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
 
 ### Imagen Docker
 
@@ -142,7 +142,7 @@ pnpm icons
 
 ## Documentación
 
-La PWA es la cara de la plataforma: todo lo que muestra viene de la API. Su documentación propia está en [`docs/`](docs/SmartPot_Web_Documentation.md) (también en [DOCX](docs/SmartPot_Web_Documentation.docx) y [PDF](docs/SmartPot_Web_Documentation.pdf)), con sus diagramas en [`docs/diagrams`](docs/diagrams): el general del componente y los de creación de un cultivo, cultivo en vivo y sesión y caché. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma completa en una sola imagen ampliable:
+La PWA es la cara de la plataforma: todo lo que muestra viene de la API. Su documentación propia está en [`docs/`](docs/SmartPot_Web_Documentation.md) (también en [DOCX](docs/SmartPot_Web_Documentation.docx) y [PDF](docs/SmartPot_Web_Documentation.pdf)), con sus diagramas en [`docs/diagrams`](docs/diagrams): el general del componente y los de creación de un cultivo, su ilustración y sesión y caché. La [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md) describe cada pantalla, la identidad visual, el SEO y la seguridad web. Los diagramas generales muestran la plataforma completa en una sola imagen ampliable:
 
 - [Recorrido de la PWA](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_07_User_Journey.svg): cada pantalla, las rutas de la API que llama y el servicio que responde
 - [Operación completa](https://github.com/SmartPotTech/.github/blob/main/docs/diagrams/SmartPot_Global_02_Operation_Sequence.svg): qué pasa detrás de cada acción de la persona, de la PWA al dispositivo
