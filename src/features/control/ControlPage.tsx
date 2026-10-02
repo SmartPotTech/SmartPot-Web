@@ -126,8 +126,8 @@ export function ControlPage() {
                         <h2 className="flex items-center gap-2 text-lg font-semibold"><Zap size={18}
                                                                                            className="text-leaf-700"/> Órdenes
                             en bloque</h2>
-                        <p className="text-sm text-muted">Elige los cultivos y la orden. Los que no tengan ese actuador
-                            se omiten.</p>
+                        <p className="text-sm text-muted">Elige los cultivos y la orden. Se omiten los que no tienen ese
+                            actuador, los que ya están así y los que esperan otra orden.</p>
 
                         <fieldset className="mt-4">
                             <legend className="text-sm font-semibold">Cultivos</legend>
