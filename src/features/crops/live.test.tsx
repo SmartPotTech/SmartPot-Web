@@ -116,6 +116,7 @@ describe("cultivo en vivo", () => {
         expect([...runningActuators(actuators, commands, simulated, NOW)].sort())
             .toEqual(["HUMIDIFIER", "UV_LIGHT", "WATER_PUMP"]);
         expect(runningActuators(actuators, commands, [], NOW + 60_000).has("WATER_PUMP")).toBe(false);
+        expect(runningActuators([], [], [{actuator: "FAN", until: null}], NOW).has("FAN")).toBe(true);
     });
 
     it("solo ilustra lo que está conectado", () => {
