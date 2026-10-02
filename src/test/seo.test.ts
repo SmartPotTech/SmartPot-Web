@@ -5,15 +5,17 @@ import {describe, expect, it} from "vitest";
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf-8");
 
 describe("SEO y PWA", () => {
-    const html = read("index.html");
+    const page = new DOMParser().parseFromString(read("index.html"), "text/html");
+    const attribute = (selector: string, name: string) => page.querySelector(selector)?.getAttribute(name) ?? "";
 
     it("index.html trae metadatos, Open Graph y datos estructurados en español", () => {
-        expect(html).toContain('<html lang="es">');
-        expect(html).toMatch(/<meta name="description" content="[^"]{80,160}"/);
-        expect(html).toContain('<link rel="canonical" href="https://smartpot.app/"');
-        expect(html).toContain('property="og:image" content="https://smartpot.app/og-image.png"');
-        expect(html).toContain('<link rel="manifest" href="/manifest.webmanifest"');
-        const jsonLd = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] ?? "{}";
+        expect(page.documentElement.lang).toBe("es");
+        expect(attribute('meta[name="description"]', "content").length).toBeGreaterThanOrEqual(80);
+        expect(attribute('meta[name="description"]', "content").length).toBeLessThanOrEqual(160);
+        expect(attribute('link[rel="canonical"]', "href")).toBe("https://smartpot.app/");
+        expect(attribute('meta[property="og:image"]', "content")).toBe("https://smartpot.app/og-image.png");
+        expect(attribute('link[rel="manifest"]', "href")).toBe("/manifest.webmanifest");
+        const jsonLd = page.querySelector('script[type="application/ld+json"]')?.textContent ?? "{}";
         const types = JSON.parse(jsonLd)["@graph"].map((node: { "@type": string }) => node["@type"]);
         expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite", "SoftwareApplication", "FAQPage"]));
     });
