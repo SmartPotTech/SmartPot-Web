@@ -120,9 +120,23 @@ describe("componentes del cultivo", () => {
         expect(config).toContain('"tls": True');
         expect(config).toContain("<CLAVE_DEL_DISPOSITIVO>");
         expect(config).toContain("<NOMBRE_DE_TU_RED>");
+        expect(config).toContain('"CA_CRT": """<CA_DE_SMARTPOT>"""');
+        expect(config).not.toContain("ca_file");
         expect(firmwareConfig({
             host: "h", port: 8883, tls: true, username: "c1", key: "k",
             topics: {telemetry: "t", commands: "c", commandAck: "a", status: "s"}
         }, "wokwi")).toContain('"ssid": "Wokwi-GUEST"');
+    });
+
+    it("lleva la CA del broker en BROKER, también sin TLS", () => {
+        const credentials = {
+            host: "h", port: 8883, tls: true, username: "c1",
+            topics: {telemetry: "t", commands: "c", commandAck: "a", status: "s"}
+        };
+        const ca = "-----BEGIN CERTIFICATE-----\nAAAA\n-----END CERTIFICATE-----";
+        expect(firmwareConfig(credentials, "esp32", `${ca}\n`))
+            .toContain(`BROKER = {\n    "CA_CRT": """${ca}"""\n}`);
+        expect(firmwareConfig({...credentials, port: 1883, tls: false}, "esp32", ca))
+            .toContain('"CA_CRT": """"""');
     });
 });
