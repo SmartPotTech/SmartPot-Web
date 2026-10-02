@@ -42,7 +42,7 @@ export function runningActuators(actuators: Actuator[], commands: Command[],
         }
     }
     for (const item of simulated) {
-        if (Date.parse(item.until) > now) running.add(item.actuator);
+        if (!item.until || Date.parse(item.until) > now) running.add(item.actuator);
     }
     return running;
 }

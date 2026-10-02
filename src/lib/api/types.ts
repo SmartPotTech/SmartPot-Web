@@ -389,7 +389,7 @@ export interface VirtualDevice {
     lastPublishedAt?: string | null;
     weather?: Weather | null;
     weatherError?: string | null;
-    activeActuators: { actuator: ActuatorType; until: string }[];
+    activeActuators: { actuator: ActuatorType; until: string | null }[];
     lastCommand?: { id: string; status: string; message: string; at: string } | null;
     updatedAt?: string | null;
 }
