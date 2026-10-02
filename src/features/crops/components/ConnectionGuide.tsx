@@ -1,8 +1,8 @@
-import {Check, Copy, Cpu, Download, ExternalLink, MonitorPlay} from "lucide-react";
-import {type ReactNode, useState} from "react";
+import {Check, Copy, Cpu, ExternalLink, MonitorPlay} from "lucide-react";
+import {type ReactNode, useEffect, useState} from "react";
 import {Alert} from "../../../components/ui/Feedback";
 import type {DeviceCredentials} from "../../../lib/api/types";
-import {FIRMWARE_REPO, firmwareConfig, type FirmwareTarget, WOKWI_PROJECT} from "../firmware";
+import {BROKER_CA_PATH, FIRMWARE_REPO, firmwareConfig, type FirmwareTarget, WOKWI_PROJECT} from "../firmware";
 import {CredentialsView} from "./CredentialsView";
 
 const TARGETS: { id: FirmwareTarget; label: string; hint: string; icon: typeof Cpu }[] = [
@@ -38,9 +38,29 @@ function Step({number, title, children}: { number: number; title: string; childr
     );
 }
 
+/** La CA pública del broker, para incluirla en BROKER de config.py. */
+function useBrokerCertificate(enabled: boolean) {
+    const [certificate, setCertificate] = useState<string>();
+    useEffect(() => {
+        if (!enabled) return;
+        let active = true;
+        fetch(BROKER_CA_PATH)
+            .then((response) => (response.ok ? response.text() : ""))
+            .then((text) => {
+                if (active && text.includes("BEGIN CERTIFICATE")) setCertificate(text);
+            })
+            .catch(() => undefined);
+        return () => {
+            active = false;
+        };
+    }, [enabled]);
+    return certificate;
+}
+
 function ConfigBlock({credentials, target}: { credentials: DeviceCredentials; target: FirmwareTarget }) {
     const [copied, setCopied] = useState(false);
-    const config = firmwareConfig(credentials, target);
+    const certificate = useBrokerCertificate(credentials.tls);
+    const config = firmwareConfig(credentials, target, certificate);
     return (
         <div className="relative">
             <pre className="overflow-x-auto rounded-lg bg-leaf-950 p-3 pr-10 text-xs text-leaf-100">{config}</pre>
@@ -53,6 +73,12 @@ function ConfigBlock({credentials, target}: { credentials: DeviceCredentials; ta
                     }}>
                 {copied ? <Check size={16}/> : <Copy size={16}/>}
             </button>
+            {credentials.tls && (
+                <p className="mt-1.5 text-xs text-muted">
+                    <code>BROKER</code> ya trae la CA pública con la que el dispositivo verifica el broker (<a
+                    href={BROKER_CA_PATH} download className="font-semibold text-leaf-700">ca.crt</a>).
+                </p>
+            )}
         </div>
     );
 }
@@ -111,12 +137,6 @@ export function ConnectionGuide({credentials}: { credentials: DeviceCredentials 
                     </Step>
                     <Step number={3} title="Crea config.py con tu red y este cultivo">
                         <ConfigBlock credentials={credentials} target="esp32"/>
-                        {credentials.tls && (
-                            <a href="/ca.crt" download
-                               className="inline-flex items-center gap-1.5 font-semibold text-leaf-700">
-                                <Download size={14}/> Descargar ca.crt (certificado del broker)
-                            </a>
-                        )}
                     </Step>
                     <Step number={4} title="Enciende la placa">
                         <p className="text-muted">En unos segundos el cultivo aparece <strong className="text-ink">En
@@ -133,14 +153,8 @@ export function ConnectionGuide({credentials}: { credentials: DeviceCredentials 
                             están conectados. Guarda una copia en tu cuenta de Wokwi.
                         </p>
                     </Step>
-                    <Step number={2} title="Pega config.py y ca.crt">
+                    <Step number={2} title="Pega config.py">
                         <ConfigBlock credentials={credentials} target="wokwi"/>
-                        {credentials.tls && (
-                            <a href="/ca.crt" download
-                               className="inline-flex items-center gap-1.5 font-semibold text-leaf-700">
-                                <Download size={14}/> Descargar ca.crt (certificado del broker)
-                            </a>
-                        )}
                     </Step>
                     <Step number={3} title="Ejecuta la simulación">
                         <p className="text-muted">La red <code>Wokwi-GUEST</code> tiene salida a Internet: mueve los

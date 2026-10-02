@@ -410,4 +410,17 @@ describe("guía de conexión", () => {
         expect(screen.getByText(/"ssid": "Wokwi-GUEST"/)).toBeInTheDocument();
         expect(screen.getByText(/Deja tu copia del proyecto como privada/)).toBeInTheDocument();
     });
+
+    it("incluye en config.py la CA pública del broker", async () => {
+        const ca = "-----BEGIN CERTIFICATE-----\nMIIBCA\n-----END CERTIFICATE-----\n";
+        const fetchCa = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(ca));
+        render(<ConnectionGuide credentials={{
+            host: "mqtt.smartpot.app", port: 8883, tls: true, username: "c1",
+            topics: {telemetry: "t", commands: "c", commandAck: "a", status: "s"}
+        }}/>);
+        expect(await screen.findByText(/"CA_CRT": """-----BEGIN CERTIFICATE-----/)).toBeInTheDocument();
+        expect(fetchCa).toHaveBeenCalledWith("/ca.crt");
+        expect(screen.getByRole("link", {name: "ca.crt"})).toHaveAttribute("href", "/ca.crt");
+        fetchCa.mockRestore();
+    });
 });
