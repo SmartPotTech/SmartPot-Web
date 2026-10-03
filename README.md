@@ -20,23 +20,28 @@ Se instala en Android, iOS y escritorio, y permite:
   filtrado por estado y origen.
 - Crear cultivos **reales** (un ESP32 con el firmware, físico o simulado en Wokwi, con su guía de conexión) o *
   *virtuales** (los simula SmartPot), de seis especies y cuatro formas: maceta, tubos NFT, torre vertical o balsa
-  flotante. El tipo no cambia después.
+  flotante, y decir dónde está: bajo techo o al aire libre, cuánto sol recibe y en qué ciudad. El tipo no cambia
+  después; el lugar se edita en Ajustes.
 - Ver cada cultivo **ilustrado** sobre todas sus secciones: su forma y su especie (lechuga, tomate, fresa…) con el color
-  de su salud, el entorno (interior o el clima del lugar) y cada actuador encendido o apagado. La ilustración no tiene
+  de su salud, en su lugar (una ventana con el cielo de afuera, una malla de media sombra o un árbol) con el clima real
+  y cada actuador encendido o apagado. La ilustración no tiene
   botones: las órdenes se dan en Control. Si no está conectado, no se ilustra.
 - Ver las lecturas en tiempo real, comparadas con el rango ideal de la especie, e historiales de 6 h, 24 h o 7 días
   exportables a CSV.
 - Consultar al **asistente de IA** de cada cultivo: índice de salud y de qué variables depende, diagnóstico,
   conclusiones del sistema experto, predicciones de los modelos, pronóstico de las próximas horas, lo **aprendido de
   cultivos reales** (estado de operación, lectura habitual o no, riego o calor probables en la próxima hora y sustrato
-  esperado) y acciones sugeridas.
+  esperado), el consejo de lugar según la luz que pide la especie y acciones sugeridas.
 - Ver en **Aprendizaje** cómo mejora el asistente con cada lectura: calidad de los datos, comparación de modelos con su
   puntaje frente a la línea base, estados típicos de cada especie y detector de lecturas poco habituales.
-- Controlar la **simulación** de un cultivo virtual: el clima real de un lugar (con su escena de sol, nubes, lluvia o
-  noche), medidores manuales o el ciclo de día y noche de la especie; pausarla y reanudarla.
-- Vincular **Telegram** desde el perfil para recibir las alertas elegidas fuera de la app.
-- Encender y apagar la bomba, la luz de cultivo, el ventilador, el humidificador y los dosificadores, y activar el *
-  *modo automático** del agente.
+- Controlar la **simulación** de un cultivo virtual en dos partes, como Dispositivo: arriba el estado con Pausar y
+  Reanudar; abajo cómo se simula (clima real del lugar, medidores manuales o el día y la noche de la especie) con
+  «Aplicar cambios».
+- Vincular **Telegram** en Perfil › Aplicaciones (en gris, con su detalle técnico, si el servidor no lo tiene) y elegir
+  en Ajustes qué avisa cada cultivo: al instante o en resúmenes, un resumen diario y los chats con los que se comparte.
+- Encender y apagar con un **switch** la bomba, la luz ultravioleta, el ventilador, el humidificador y los
+  dosificadores, con su duración y su cuenta regresiva, y activar el **modo automático** del agente.
+- Conectar un cultivo real con un `config.py` que ya trae la red, la clave y la CA del broker.
 - Recibir alertas del cultivo, del dispositivo y del asistente.
 
 La página de inicio es pública e indexable; la aplicación vive bajo `/app` y no se indexa.
