@@ -5,7 +5,7 @@ acento: Web
 subtitulo: La aplicación de SmartPot
 bajada: PWA instalable: panel general, creación de cultivos reales o virtuales, ilustración de cada cultivo con su especie y sus actuadores, asistente de IA, control, aprendizaje, alertas y Telegram, con su seguridad, configuración y pruebas.
 documento: SmartPot-Web
-version: 1.0 · septiembre 2026
+version: 1.1 · octubre 2026
 equipo: SmartPotTech
 proyecto: smartpot.app
 -->
@@ -18,7 +18,7 @@ proyecto: smartpot.app
 |--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Proyecto                       | SmartPot · [smartpot.app](https://smartpot.app)                                                                                                                                                                                                                                                                                                                                                                                                         |
 | Componente                     | [SmartPot-Web](https://github.com/SmartPotTech/SmartPot-Web)                                                                                                                                                                                                                                                                                                                                                                                            |
-| Versión                        | 1.0 · septiembre 2026                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Versión                        | 1.1 · octubre 2026                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Alcance                        | Pantallas, creación de cultivos, ilustración del cultivo, sesión, caché, identidad visual, seguridad web, configuración y pruebas                                                                                                                                                                                                                                                                                                                       |
 | Documentación de la plataforma | [Documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md), [recorrido del proyecto](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Project_Journey.md), [ciclo de vida](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Software_Lifecycle.md) y [diagramas generales](https://github.com/SmartPotTech/.github/blob/main/docs/README.md#diagramas-generales) |
 | Mantenimiento                  | Se genera desde `docs/` de este repositorio con las herramientas de `.github/docs/tools`; se actualiza con cada cambio del componente                                                                                                                                                                                                                                                                                                                   |
@@ -34,14 +34,14 @@ instala en el teléfono o el computador. Muestra cada cultivo en vivo, lo compar
 crear cultivos reales o virtuales, dar órdenes a los actuadores y ver qué piensa y qué aprende el asistente. Todo lo que
 muestra viene de la API.
 
-| Pantalla                      | Qué permite                                                                                                                                              |
-|-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inicio público                | Presentación, funciones, especies y preguntas frecuentes; indexable                                                                                      |
-| Panel general                 | Salud de cada cultivo, comparación de una variable, últimas lecturas y análisis de la IA de toda la cuenta                                               |
-| Mis cultivos                  | Tarjetas con tipo, especie, forma, estado y salud; asistente de creación                                                                                 |
-| Detalle                       | La ilustración del cultivo sobre todas las secciones: resumen, asistente IA, control, historial, dispositivo (reales) o simulación (virtuales) y ajustes |
-| Control general y acciones    | Modo automático y órdenes en bloque; sugerencias e historial de órdenes                                                                                  |
-| Aprendizaje, alertas y perfil | Lo que aprende la IA, notificaciones, Telegram, datos y contraseña                                                                                       |
+| Pantalla                      | Qué permite                                                                                                                                                                                                                                     |
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Inicio público                | Presentación, funciones, especies y preguntas frecuentes; indexable                                                                                                                                                                             |
+| Panel general                 | Salud de cada cultivo, comparación de una variable, últimas lecturas y análisis de la IA de toda la cuenta                                                                                                                                      |
+| Mis cultivos                  | Tarjetas con tipo, especie, forma, estado y salud; asistente de creación                                                                                                                                                                        |
+| Detalle                       | La ilustración del cultivo en su lugar sobre todas las secciones: resumen, asistente IA con el consejo de lugar, control con switches, historial, dispositivo (reales) o simulación (virtuales) y ajustes con el lugar y los avisos del cultivo |
+| Control general y acciones    | Modo automático y órdenes en bloque; sugerencias e historial de órdenes                                                                                                                                                                         |
+| Aprendizaje, alertas y perfil | Lo que aprende la IA, notificaciones, Aplicaciones (Telegram), datos y contraseña                                                                                                                                                               |
 
 ## 2. Arquitectura del componente
 
@@ -124,13 +124,14 @@ flowchart TB
   class guide clay
 ```
 
-| Decisión     | Detalle                                                                                                                                               |
-|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Tipo         | Real (un ESP32 con el firmware, físico o en Wokwi) o virtual (lo simula SmartPot). No cambia después; Ajustes lo muestra y explica cómo crear otro    |
-| Forma        | Maceta, tubos NFT, torre vertical o balsa flotante; se puede cambiar en Ajustes y solo afecta la ilustración                                          |
-| Vista previa | La escena del cultivo con la especie y la forma elegidas y los actuadores con los que nace                                                            |
-| Real         | Muestra la clave una sola vez y la guía: circuito y pines, firmware y `config.py` con la red WiFi, o el proyecto de Wokwi con la red `Wokwi-GUEST`    |
-| Virtual      | Día y noche, clima real (buscador de lugares o ubicación del dispositivo) o manual; abre el cultivo y su configuración queda en la pestaña Simulación |
+| Decisión     | Detalle                                                                                                                                                                                       |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Tipo         | Real (un ESP32 con el firmware, físico o en Wokwi) o virtual (lo simula SmartPot). No cambia después; Ajustes lo muestra y explica cómo crear otro                                            |
+| Forma        | Maceta, tubos NFT, torre vertical o balsa flotante; se puede cambiar en Ajustes y solo afecta la ilustración                                                                                  |
+| Lugar        | Bajo techo o al aire libre, cuánto sol recibe y la ubicación; se puede cambiar en Ajustes                                                                                                     |
+| Vista previa | La escena del cultivo con la especie y la forma elegidas y los actuadores con los que nace                                                                                                    |
+| Real         | Muestra la clave una sola vez y la guía: circuito y pines, firmware y `config.py` con la red WiFi y la CA del broker (que toma de `/ca.crt`), o el proyecto de Wokwi con la red `Wokwi-GUEST` |
+| Virtual      | Día y noche, clima real (buscador de lugares o ubicación del dispositivo) o manual; abre el cultivo y su configuración queda en la pestaña Simulación                                         |
 
 ## 4. Ilustración del cultivo
 
@@ -156,7 +157,7 @@ flowchart LR
   empty["Aviso sin ilustración<br/>ver cómo conectarlo<br/>o ir a Simulación"]
   subgraph scene["CropScene · SVG 360 × 220"]
     direction TB
-    backdrop["Backdrop<br/>interior o clima del lugar"]
+    backdrop["Backdrop<br/>ventana bajo techo o clima del lugar<br/>media sombra o árbol al aire libre"]
     system["Forma<br/>PotSystem · NftSystem<br/>TowerSystem · RaftSystem"]
     plant["Plant<br/>lechuga · espinaca · albahaca<br/>tomate · fresa · pimentón"]
     equip["Equipment<br/>WaterPump · GrowLight · Fan<br/>Humidifier · Doser"]
@@ -189,7 +190,7 @@ flowchart LR
 | Tubos NFT                  | Tres tubos con cuatro plantas cada uno, colector de entrada y retorno al depósito; la película de solución corre si la bomba está encendida                                                                                                                                           |
 | Torre vertical             | Columna con bolsillos escalonados; la bomba sube la solución y cae en gotas por dentro                                                                                                                                                                                                |
 | Balsa flotante             | Estanque con la balsa, raíces en la solución y burbujas desde la piedra difusora                                                                                                                                                                                                      |
-| Luz de cultivo             | Barra con LED; encendida ilumina las plantas                                                                                                                                                                                                                                          |
+| Luz ultravioleta           | Barra con LED; encendida ilumina las plantas                                                                                                                                                                                                                                          |
 | Ventilador y humidificador | Aspas que giran con corriente de aire; bruma que sube                                                                                                                                                                                                                                 |
 | Plantas                    | La especie tal como es: lechuga en roseta, espinaca de hoja ancha, albahaca de hojas pareadas, tomate con tutor, flores y frutos rojos, fresa con flor blanca y frutos, pimentón rojo y amarillo; las hojas con el color de su salud: verde sano, amarillento en riesgo, ocre crítico |
 
@@ -197,8 +198,19 @@ La escena usa la paleta de SmartPot, anuncia su contenido con `aria-label` (qué
 animaciones se detienen si la persona prefiere menos movimiento. Va encima de todas las secciones del detalle (
 `CropHero`). Junto a ella, cada actuador aparece como una etiqueta con su estado; no hay botones: las órdenes se dan en
 Control. Si el cultivo no está conectado no se ilustra: se explica cómo conectarlo (reales) o se lleva a la pestaña
-Simulación para reanudarla (virtuales). La configuración de la simulación (modo, lugar, medidores, frecuencia y pausa)
-vive en esa pestaña, que solo aparece en los cultivos virtuales.
+Simulación para reanudarla (virtuales). La pestaña Simulación, que solo aparece en los virtuales, tiene dos partes como
+Dispositivo: arriba el estado en línea con Pausar y Reanudar; abajo cómo se simula (modo, lugar, medidores y frecuencia)
+con «Aplicar cambios».
+
+El lugar cambia el fondo: bajo techo, una ventana con el cielo de afuera (sol que entra si es soleada, cortina si no
+tiene luz natural); al aire libre, el clima del lugar, con una malla de media sombra o un árbol que da sombra. Junto a
+la escena se escribe dónde está el cultivo y el clima de afuera; solo los virtuales llevan una etiqueta de tipo.
+
+En Control, cada actuador es un switch: al encenderlo se elige la duración (o sin límite en la luz, el ventilador y el
+humidificador), mientras espera la confirmación muestra «Enviando…» y después la cuenta regresiva. La API rechaza con
+409 la orden que no cambia nada, así un doble clic nunca repite órdenes. En Ajustes, cada cultivo elige sus avisos por
+Telegram cuando el chat está vinculado; Perfil › Aplicaciones muestra el canal en gris, con lo que le falta al
+servidor, si no está disponible.
 
 <!-- parte: PARTE III | Operación -->
 
@@ -257,10 +269,11 @@ app y una paleta categórica de 8 colores validada para daltonismo en las compar
 
 ## 7. Pruebas
 
-`pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm build`. Las 54 pruebas de Vitest y Testing Library cubren el cliente
-HTTP y sus errores, la sesión, las validaciones, el ingreso, los componentes del cultivo, el asistente con pronóstico y
-lo aprendido, la comparación de modelos, Telegram, el panel general, la ilustración del cultivo (formas, especies,
-actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de SEO y PWA.
+`pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm build`. Las 65 pruebas de Vitest y Testing Library cubren el cliente
+HTTP y sus errores, la sesión, las validaciones, el ingreso, los componentes del cultivo, los switches, el asistente con
+pronóstico, consejo de lugar y lo aprendido, la comparación de modelos, Aplicaciones y avisos por cultivo, el panel
+general, la ilustración del cultivo (formas, especies, lugar, actuadores, clima y conexión), la Simulación en dos
+partes, la creación real o virtual, la guía de conexión con la CA y los requisitos de SEO y PWA.
 
 ## 8. Operación
 
