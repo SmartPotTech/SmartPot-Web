@@ -91,4 +91,4 @@ jobs:
         if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'schedule'
         run: |
           echo "::notice::Publicando snapshot a Snyk Platform para monitoreo continuo 24/7 y habilitación de Automatic Fix PRs..."
-          snyk monitor --org="${{ env.SNYK_CFG_ORG }}" --all-projects --project-name="SmartPotTech/SmartPot-Web"
+          snyk monitor --org="${{ env.SNYK_CFG_ORG }}" --project-name="SmartPotTech/SmartPot-Web"
