@@ -1,5 +1,6 @@
 import {createMemo, createSignal, For, Show} from "solid-js";
 import {METRICS} from "../../../lib/catalog";
+import {downsampleLTTB} from "../../../lib/lttb";
 import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
 import type {MetricKey, ProfileRange, Reading} from "../../../lib/api/types";
 
@@ -10,20 +11,28 @@ interface ReadingsChartProps {
     height?: number;
 }
 
+const MAX_POINTS = 480;
+
 /** Serie de una variable con la franja del rango ideal de la especie (SVG nativo sin dependencias pesadas). */
 export function ReadingsChart(props: ReadingsChartProps) {
     const info = () => METRICS[props.metric];
     const [hoverIdx, setHoverIdx] = createSignal<number | null>(null);
 
+    // Con miles de lecturas (24 h a 15 s) se dibujan como mucho MAX_POINTS, elegidos por LTTB para no perder picos.
     const data = createMemo(() =>
-        props.readings
-            .filter((reading) => reading.measures[props.metric] !== undefined)
-            .map((reading) => ({
-                time: new Date(reading.measuredAt).getTime(),
-                iso: reading.measuredAt,
-                value: Number(reading.measures[props.metric]),
-            }))
-            .sort((a, b) => a.time - b.time),
+        downsampleLTTB(
+            props.readings
+                .filter((reading) => reading.measures[props.metric] !== undefined)
+                .map((reading) => ({
+                    time: new Date(reading.measuredAt).getTime(),
+                    iso: reading.measuredAt,
+                    value: Number(reading.measures[props.metric]),
+                }))
+                .sort((a, b) => a.time - b.time),
+            MAX_POINTS,
+            (point) => point.time,
+            (point) => point.value,
+        ),
     );
 
     const geometry = createMemo(() => {
