@@ -9,7 +9,6 @@
     "build": "tsc -b && vite build && bun scripts/compress-assets.mjs",
     "compress": "bun scripts/compress-assets.mjs",
     "preview": "vite preview",
-    "start": "bun server.ts",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",

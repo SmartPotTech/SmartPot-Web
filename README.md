@@ -101,13 +101,12 @@ SmartPot-Web-Solid/
 │   │   └── pwa/                # Registro del service worker e instalación
 │   ├── hooks/                  # Metadatos por página, recursos con refresco por visibilidad y estado de red
 │   ├── lib/                    # Cliente de la API con caché ETag, tipos, catálogos y formato en español
-│   ├── styles/index.css        # Paleta SmartPot como tokens de Tailwind
-│   └── workers/                # Web Workers para cómputo intensivo de telemetría fuera del hilo principal
+│   ├── services/stream.ts      # Lecturas en vivo por SSE con reconexión (respaldo: consulta con ETag)
+│   └── styles/index.css        # Paleta SmartPot como tokens de Tailwind
 ├── nginx/                      # Servidor de producción en contenedor: CSP, CORP, caché y configuración
 ├── scripts/
 │   ├── compress-assets.mjs     # Pre-compresión estática de activos (Gzip nivel 9 y Brotli calidad 11)
 │   └── generate-icons.mjs      # PNG de la PWA a partir de los SVG
-├── server.ts                   # Servidor Bun nativo de alto rendimiento (balanceo SO_REUSEPORT, proxy y spa)
 ├── bun.lock                    # Árbol de dependencias determinista y versionable de Bun
 └── Dockerfile                  # Compilación multi-stage con Bun Alpine y servicio Nginx unprivileged
 ```
@@ -220,16 +219,16 @@ sesión con caché `ETag`. La [documentación de migración](https://github.com/
 explica cómo convive dentro del entorno `demo-beta` junto a `SmartPot-API-Go`, `SmartPot-DB-Postgre`,
 `SmartPot-Cache-Valkey` y `SmartPot-Broker-EMQX`.
 
-## Hoja de Ruta Industrial: Builder Bun 1.4, Runner Caddy HTTP/3 y Streams Reactivos SSE
+## Transporte y rendimiento
 
-Como parte del **Plan Maestro de Maximización del Stack B (demo-beta)**, `SmartPot-Web-Solid` implementa una separación estricta de responsabilidades entre compilación y servicio:
-
-1. **Separación Builder vs. Runner**:
-   - **Builder (`oven/bun:1.4-alpine`)**: Compilación con Bun/Vite y pre-compresión estática de activos con Zstandard (`.zst`, nivel 19) y Brotli (`.br`, nivel 11).
-   - **Runner (`caddy:2.9-alpine`)**: Servidor estático de ultra-alto rendimiento sirviendo sobre **HTTP/3 (QUIC)** con **kTLS** y cabeceras estrictas de aislamiento de origen (COOP, COEP, CSP), sin ningún runtime de JavaScript en producción.
-2. **Arquitectura Reactiva SSE en el Navegador**:
-   - Reemplazo del polling periódico por conexión persistente **Server-Sent Events (SSE)** hacia `/api/v1/crops/{id}/stream`.
-   - Web Worker desacoplado (`src/workers/telemetry.worker.ts`) que decodifica flujos binarios y suaviza curvas de gráficas comunicándose con el hilo principal mediante `Float64Array` transferibles (`SharedArrayBuffer`), garantizando 60 FPS estables.
+- **Bun solo para compilar.** La imagen compila con Bun y Vite y sirve los archivos estáticos con nginx sin
+  privilegios, con precompresión Gzip (nivel 9) y Brotli (calidad 11). No hay JavaScript del lado del servidor.
+- **Lecturas en vivo por SSE.** El detalle del cultivo abre `GET /api/v1/crops/{id}/stream` con el token Bearer
+  (`src/services/stream.ts`). El flujo funciona con chunked (HTTP/1.1) y también detrás de un nginx que hable
+  HTTP/1.0 con la API; si se corta, se reconecta con espera creciente. La consulta cada 30 s con `If-None-Match`
+  queda de respaldo, así la página sigue al día aunque un proxy no deje pasar el flujo.
+- **Series largas con LTTB.** Con miles de lecturas, el gráfico dibuja como mucho 480 puntos elegidos por
+  Largest-Triangle-Three-Buckets (`src/lib/lttb.ts`), que conserva picos y tendencias.
 
 ## Licencia
 
