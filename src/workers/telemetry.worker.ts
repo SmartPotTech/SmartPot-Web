@@ -50,7 +50,6 @@ export function downsampleLTTB(data: LTTBPoint[], threshold: number): LTTBPoint[
     }
 
     const sampled: LTTBPoint[] = [];
-    let sampledIndex = 0;
 
     const every = (data.length - 2) / (threshold - 2);
 
@@ -58,7 +57,7 @@ export function downsampleLTTB(data: LTTBPoint[], threshold: number): LTTBPoint[
     let maxAreaPoint: LTTBPoint = data[a]!;
     let nextA = 0;
 
-    sampled[sampledIndex++] = data[a]!;
+    sampled.push(data[a]!);
 
     for (let i = 0; i < threshold - 2; i++) {
         let avgX = 0;
@@ -97,11 +96,11 @@ export function downsampleLTTB(data: LTTBPoint[], threshold: number): LTTBPoint[
             }
         }
 
-        sampled[sampledIndex++] = maxAreaPoint;
+        sampled.push(maxAreaPoint);
         a = nextA;
     }
 
-    sampled[sampledIndex++] = data[data.length - 1]!;
+    sampled.push(data[data.length - 1]!);
     return sampled;
 }
 
