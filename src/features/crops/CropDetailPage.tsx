@@ -1,6 +1,6 @@
 import {A, useParams, useSearchParams} from "@solidjs/router";
 import {ArrowLeft, FileDown} from "lucide-solid";
-import {createSignal, For, onCleanup, Show} from "solid-js";
+import {createEffect, createSignal, For, onCleanup, Show, untrack} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Alert, Badge} from "../../components/ui/Feedback";
 import {PageLoader} from "../../components/ui/Spinner";
@@ -10,7 +10,8 @@ import {ApiError} from "../../lib/api/client";
 import {actuatorApi, commandApi, cropApi, insightApi, readingApi, virtualDeviceApi} from "../../lib/api/services";
 import {CROP_FORMS, CROP_TYPES, HEALTH, METRICS, PRIMARY_METRICS} from "../../lib/catalog";
 import {formatMetric, timeAgo} from "../../lib/format";
-import type {CropKind, MetricKey, VirtualDevice, Weather} from "../../lib/api/types";
+import type {CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
+import {subscribeTelemetryStream} from "../../services/stream";
 import {ControlPanel} from "./components/ControlPanel";
 import {DevicePanel} from "./components/DevicePanel";
 import {CropHero} from "./components/CropHero";
@@ -60,6 +61,18 @@ export default function CropDetailPage() {
         () => [cropId(), hours()],
         30_000,
     );
+    // Las lecturas nuevas llegan en vivo por SSE y se suman a la serie; la consulta cada 30 s (con ETag) queda de
+    // respaldo si el flujo no pasa por algún proxy.
+    createEffect(() => {
+        const id = cropId();
+        const subscription = subscribeTelemetryStream(id, (reading: Reading) => {
+            const current = untrack(() => readings.data);
+            if (!current || current.some((item) => item.id === reading.id)) return;
+            const since = Date.now() - untrack(hours) * 3600_000;
+            readings.setData([...current.filter((item) => Date.parse(item.measuredAt) >= since), reading]);
+        });
+        onCleanup(() => subscription.unsubscribe());
+    });
     const tabs = () => TABS.filter((item) => !item.only || !crop.data || item.only === crop.data.kind);
     const tab = () => tabs().find((item) => item.id === wanted())?.id ?? "summary";
     const isVirtual = () => crop.data?.kind === "VIRTUAL";
