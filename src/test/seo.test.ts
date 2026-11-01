@@ -20,6 +20,14 @@ describe("SEO y PWA", () => {
         expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite", "SoftwareApplication", "FAQPage"]));
     });
 
+    it("el contenido para rastreadores tiene estilo propio", () => {
+        expect(page.querySelector("#root > main.prerender h1")?.textContent).toContain("SmartPot");
+        // Hoja aparte: la CSP (style-src 'self') bloquearía un <style> en línea.
+        expect(page.querySelector('link[href="/prerender.css"]')).not.toBeNull();
+        expect(read("public/prerender.css")).toContain(".prerender");
+        expect(read("public/sw.js")).toContain('"/prerender.css"');
+    });
+
     it("el manifiesto es instalable", () => {
         const manifest = JSON.parse(read("public/manifest.webmanifest"));
         expect(manifest.display).toBe("standalone");
