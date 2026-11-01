@@ -6,11 +6,16 @@ import "./styles/index.css";
 
 registerServiceWorker();
 
+// render() de Solid agrega la app sin borrar lo que haya: el contenido estático para rastreadores
+// (index.html) se quita antes de montar para que no quede sobre la interfaz.
+const root = document.getElementById("root")!;
+root.replaceChildren();
+
 render(
     () => (
         <AuthProvider>
             <AppRouter/>
         </AuthProvider>
     ),
-    document.getElementById("root")!,
+    root,
 );

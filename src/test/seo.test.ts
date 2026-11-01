@@ -20,6 +20,17 @@ describe("SEO y PWA", () => {
         expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite", "SoftwareApplication", "FAQPage"]));
     });
 
+    it("el contenido para rastreadores tiene estilo propio y la app lo quita al montar", () => {
+        const fallback = page.querySelector("#root > main.prerender");
+        expect(fallback?.querySelector("h1")?.textContent).toContain("SmartPot");
+        // Hoja aparte: la CSP (style-src 'self') bloquearía un <style> en línea.
+        expect(page.querySelector('link[href="/prerender.css"]')).not.toBeNull();
+        expect(read("public/prerender.css")).toContain(".prerender");
+        expect(read("public/sw.js")).toContain('"/prerender.css"');
+        // render() de Solid no vacía el contenedor: sin esto el bloque queda encima de la interfaz.
+        expect(read("src/main.tsx")).toContain("root.replaceChildren()");
+    });
+
     it("el manifiesto es instalable", () => {
         const manifest = JSON.parse(read("public/manifest.webmanifest"));
         expect(manifest.display).toBe("standalone");
