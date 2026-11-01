@@ -1,3 +1,8 @@
 allowBuilds:
   "@resvg/resvg-js": true
   esbuild: true
+
+# minimatch < 11.0.1: denegación de servicio por amplificación de patrones (GHSA-g3hv-75wg-m249). Solo lo usa ESLint;
+# quitar cuando ESLint dependa de minimatch 11 o superior.
+overrides:
+  minimatch: ^11.0.1
