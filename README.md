@@ -152,28 +152,38 @@ la comparación, y los gráficos van acompañados de leyenda y de la tabla de ú
 
 ## Guía de Instalación
 
+### Despliegue en un comando
+
+La imagen es pública: `ghcr.io/smartpottech/smartpot-web-solid`. La plataforma completa, con este servicio incluido, se
+levanta con un solo comando y sin descargar el código:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/SmartPotTech/.github/main/docker/demo-beta/compose.yaml | docker compose -f - up -d --wait
+```
+
+Abre http://localhost:5173 e ingresa con `demo@smartpot.app` / `SmartPot2026`. Se detiene con
+`docker compose -p smartpot-demo-beta down` (con `-v` borra también los datos). Más detalle en la
+[demo beta](https://github.com/SmartPotTech/.github/tree/main/docker/demo-beta).
+
+Solo este servicio, con la imagen publicada:
+
+```bash
+docker run -d --name smartpot-web -p 5173:8080 -e API_URL=http://localhost:8091 \
+  --read-only --tmpfs /tmp --tmpfs /etc/nginx/conf.d:uid=101,gid=101 \
+  ghcr.io/smartpottech/smartpot-web-solid:latest
+```
+
 ### Requisitos Previos
 
-- Bun 1.2+ o 1.4+ instalado en el entorno (`curl -fsSL https://bun.sh/install | bash` o `powershell -c "irm bun.sh/install.ps1 | iex"`)
+- Bun 1.4+ para desarrollar (`curl -fsSL https://bun.sh/install | bash` o `powershell -c "irm bun.sh/install.ps1 | iex"`)
 - La API de SmartPot en `http://localhost:8091` (el entorno completo está
   en [SmartPotTech/.github](https://github.com/SmartPotTech/.github))
 
 ### Desarrollo
 
 ```bash
-git clone https://github.com/SmartPotTech/SmartPot-Web-Solid.git
-cd SmartPot-Web-Solid
 bun install
 bun run dev
-```
-
-### Servidor Local con Bun
-
-Para levantar el servidor de alto rendimiento con Bun (despacho pre-comprimido, proxy reverso y cabeceras de seguridad):
-
-```bash
-bun run build
-bun run start
 ```
 
 ### Calidad
@@ -185,7 +195,7 @@ bun run test
 bun run build
 ```
 
-Las 66 pruebas de Vitest y `@solidjs/testing-library` cubren el cliente HTTP, la revalidación condicional por `ETag`
+Las pruebas de Vitest y `@solidjs/testing-library` cubren el cliente HTTP, la revalidación condicional por `ETag`
 (`304 Not Modified`) y sus errores en español, la sesión, las validaciones, el ingreso, los componentes del cultivo, el
 panel del asistente, lo aprendido y la comparación de modelos, los canales de Telegram, la ilustración del cultivo
 (formas, especies, actuadores, clima y conexión), la creación real o virtual, la guía de conexión y los requisitos de
