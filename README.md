@@ -125,6 +125,27 @@ la comparación, y los gráficos van acompañados de leyenda y de la tabla de ú
 
 ## Guía de Instalación
 
+### Despliegue en un comando
+
+La imagen es pública: `ghcr.io/smartpottech/smartpot-web`. La plataforma completa, con este servicio incluido, se
+levanta con un solo comando y sin descargar el código:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/SmartPotTech/.github/main/docker/demo/compose.yaml | docker compose -f - up -d --wait
+```
+
+Abre http://localhost:5173 e ingresa con `demo@smartpot.app` / `SmartPot2026`. Se detiene con
+`docker compose -p smartpot-demo down` (con `-v` borra también los datos). Más detalle en la
+[demo](https://github.com/SmartPotTech/.github/tree/main/docker/demo).
+
+Solo este servicio, con la imagen publicada:
+
+```bash
+docker run -d --name smartpot-web -p 5173:8080 -e API_URL=http://localhost:8091 \
+  --read-only --tmpfs /tmp --tmpfs /etc/nginx/conf.d:uid=101,gid=101 \
+  ghcr.io/smartpottech/smartpot-web:latest
+```
+
 ### Requisitos Previos
 
 - Node.js 22 o 24 y pnpm 11 (`corepack enable`)
@@ -134,8 +155,6 @@ la comparación, y los gráficos van acompañados de leyenda y de la tabla de ú
 ### Desarrollo
 
 ```bash
-git clone https://github.com/SmartPotTech/SmartPot-Web.git
-cd SmartPot-Web
 pnpm install
 pnpm dev
 ```
