@@ -46,9 +46,17 @@ server {
         add_header Cache-Control "no-cache" always;
     }
 
-    location /assets/ {
+    location ^~ /assets/ {
         include /etc/nginx/conf.d/security-headers.inc;
         add_header Cache-Control "public, max-age=31536000, immutable" always;
+        try_files $uri =404;
+    }
+
+    # Un archivo que no existe responde 404 y no la app: evita el "soft 404" ante rastreadores y que el service
+    # worker guarde HTML como si fuera un recurso. Las rutas de la app no llevan extensión.
+    location ~* \.[a-z0-9]+$ {
+        include /etc/nginx/conf.d/security-headers.inc;
+        add_header Cache-Control "no-cache" always;
         try_files $uri =404;
     }
 
