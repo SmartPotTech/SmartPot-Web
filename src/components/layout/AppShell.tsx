@@ -93,7 +93,7 @@ export function AppShell(props: { children?: JSX.Element }) {
                 </div>
             </aside>
 
-            <div class="flex min-h-dvh flex-col bg-linear-to-b from-leaf-50 to-page to-40% pb-20 md:pb-0">
+            <div class="flex min-h-dvh min-w-0 flex-col bg-linear-to-b from-leaf-50 to-page to-40% pb-20 md:pb-0">
                 <header class="sticky top-0 z-20 flex h-14 items-center justify-between bg-leaf-900 px-4 text-white md:hidden">
                     <A href="/app" aria-label="SmartPot, panel general"><Logo size={28} inverse/></A>
                     <div class="flex items-center gap-1">
