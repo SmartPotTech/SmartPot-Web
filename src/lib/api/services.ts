@@ -1,5 +1,8 @@
 import {request} from "./client";
 import type {
+    Connection,
+    ConnectionCreated,
+    ConnectionScope,
     Actuator,
     ActuatorType,
     AppNotification,
@@ -130,6 +133,13 @@ export const overviewApi = {
 export const insightApi = {
     get: (cropId: string) => request<Insight>(`${V1}/crops/${cropId}/insights`),
     learning: () => request<LearningStatus>(`${V1}/ai/learning`),
+};
+
+export const connectionApi = {
+    list: () => request<Connection[]>(`${V1}/connections`),
+    create: (body: { name: string; scope: ConnectionScope; expiresInDays?: number }) =>
+        request<ConnectionCreated>(`${V1}/connections`, {method: "POST", body}),
+    revoke: (id: string) => request<void>(`${V1}/connections/${id}`, {method: "DELETE"}),
 };
 
 export const channelApi = {
