@@ -226,7 +226,7 @@ export function ModelSummary(props: { model: ModelCard }) {
                     </tbody>
                 </table>
             </Show>
-            <p class="mt-2 text-[11px] text-muted">{props.model.samples.toLocaleString("es-CO")} ejemplos
+            <p class="mt-2 text-xs text-muted">{props.model.samples.toLocaleString("es-CO")} ejemplos
                 {props.model.positives != null && ` · ${props.model.positives.toLocaleString("es-CO")} casos positivos`}</p>
         </article>
     );

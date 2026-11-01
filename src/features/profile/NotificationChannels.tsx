@@ -113,7 +113,7 @@ export function ChannelRow(props: ChannelRowProps) {
                 </Show>
                 <Button size="sm" class="mt-3" disabled>Vincular {props.option.name}</Button>
                 <details class="mt-3 text-xs text-muted">
-                    <summary class="cursor-pointer font-semibold">Detalle técnico</summary>
+                    <summary class="touch-target cursor-pointer font-semibold">Detalle técnico</summary>
                     <p class="mt-1">
                         Este servidor aún no ofrece {props.option.name}. Quien lo administra debe definir{" "}
                         <For each={requirements()}>

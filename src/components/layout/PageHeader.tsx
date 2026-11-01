@@ -45,7 +45,7 @@ export function HeaderStat(props: { label: string; value: JSX.Element; hint?: st
         <div class="rounded-2xl bg-white/10 px-4 py-3 ring-1 ring-white/15">
             <p class="font-display text-2xl font-bold leading-tight">{props.value}</p>
             <p class="text-xs text-leaf-100/90">{props.label}</p>
-            <Show when={props.hint}><p class="mt-0.5 text-[11px] text-leaf-300">{props.hint}</p></Show>
+            <Show when={props.hint}><p class="mt-0.5 text-xs text-leaf-300">{props.hint}</p></Show>
         </div>
     );
 }

@@ -66,11 +66,11 @@ export function NotificationsPage() {
                                                 <Show when={item.cropId}>
                                                     {(cId) => (
                                                         <A href={`/app/crops/${cId()}`}
-                                                           class="font-semibold text-leaf-700">Ver cultivo</A>
+                                                           class="touch-target font-semibold text-leaf-700">Ver cultivo</A>
                                                     )}
                                                 </Show>
                                                 <Show when={!item.read}>
-                                                    <button type="button" class="font-semibold text-leaf-700"
+                                                    <button type="button" class="touch-target font-semibold text-leaf-700"
                                                             onClick={() => void act(notificationApi.markRead(item.id))}>
                                                         Marcar como leída
                                                     </button>
@@ -78,7 +78,7 @@ export function NotificationsPage() {
                                             </div>
                                         </div>
                                         <button type="button" aria-label="Eliminar alerta"
-                                                class="self-start rounded-lg p-1.5 text-muted hover:text-danger-600"
+                                                class="touch-target self-start rounded-lg p-1.5 text-muted hover:text-danger-600"
                                                 onClick={() => void act(notificationApi.remove(item.id))}>
                                             <Trash2 size={16}/>
                                         </button>

@@ -35,7 +35,7 @@ export function CropCard(props: { crop: Crop }) {
                         {(metric) => (
                             <div class="rounded-xl bg-surface px-2 py-2">
                                 <p class="text-sm font-semibold">{formatMetric(metric, measures()[metric])}</p>
-                                <p class="text-[11px] text-muted">{metric === "temperature" ? "Temp." : metric === "ph" ? "pH" : "Sustrato"}</p>
+                                <p class="text-xs text-muted">{metric === "temperature" ? "Temp." : metric === "ph" ? "pH" : "Sustrato"}</p>
                             </div>
                         )}
                     </For>
