@@ -1,9 +1,11 @@
 import {ChartLine} from "lucide-solid";
 import {createMemo, createSignal, For, Show} from "solid-js";
 import {Alert} from "../../../components/ui/Feedback";
+import {useElementSize} from "../../../hooks/useElementSize";
 import {useResource} from "../../../hooks/useResource";
 import {overviewApi} from "../../../lib/api/services";
 import {MAX_COMPARED, METRICS, PRIMARY_METRICS} from "../../../lib/catalog";
+import {nearestIndex, pointerX, timeTicks, xTickCount} from "../../../lib/chart";
 import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
 import type {Crop, MetricKey} from "../../../lib/api/types";
 import {useComparedCrops} from "../useComparedCrops";
@@ -14,6 +16,8 @@ export function MetricComparison(props: { crops: Crop[] }) {
     const [metric, setMetric] = createSignal<MetricKey>("temperature");
     const [hours, setHours] = createSignal(24);
     const [hoverIdx, setHoverIdx] = createSignal<number | null>(null);
+    // El SVG se dibuja al tamaño real del contenedor (h-72): en un teléfono el texto no se encoge ni sobra alto.
+    const box = useElementSize({width: 760, height: 288});
     const compared = useComparedCrops(() => props.crops);
     const series = useResource(() => overviewApi.series(metric(), hours()), () => [metric(), hours()], 60_000);
 
@@ -40,8 +44,8 @@ export function MetricComparison(props: { crops: Crop[] }) {
         const currentVisible = visible();
         if (currentRows.length === 0 || currentVisible.length === 0) return null;
 
-        const width = 760;
-        const height = 260;
+        const width = Math.max(260, box.size().width);
+        const height = box.size().height;
         const padLeft = 48;
         const padRight = 16;
         const padTop = 12;
@@ -90,15 +94,13 @@ export function MetricComparison(props: { crops: Crop[] }) {
             return {value: val, y: toY(val)};
         });
 
-        const xTickCount = Math.min(5, currentRows.length);
-        const xTicks = Array.from({length: xTickCount}, (_, idx) => {
-            const row = currentRows[Math.floor((idx * (currentRows.length - 1)) / Math.max(1, xTickCount - 1))]!;
-            return {time: row.time, x: toX(row.time)};
-        });
+        const xTicks = timeTicks(minTime, maxTime, xTickCount(width, currentRows.length))
+            .map((tick) => ({...tick, x: toX(tick.time)}));
 
         const rowCoords = currentRows.map((row) => ({...row, x: toX(row.time)}));
+        const xs = rowCoords.map((row) => row.x);
 
-        return {width, height, padLeft, padRight, padTop, padBottom, plotW, plotH, lines, yTicks, xTicks, rowCoords};
+        return {width, height, padLeft, padRight, padTop, padBottom, plotW, plotH, lines, yTicks, xTicks, rowCoords, xs};
     });
 
     return (
@@ -116,7 +118,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                         {(period) => (
                             <button type="button" aria-pressed={hours() === period.hours}
                                     onClick={() => setHours(period.hours)}
-                                    class={`rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === period.hours
+                                    class={`touch-target rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === period.hours
                                         ? "bg-leaf-700 text-white" : "text-muted hover:text-ink"}`}>
                                 {period.label}
                             </button>
@@ -129,7 +131,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                 <For each={PRIMARY_METRICS}>
                     {(key) => (
                         <button type="button" aria-pressed={metric() === key} onClick={() => setMetric(key)}
-                                class={`rounded-full border px-3 py-1 text-sm font-medium transition-colors ${metric() === key
+                                class={`touch-target rounded-full border px-3 py-1 text-sm font-medium transition-colors ${metric() === key
                                     ? "border-leaf-700 bg-leaf-50 text-leaf-800" : "border-line text-muted hover:border-leaf-500"}`}>
                             {METRICS[key].label}
                         </button>
@@ -140,9 +142,8 @@ export function MetricComparison(props: { crops: Crop[] }) {
             <Show when={series.error}>
                 {(err) => <div class="mt-4"><Alert tone="danger">{err()}</Alert></div>}
             </Show>
-            <div class="relative mt-4 h-72 select-none" role="img"
-                 aria-label={`Comparación de ${info().label.toLowerCase()} entre ${visible().length} cultivos`}
-                 onMouseLeave={() => setHoverIdx(null)}>
+            <div class="relative mt-4 h-72 select-none" role="img" ref={box.ref}
+                 aria-label={`Comparación de ${info().label.toLowerCase()} entre ${visible().length} cultivos`}>
                 <Show when={chart()} fallback={
                     <p class="flex h-full items-center justify-center text-sm text-muted">
                         {series.loading ? "Cargando lecturas…" : "No hay lecturas en este periodo para los cultivos elegidos."}
@@ -153,9 +154,14 @@ export function MetricComparison(props: { crops: Crop[] }) {
                             const idx = hoverIdx();
                             return idx !== null ? g().rowCoords[idx] : null;
                         };
+                        // Puntero y dedo usan el mismo camino: la fila más cercana en X.
+                        const track = (event: PointerEvent & { currentTarget: SVGSVGElement }) =>
+                            setHoverIdx(nearestIndex(g().xs, pointerX(event, event.currentTarget, g().width)));
                         return (
                             <>
-                                <svg viewBox={`0 0 ${g().width} ${g().height}`} class="h-full w-full overflow-visible">
+                                <svg viewBox={`0 0 ${g().width} ${g().height}`} class="h-full w-full overflow-visible"
+                                     style={{"touch-action": "pan-y"}} onPointerMove={track} onPointerDown={track}
+                                     onPointerLeave={(event) => event.pointerType === "mouse" && setHoverIdx(null)}>
                                     <For each={g().yTicks}>
                                         {(tick) => (
                                             <g>
@@ -176,7 +182,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                     </For>
                                     <For each={g().xTicks}>
                                         {(tick) => (
-                                            <text x={tick.x} y={g().height - 6} text-anchor="middle"
+                                            <text x={tick.x} y={g().height - 6} text-anchor={tick.anchor}
                                                   fill="#5B6B63" font-size="11">
                                                 {hours() > 24
                                                     ? new Date(tick.time).toLocaleDateString("es-CO", {weekday: "short"})
@@ -184,12 +190,12 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                             </text>
                                         )}
                                     </For>
-                                    <For each={g().rowCoords}>
-                                        {(row, idx) => (
-                                            <rect x={row.x - 8} y={g().padTop} width={16} height={g().plotH}
-                                                  fill="transparent" onMouseEnter={() => setHoverIdx(idx())}/>
+                                    <Show when={hoveredRow()}>
+                                        {(row) => (
+                                            <line x1={row().x} x2={row().x} y1={g().padTop}
+                                                  y2={g().height - g().padBottom} stroke="#D5E3DC"/>
                                         )}
-                                    </For>
+                                    </Show>
                                 </svg>
                                 <Show when={hoveredRow()}>
                                     {(row) => (
@@ -225,7 +231,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                             <button type="button" aria-pressed={Boolean(color())} disabled={disabled()}
                                     onClick={() => compared.toggle(crop.id)}
                                     title={disabled() ? `Máximo ${MAX_COMPARED} cultivos a la vez` : undefined}
-                                    class={`flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors disabled:opacity-40
+                                    class={`touch-target flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors disabled:opacity-40
                     ${color() ? "border-line bg-white text-ink" : "border-dashed border-line text-muted"}`}>
                                 <span class="h-2.5 w-2.5 rounded-full"
                                       style={{"background-color": color() ?? "#D5E3DC"}}/>
