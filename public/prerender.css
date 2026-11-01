@@ -1,0 +1,45 @@
+/* Contenido estático de #root (index.html): lo leen los rastreadores y lo ve quien no tiene JavaScript o espera
+   a que cargue la app, que lo reemplaza. Archivo aparte porque la CSP no admite estilos en línea. */
+body {
+    margin: 0;
+    background: #F7FAF8;
+}
+
+.prerender {
+    box-sizing: border-box;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 3rem 1.25rem;
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+    color: #5B6B63;
+    font: 400 1rem/1.6 "Segoe UI", system-ui, sans-serif;
+}
+
+.prerender > * {
+    width: 100%;
+    max-width: 38rem;
+    margin: 0 auto;
+}
+
+.prerender h1 {
+    color: #0B3D2B;
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.prerender ul {
+    box-sizing: border-box;
+    padding-left: 1.25rem;
+}
+
+.prerender li + li {
+    margin-top: 0.25rem;
+}
+
+.prerender a {
+    color: #067A52;
+    font-weight: 600;
+}
