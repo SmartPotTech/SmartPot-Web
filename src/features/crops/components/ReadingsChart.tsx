@@ -1,5 +1,7 @@
 import {createMemo, createSignal, For, Show} from "solid-js";
+import {useElementSize} from "../../../hooks/useElementSize";
 import {METRICS} from "../../../lib/catalog";
+import {nearestIndex, pointerX, timeTicks, xTickCount} from "../../../lib/chart";
 import {downsampleLTTB} from "../../../lib/lttb";
 import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
 import type {MetricKey, ProfileRange, Reading} from "../../../lib/api/types";
@@ -17,6 +19,8 @@ const MAX_POINTS = 480;
 export function ReadingsChart(props: ReadingsChartProps) {
     const info = () => METRICS[props.metric];
     const [hoverIdx, setHoverIdx] = createSignal<number | null>(null);
+    // El SVG se dibuja al tamaño real del contenedor: en un teléfono el texto no se encoge ni sobra alto.
+    const box = useElementSize({width: 640, height: props.height ?? 280});
 
     // Con miles de lecturas (24 h a 15 s) se dibujan como mucho MAX_POINTS, elegidos por LTTB para no perder picos.
     const data = createMemo(() =>
@@ -39,8 +43,8 @@ export function ReadingsChart(props: ReadingsChartProps) {
         const points = data();
         if (points.length === 0) return null;
 
-        const width = 640;
-        const height = 240;
+        const width = Math.max(260, box.size().width);
+        const height = box.size().height;
         const padLeft = 48;
         const padRight = 16;
         const padTop = 12;
@@ -79,11 +83,9 @@ export function ReadingsChart(props: ReadingsChartProps) {
             return {value: val, y: toY(val)};
         });
 
-        const xTickCount = Math.min(5, points.length);
-        const xTicks = Array.from({length: xTickCount}, (_, idx) => {
-            const point = points[Math.floor((idx * (points.length - 1)) / Math.max(1, xTickCount - 1))]!;
-            return {time: point.time, x: toX(point.time)};
-        });
+        const xTicks = timeTicks(minTime, maxTime, xTickCount(width, points.length))
+            .map((tick) => ({...tick, x: toX(tick.time)}));
+        const xs = coords.map((c) => c.x);
 
         const rangeBand = props.range
             ? {
@@ -92,7 +94,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
             }
             : null;
 
-        return {width, height, padLeft, padRight, padTop, padBottom, plotW, plotH, coords, path, yTicks, xTicks, rangeBand};
+        return {width, height, padLeft, padRight, padTop, padBottom, plotW, plotH, coords, xs, path, yTicks, xTicks, rangeBand};
     });
 
     return (
@@ -101,19 +103,23 @@ export function ReadingsChart(props: ReadingsChartProps) {
                 Sin lecturas de {info().label.toLowerCase()} en este periodo.
             </p>
         }>
-            <div style={{"height": `${props.height ?? 280}px`}} role="img"
+            <div style={{"height": `${props.height ?? 280}px`}} role="img" ref={box.ref}
                  aria-label={`Gráfica de ${info().label.toLowerCase()} con ${data().length} lecturas`}
-                 class="relative w-full select-none"
-                 onMouseLeave={() => setHoverIdx(null)}>
+                 class="relative w-full select-none">
                 <Show when={geometry()}>
                     {(g) => {
                         const hovered = () => {
                             const idx = hoverIdx();
                             return idx !== null ? g().coords[idx] : null;
                         };
+                        // Puntero y dedo usan el mismo camino: el punto más cercano en X.
+                        const track = (event: PointerEvent & { currentTarget: SVGSVGElement }) =>
+                            setHoverIdx(nearestIndex(g().xs, pointerX(event, event.currentTarget, g().width)));
                         return (
                             <>
-                                <svg viewBox={`0 0 ${g().width} ${g().height}`} class="h-full w-full overflow-visible">
+                                <svg viewBox={`0 0 ${g().width} ${g().height}`} class="h-full w-full overflow-visible"
+                                     style={{"touch-action": "pan-y"}} onPointerMove={track} onPointerDown={track}
+                                     onPointerLeave={(event) => event.pointerType === "mouse" && setHoverIdx(null)}>
                                     <For each={g().yTicks}>
                                         {(tick) => (
                                             <g>
@@ -136,7 +142,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                           stroke-linecap="round" stroke-linejoin="round"/>
                                     <For each={g().xTicks}>
                                         {(tick) => (
-                                            <text x={tick.x} y={g().height - 6} text-anchor="middle"
+                                            <text x={tick.x} y={g().height - 6} text-anchor={tick.anchor}
                                                   fill="#5B6B63" font-size="11">
                                                 {formatTime(tick.time)}
                                             </text>
@@ -144,16 +150,14 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                     </For>
                                     <Show when={hovered()}>
                                         {(pt) => (
-                                            <circle cx={pt().x} cy={pt().y} r="4.5" fill={info().color}
-                                                    stroke="#FFFFFF" stroke-width="2"/>
+                                            <>
+                                                <line x1={pt().x} x2={pt().x} y1={g().padTop}
+                                                      y2={g().height - g().padBottom} stroke="#D5E3DC"/>
+                                                <circle cx={pt().x} cy={pt().y} r="4.5" fill={info().color}
+                                                        stroke="#FFFFFF" stroke-width="2"/>
+                                            </>
                                         )}
                                     </Show>
-                                    <For each={g().coords}>
-                                        {(pt, idx) => (
-                                            <circle cx={pt.x} cy={pt.y} r="10" fill="transparent"
-                                                    onMouseEnter={() => setHoverIdx(idx())}/>
-                                        )}
-                                    </For>
                                 </svg>
                                 <Show when={hovered()}>
                                     {(pt) => (

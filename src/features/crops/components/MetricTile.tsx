@@ -10,11 +10,13 @@ export function MetricTile(props: { metric: MetricKey; value?: number; range?: P
 
     return (
         <div class="card p-4">
-            <div class="flex items-center justify-between gap-2">
-                <p class="flex items-center gap-2 text-sm text-muted">
-                    <span class="h-2.5 w-2.5 rounded-full" style={{"background-color": info().color}}/>
-                    {info().label}
-                </p>
+            {/* La etiqueta va sola en su línea: en dos columnas de un teléfono la insignia la partía en tres. */}
+            <p class="flex items-start gap-2 text-sm leading-snug text-muted">
+                <span class="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full" style={{"background-color": info().color}}/>
+                {info().label}
+            </p>
+            <div class="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                <p class="font-display text-2xl font-bold">{formatMetric(props.metric, props.value)}</p>
                 <Show when={statusKey() !== "unknown"}>
                     <span
                         class={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
@@ -29,7 +31,6 @@ export function MetricTile(props: { metric: MetricKey; value?: number; range?: P
                     </span>
                 </Show>
             </div>
-            <p class="mt-2 font-display text-2xl font-bold">{formatMetric(props.metric, props.value)}</p>
             <Show when={props.range}>
                 {(range) => (
                     <p class="mt-1 text-xs text-muted">Ideal: {range().min}–{range().max} {range().unit}</p>
