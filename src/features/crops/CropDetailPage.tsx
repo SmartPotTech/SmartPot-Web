@@ -137,7 +137,7 @@ export default function CropDetailPage() {
             <Show when={crop.data} fallback={
                 <div class="space-y-4">
                     <A href="/app/crops"
-                       class="inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft
+                       class="touch-target inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft
                         size={16}/> Mis cultivos</A>
                     <Alert tone="danger">{crop.error ?? "El cultivo no existe"}</Alert>
                 </div>
@@ -151,7 +151,7 @@ export default function CropDetailPage() {
                         <div class="space-y-6">
                             <div>
                                 <A href="/app/crops"
-                                   class="inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft
+                                   class="touch-target inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft
                                     size={16}/> Mis cultivos</A>
                                 <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
                                     <div>
@@ -263,7 +263,7 @@ export default function CropDetailPage() {
                                             <For each={RANGES}>
                                                 {(range) => (
                                                     <button type="button" onClick={() => setHours(range.hours)}
-                                                            class={`rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === range.hours ? "bg-white text-leaf-800 shadow-sm" : "text-muted"}`}>
+                                                            class={`touch-target rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === range.hours ? "bg-white text-leaf-800 shadow-sm" : "text-muted"}`}>
                                                         {range.label}
                                                     </button>
                                                 )}

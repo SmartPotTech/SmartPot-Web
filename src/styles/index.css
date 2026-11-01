@@ -65,6 +65,23 @@
     }
 }
 
+/* Con dedo (puntero grueso), el área tocable mide al menos 44 × 44 px sin cambiar el tamaño visible. */
+@utility touch-target {
+    position: relative;
+
+    @media (pointer: coarse) {
+        &::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: max(100%, 44px);
+            height: max(100%, 44px);
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

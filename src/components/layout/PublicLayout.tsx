@@ -21,13 +21,13 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                         <Show when={auth.token} fallback={
                             <>
                                 <A href="/login"
-                                   class="rounded-xl px-3 py-2 text-leaf-800 hover:bg-leaf-50">Ingresar</A>
+                                   class="touch-target rounded-xl px-3 py-2 text-leaf-800 hover:bg-leaf-50">Ingresar</A>
                                 <A href="/register"
-                                   class="rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">Crear
+                                   class="touch-target rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">Crear
                                     cuenta</A>
                             </>
                         }>
-                            <A href="/app" class="rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">Ir
+                            <A href="/app" class="touch-target rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">Ir
                                 a mi panel</A>
                         </Show>
                     </div>
@@ -46,10 +46,10 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                     </div>
                     <div class="text-sm">
                         <p class="font-semibold text-white">Producto</p>
-                        <ul class="mt-2 space-y-1.5 text-leaf-300/80">
-                            <li><a href="/#funciones" class="hover:text-white">Funciones</a></li>
-                            <li><a href="/#como-funciona" class="hover:text-white">Cómo funciona</a></li>
-                            <li><A href="/register" class="hover:text-white">Crear cuenta</A></li>
+                        <ul class="mt-1 space-y-0.5 text-leaf-300/80">
+                            <li><a href="/#funciones" class="inline-block py-1 hover:text-white">Funciones</a></li>
+                            <li><a href="/#como-funciona" class="inline-block py-1 hover:text-white">Cómo funciona</a></li>
+                            <li><A href="/register" class="inline-block py-1 hover:text-white">Crear cuenta</A></li>
                         </ul>
                     </div>
                     <div class="text-sm">
@@ -58,10 +58,10 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                            class="mt-2 inline-flex items-center gap-2 text-leaf-300/80 hover:text-white">
                             <GitFork size={16}/> SmartPotTech en GitHub
                         </a>
-                        <p class="mt-2 text-leaf-300/60">Licencia MIT · Hecho en Colombia</p>
+                        <p class="mt-2 text-leaf-300/80">Licencia MIT · Hecho en Colombia</p>
                     </div>
                 </div>
-                <p class="border-t border-white/10 py-4 text-center text-xs text-leaf-300/60">
+                <p class="border-t border-white/10 py-4 text-center text-xs text-leaf-300/80">
                     © {new Date().getFullYear()} SmartPot Tech
                 </p>
             </footer>

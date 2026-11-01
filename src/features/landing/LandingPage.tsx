@@ -247,15 +247,15 @@ export function LandingPage() {
                     <div class="mt-8 space-y-3">
                         <For each={FAQ}>
                             {({question, answer}) => (
-                                <details class="card group p-5">
-                                    <summary class="cursor-pointer list-none font-semibold marker:hidden">
+                                <details class="card group">
+                                    <summary class="block cursor-pointer list-none p-5 font-semibold marker:hidden">
                                         <span class="flex items-center justify-between gap-4">
                                             {question}
                                             <ArrowRight size={18}
                                                         class="shrink-0 text-leaf-600 transition-transform group-open:rotate-90"/>
                                         </span>
                                     </summary>
-                                    <p class="mt-3 text-sm leading-relaxed text-muted">{answer}</p>
+                                    <p class="-mt-2 px-5 pb-5 text-sm leading-relaxed text-muted">{answer}</p>
                                 </details>
                             )}
                         </For>

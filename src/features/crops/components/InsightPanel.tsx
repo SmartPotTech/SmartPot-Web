@@ -231,7 +231,7 @@ export function InsightPanel(props: InsightPanelProps) {
                             </div>
 
                             <details class="card p-5 text-sm">
-                                <summary class="flex cursor-pointer items-center gap-2 font-semibold"><CircleHelp
+                                <summary class="touch-target flex cursor-pointer items-center gap-2 font-semibold"><CircleHelp
                                     size={16}/> ¿Cómo
                                     decide el asistente?
                                 </summary>

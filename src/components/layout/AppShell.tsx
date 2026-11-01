@@ -50,7 +50,7 @@ export function AppShell(props: { children?: JSX.Element }) {
             <aside class="sticky top-0 hidden h-dvh flex-col bg-leaf-900 px-4 py-5 text-leaf-100 md:flex">
                 <div aria-hidden="true"
                      class="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-leaf-950/80 to-transparent"/>
-                <A href="/app" aria-label="Panel general" class="relative px-1"><Logo size={34} inverse/></A>
+                <A href="/app" aria-label="SmartPot, panel general" class="relative px-1"><Logo size={34} inverse/></A>
                 <nav class="relative mt-9 flex flex-1 flex-col gap-1" aria-label="Aplicación">
                     <For each={NAV}>
                         {({to, label, icon: Icon, end}) => (
@@ -95,15 +95,15 @@ export function AppShell(props: { children?: JSX.Element }) {
 
             <div class="flex min-h-dvh flex-col bg-linear-to-b from-leaf-50 to-page to-40% pb-20 md:pb-0">
                 <header class="sticky top-0 z-20 flex h-14 items-center justify-between bg-leaf-900 px-4 text-white md:hidden">
-                    <A href="/app" aria-label="Panel general"><Logo size={28} inverse/></A>
+                    <A href="/app" aria-label="SmartPot, panel general"><Logo size={28} inverse/></A>
                     <div class="flex items-center gap-1">
                         <Show when={installPrompt.available}>
                             <button type="button" onClick={() => void installPrompt.install()} aria-label="Instalar app"
-                                    class="rounded-lg p-2 text-leaf-300 hover:bg-leaf-800"><Download size={20}/>
+                                    class="touch-target rounded-lg p-2 text-leaf-300 hover:bg-leaf-800"><Download size={20}/>
                             </button>
                         </Show>
                         <A href="/app/profile" aria-label="Mi perfil"
-                           class="rounded-lg p-2 text-leaf-100 hover:bg-leaf-800">
+                           class="touch-target rounded-lg p-2 text-leaf-100 hover:bg-leaf-800">
                             <UserRound size={20}/>
                         </A>
                     </div>
