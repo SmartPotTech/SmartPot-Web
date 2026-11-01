@@ -19,6 +19,14 @@ case "$API_URL" in
 esac
 export CSP_UPGRADE
 
+# URL pública del servidor MCP (opcional): solo se muestra en Perfil › Conexiones, la PWA no lo llama.
+MCP_URL="${MCP_URL:-}"
+case "$MCP_URL" in
+  ""|http://*|https://*) ;;
+  *) echo "MCP_URL debe empezar por http:// o https://"; exit 1 ;;
+esac
+MCP_URL="${MCP_URL%/}"
+
 mkdir -p /tmp/smartpot
-printf 'window.SMARTPOT_CONFIG = { apiUrl: "%s" };\n' "$API_URL" > /tmp/smartpot/config.js
+printf 'window.SMARTPOT_CONFIG = { apiUrl: "%s", mcpUrl: "%s" };\n' "$API_URL" "$MCP_URL" > /tmp/smartpot/config.js
 echo "SmartPot Web usará la API en $API_URL"

@@ -209,7 +209,7 @@ docker run --rm -p 5173:8080 -e API_URL=http://localhost:8091 \
   --read-only --tmpfs /tmp --tmpfs /etc/nginx/conf.d:uid=101,gid=101 smartpot-web-solid
 ```
 
-`API_URL` se inyecta al arrancar en `/config.js` y en la CSP, así la misma imagen sirve para cualquier entorno. Imagen
+`API_URL` se inyecta al arrancar en `/config.js` y en la CSP, así la misma imagen sirve para cualquier entorno. `MCP_URL` (opcional) es la URL pública del servidor [SmartPot-MCP](https://github.com/SmartPotTech/SmartPot-MCP): la PWA la muestra en la configuración que genera al crear una conexión en Perfil › Conexiones, pero no la llama. Imagen
 publicada: `ghcr.io/smartpottech/smartpot-web-solid:latest`.
 
 ### Íconos
