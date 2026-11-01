@@ -447,3 +447,22 @@ export interface BulkCommandResult {
         message: string | null
     }[];
 }
+
+/** Conexión personal (cliente MCP o similar): READ solo consulta; CONTROL además crea, edita y acciona. */
+export type ConnectionScope = "READ" | "CONTROL";
+
+export interface Connection {
+    id: string;
+    name: string;
+    prefix: string;
+    scope: ConnectionScope;
+    createdAt: string;
+    lastUsedAt?: string;
+    expiresAt?: string;
+}
+
+export interface ConnectionCreated {
+    connection: Connection;
+    /** Solo llega al crearla; no se vuelve a mostrar. */
+    token: string;
+}
