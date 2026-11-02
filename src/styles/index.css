@@ -2,6 +2,9 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/outfit";
 
+/* El modo oscuro se activa con la clase .dark en <html> (src/lib/theme), no con la preferencia del sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Paleta SmartPot: verdes de hoja, agua, sol y arcilla. */
 @theme {
     --color-leaf-950: #06281c;
@@ -30,12 +33,48 @@
     --color-line: #d5e3dc;
     --color-surface: #f2f7f4;
     --color-page: #f7faf8;
+    --color-card: #ffffff;
+
+    /* Semánticos: en claro son tonos de la paleta; en oscuro se aclaran para conservar el contraste. */
+    --color-accent: #067a52;
+    --color-accent-strong: #0a5a3c;
+    --color-link: #1f6fa0;
+    --color-sun-fg: #c98d12;
+    --color-clay-fg: #b85a38;
+    --color-danger-fg: #b83232;
 
     --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
     --font-display: "Outfit Variable", "Segoe UI", system-ui, sans-serif;
 
     --radius-card: 1.25rem;
     --shadow-card: 0 1px 2px rgb(11 61 43 / 0.06), 0 8px 24px rgb(11 61 43 / 0.06);
+}
+
+/* Modo oscuro: fondo leaf-950, tarjetas leaf-900, bordes de bosque y texto claro. */
+:root {
+    color-scheme: light;
+}
+
+:root.dark {
+    color-scheme: dark;
+    --color-page: #06281c;
+    --color-card: #0b3d2b;
+    --color-surface: #0e4a35;
+    --color-line: #18523d;
+    --color-ink: #f2f7f4;
+    --color-muted: #a9c4b8;
+    --color-leaf-50: #0e4a35;
+    --color-sun-100: #3b3415;
+    --color-water-100: #0f3f58;
+    --color-clay-100: #4a2b20;
+    --color-danger-100: #4a2024;
+    --color-accent: #7fdbb0;
+    --color-accent-strong: #ddf5ea;
+    --color-link: #7cc4ee;
+    --color-sun-fg: #f2b632;
+    --color-clay-fg: #f0a283;
+    --color-danger-fg: #f08a8a;
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.28);
 }
 
 @layer base {
@@ -61,7 +100,7 @@
 
 @layer components {
     .card {
-        @apply rounded-[var(--radius-card)] border border-line bg-white shadow-[var(--shadow-card)];
+        @apply rounded-[var(--radius-card)] border border-line bg-card shadow-[var(--shadow-card)];
     }
 }
 

@@ -1,8 +1,32 @@
 /* Contenido estático de #root (index.html): lo leen los rastreadores y lo ve quien no tiene JavaScript o espera
    a que cargue la app, que lo reemplaza. Archivo aparte porque la CSP no admite estilos en línea. */
+:root {
+    --prerender-page: #F7FAF8;
+    --prerender-text: #5B6B63;
+    --prerender-title: #0B3D2B;
+    --prerender-link: #067A52;
+}
+
+/* Modo oscuro: lo fija /theme-init.js; sin JavaScript sigue la preferencia del sistema. */
+:root[data-theme="dark"] {
+    --prerender-page: #06281C;
+    --prerender-text: #A9C4B8;
+    --prerender-title: #F2F7F4;
+    --prerender-link: #7FDBB0;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --prerender-page: #06281C;
+        --prerender-text: #A9C4B8;
+        --prerender-title: #F2F7F4;
+        --prerender-link: #7FDBB0;
+    }
+}
+
 body {
     margin: 0;
-    background: #F7FAF8;
+    background: var(--prerender-page);
 }
 
 .prerender {
@@ -13,7 +37,7 @@ body {
     display: grid;
     align-content: center;
     gap: 1rem;
-    color: #5B6B63;
+    color: var(--prerender-text);
     font: 400 1rem/1.6 "Segoe UI", system-ui, sans-serif;
 }
 
@@ -24,7 +48,7 @@ body {
 }
 
 .prerender h1 {
-    color: #0B3D2B;
+    color: var(--prerender-title);
     font-size: clamp(1.75rem, 6vw, 2.5rem);
     line-height: 1.15;
     letter-spacing: -0.02em;
@@ -40,6 +64,6 @@ body {
 }
 
 .prerender a {
-    color: #067A52;
+    color: var(--prerender-link);
     font-weight: 600;
 }
