@@ -29,7 +29,7 @@ export function ThemeToggle(props: { surface?: Surface }) {
                     next: t(THEME_LABEL[next()]),
                 })}
                 title={t(THEME_LABEL[themePreference()])}
-                class={`touch-target inline-flex h-10 w-10 items-center justify-center rounded-lg transition-colors ${BUTTON[props.surface ?? "auto"]}`}>
+                class={`touch-target inline-flex h-10 w-9 items-center sm:w-10 justify-center rounded-lg transition-colors ${BUTTON[props.surface ?? "auto"]}`}>
             {themePreference() === "system" ? <Monitor size={18}/> : resolvedTheme() === "dark" ? <Moon size={18}/> :
                 <Sun size={18}/>}
         </button>
@@ -46,7 +46,7 @@ export function LocaleToggle(props: { surface?: Surface }) {
                     next: t(LOCALE_LABEL[next()]),
                 })}
                 title={t(LOCALE_LABEL[locale()])}
-                class={`touch-target inline-flex h-10 min-w-10 items-center justify-center rounded-lg px-2 text-xs font-bold uppercase transition-colors ${BUTTON[props.surface ?? "auto"]}`}>
+                class={`touch-target inline-flex h-10 min-w-9 items-center sm:min-w-10 justify-center rounded-lg px-2 text-xs font-bold uppercase transition-colors ${BUTTON[props.surface ?? "auto"]}`}>
             {locale()}
         </button>
     );
