@@ -1,5 +1,6 @@
 import {HEALTH} from "../../../lib/catalog";
 import type {HealthLevel} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 
 interface HealthGaugeProps {
     index: number | null;
@@ -17,15 +18,14 @@ export function HealthGauge(props: HealthGaugeProps) {
     const color = () => HEALTH[props.level]?.color ?? HEALTH.UNKNOWN.color;
     return (
         <figure class="flex flex-col items-center"
-                aria-label={`Salud ${props.index === null ? "sin datos" : `${Math.round(value())} de 100`}, ${props.label}`}>
+                aria-label={props.index === null ? t("gauge.noData", {label: props.label}) : t("gauge.value", {value: Math.round(value()), label: props.label})}>
             <svg width={size()} height={size() * 0.62} viewBox="0 0 180 112" aria-hidden="true">
-                <path d="M20 100a70 70 0 0 1 140 0" fill="none" stroke="#E4EEE9" stroke-width="16"
+                <path d="M20 100a70 70 0 0 1 140 0" fill="none" class="stroke-line" stroke-width="16"
                       stroke-linecap="round"/>
                 <path d="M20 100a70 70 0 0 1 140 0" fill="none" stroke={color()} stroke-width="16"
                       stroke-linecap="round"
                       stroke-dasharray={`${(value() / 100) * circumference} ${circumference}`}/>
-                <text x="90" y="92" text-anchor="middle" class="font-display" font-size="34" font-weight="700"
-                      fill="#17261F">
+                <text x="90" y="92" text-anchor="middle" class="font-display fill-ink" font-size="34" font-weight="700">
                     {props.index === null ? "—" : Math.round(value())}
                 </text>
             </svg>

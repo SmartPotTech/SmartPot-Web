@@ -12,9 +12,10 @@ import {
 import {createSignal, For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {Alert, Badge} from "../../../components/ui/Feedback";
-import {describePlacement, METRICS} from "../../../lib/catalog";
+import {describePlacement, healthLabel, METRICS} from "../../../lib/catalog";
 import {describeAction, formatHoursAhead, formatMetric, timeAgo} from "../../../lib/format";
 import {ApiError} from "../../../lib/api/client";
+import {t, type TranslationKey} from "../../../lib/i18n";
 import type {Actuator, Insight, PlacementAdvice} from "../../../lib/api/types";
 import {HealthGauge} from "./HealthGauge";
 import {LearningCard} from "./LearningCard";
@@ -40,18 +41,18 @@ const PLACEMENT_TONE = {
 function PlacementCard(props: { advice: PlacementAdvice; onOpenTab?: (tab: string) => void }) {
     const ideal = () => describePlacement({setting: props.advice.idealSetting, exposure: props.advice.idealExposure});
     return (
-        <section class={`rounded-2xl border p-5 ${PLACEMENT_TONE[props.advice.level]}`} aria-label="Lugar del cultivo">
-            <p class="flex items-center gap-2 text-sm font-semibold text-leaf-800"><MapPinned
+        <section class={`rounded-2xl border p-5 ${PLACEMENT_TONE[props.advice.level]}`} aria-label={t("insight.placementLabel")}>
+            <p class="flex items-center gap-2 text-sm font-semibold text-accent-strong"><MapPinned
                 size={16}/> {props.advice.title}</p>
             <p class="mt-1 text-sm">{props.advice.message}</p>
             <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
                 <Show when={props.advice.level !== "OK" && ideal()}>
-                    <span>Lugar ideal: {ideal()}</span>
+                    <span>{t("insight.idealPlace", {place: ideal() ?? ""})}</span>
                 </Show>
                 <Show when={props.advice.level !== "OK" && props.onOpenTab}>
                     <button type="button" onClick={() => props.onOpenTab?.("settings")}
-                            class="font-semibold text-water-700 hover:underline">
-                        {props.advice.level === "UNKNOWN" ? "Indicar dónde está" : "Cambiar el lugar"}
+                            class="font-semibold text-link hover:underline">
+                        {props.advice.level === "UNKNOWN" ? t("insight.setWhere") : t("insight.changePlace")}
                     </button>
                 </Show>
             </div>
@@ -60,7 +61,12 @@ function PlacementCard(props: { advice: PlacementAdvice; onOpenTab?: (tab: strin
 }
 
 const SEVERITY = {OK: "success", WARNING: "warning", CRITICAL: "danger"} as const;
-const STATUS_TEXT = {LOW: "Bajo", OPTIMAL: "Ideal", HIGH: "Alto", REST: "Descanso"} as const;
+const STATUS_TEXT = {
+    LOW: "insight.status.LOW",
+    OPTIMAL: "insight.status.OPTIMAL",
+    HIGH: "insight.status.HIGH",
+    REST: "insight.status.REST",
+} as const satisfies Record<string, TranslationKey>;
 
 export function InsightPanel(props: InsightPanelProps) {
     const [running, setRunning] = createSignal<string | null>(null);
@@ -68,11 +74,11 @@ export function InsightPanel(props: InsightPanelProps) {
 
     return (
         <Show when={!(props.error && !props.insight)} fallback={
-            <Alert tone="info" title="El asistente todavía no puede evaluar">{props.error}</Alert>
+            <Alert tone="info" title={t("insight.cannotEvaluate")}>{props.error}</Alert>
         }>
             <Show when={props.insight} fallback={
                 <p class="py-10 text-center text-sm text-muted">
-                    {props.loading ? "Analizando tu cultivo…" : "Sin evaluación."}
+                    {props.loading ? t("insight.analyzing") : t("insight.noEvaluation")}
                 </p>
             }>
                 {(insight) => {
@@ -82,17 +88,17 @@ export function InsightPanel(props: InsightPanelProps) {
                         <div class="space-y-5">
                             <section class="card grid gap-6 p-5 md:grid-cols-[auto_1fr] md:items-center">
                                 <HealthGauge index={insight().health.index} level={insight().health.level}
-                                             label={insight().health.label}/>
+                                             label={healthLabel(insight().health)}/>
                                 <div>
-                                    <p class="flex items-center gap-2 text-sm font-semibold text-leaf-700"><Sparkles
-                                        size={16}/> Resumen del asistente</p>
+                                    <p class="flex items-center gap-2 text-sm font-semibold text-accent"><Sparkles
+                                        size={16}/> {t("insight.summary")}</p>
                                     <p class="mt-2 text-lg leading-snug">{insight().summary}</p>
                                     <div class="mt-3 flex items-center gap-3 text-xs text-muted">
-                                        <span>Evaluado {timeAgo(insight().evaluatedAt)}</span>
+                                        <span>{t("insight.evaluated", {time: timeAgo(insight().evaluatedAt)})}</span>
                                         <Button variant="ghost" size="sm" onClick={props.onRefresh}
                                                 loading={props.loading}
                                                 icon={<RefreshCw size={14}/>}>
-                                            Volver a evaluar
+                                            {t("insight.reevaluate")}
                                         </Button>
                                     </div>
                                 </div>
@@ -104,7 +110,7 @@ export function InsightPanel(props: InsightPanelProps) {
 
                             <Show when={insight().actions.length > 0}>
                                 <section class="card p-5">
-                                    <h3 class="font-semibold">Acciones sugeridas por el agente</h3>
+                                    <h3 class="font-semibold">{t("insight.suggested")}</h3>
                                     <Show when={actionError()}>
                                         {(err) => <div class="mt-3"><Alert tone="danger">{err()}</Alert></div>}
                                     </Show>
@@ -132,12 +138,12 @@ export function InsightPanel(props: InsightPanelProps) {
                                                                             try {
                                                                                 await props.onRunAction(action, act());
                                                                             } catch (caught) {
-                                                                                setActionError(caught instanceof ApiError ? caught.message : "No se pudo ejecutar la acción");
+                                                                                setActionError(caught instanceof ApiError ? caught.message : t("insight.runFailed"));
                                                                             } finally {
                                                                                 setRunning(null);
                                                                             }
                                                                         }}>
-                                                                    Ejecutar
+                                                                    {t("insight.run")}
                                                                 </Button>
                                                             )}
                                                         </Show>
@@ -157,10 +163,9 @@ export function InsightPanel(props: InsightPanelProps) {
 
                             <div class="grid gap-5 lg:grid-cols-2">
                                 <section class="card p-5">
-                                    <h3 class="font-semibold">Diagnóstico por variable</h3>
+                                    <h3 class="font-semibold">{t("insight.diagnosis")}</h3>
                                     <Show when={issues().length === 0}>
-                                        <p class="mt-2 text-sm text-muted">Todas las variables están en su rango
-                                            ideal.</p>
+                                        <p class="mt-2 text-sm text-muted">{t("insight.allIdeal")}</p>
                                     </Show>
                                     <ul class="mt-3 space-y-3">
                                         <For each={insight().diagnosis}>
@@ -169,12 +174,12 @@ export function InsightPanel(props: InsightPanelProps) {
                                                     <div class="flex items-center justify-between gap-2">
                                                         <p class="text-sm font-semibold">{METRICS[item.parameter]?.label ?? item.parameter}</p>
                                                         <Badge
-                                                            tone={item.status === "REST" ? "info" : SEVERITY[item.severity]}>{STATUS_TEXT[item.status]} · {formatMetric(item.parameter, item.value)}</Badge>
+                                                            tone={item.status === "REST" ? "info" : SEVERITY[item.severity]}>{t(STATUS_TEXT[item.status])} · {formatMetric(item.parameter, item.value)}</Badge>
                                                     </div>
                                                     <Show when={item.status !== "OPTIMAL"}>
                                                         <p class="mt-1 text-sm text-muted">{item.message}</p>
                                                         <Show when={item.recommendation}>
-                                                            <p class="mt-1 text-sm text-leaf-800">{item.recommendation}</p>
+                                                            <p class="mt-1 text-sm text-accent-strong">{item.recommendation}</p>
                                                         </Show>
                                                     </Show>
                                                 </li>
@@ -186,28 +191,27 @@ export function InsightPanel(props: InsightPanelProps) {
                                 <div class="space-y-5">
                                     <section class="card p-5">
                                         <h3 class="flex items-center gap-2 font-semibold"><BrainCircuit size={18}
-                                                                                                        class="text-leaf-700"/> Conclusiones
-                                            del sistema experto</h3>
+                                                                                                        class="text-accent"/> {t("insight.expertTitle")}</h3>
                                         <ul class="mt-3 space-y-3">
                                             <For each={insight().conclusions}>
                                                 {(conclusion) => (
                                                     <li>
                                                         <p class="text-sm font-semibold">{conclusion.title}
                                                             <span
-                                                                class="ml-2 text-xs font-normal text-muted">certeza {Math.round(conclusion.certainty * 100)} %</span>
+                                                                class="ml-2 text-xs font-normal text-muted">{t("insight.certainty", {value: Math.round(conclusion.certainty * 100)})}</span>
                                                         </p>
                                                         <p class="text-sm text-muted">{conclusion.message}</p>
                                                     </li>
                                                 )}
                                             </For>
                                             <Show when={insight().conclusions.length === 0}>
-                                                <p class="text-sm text-muted">Sin conclusiones para esta lectura.</p>
+                                                <p class="text-sm text-muted">{t("insight.noConclusions")}</p>
                                             </Show>
                                         </ul>
                                     </section>
 
                                     <section class="card p-5">
-                                        <h3 class="font-semibold">Predicciones de los modelos</h3>
+                                        <h3 class="font-semibold">{t("insight.predictions")}</h3>
                                         <ul class="mt-3 space-y-3">
                                             <For each={insight().predictions}>
                                                 {(prediction) => (
@@ -232,35 +236,14 @@ export function InsightPanel(props: InsightPanelProps) {
 
                             <details class="card p-5 text-sm">
                                 <summary class="touch-target flex cursor-pointer items-center gap-2 font-semibold"><CircleHelp
-                                    size={16}/> ¿Cómo
-                                    decide el asistente?
+                                    size={16}/> {t("insight.howTitle")}
                                 </summary>
                                 <div class="mt-3 space-y-2 text-muted">
-                                    <p><strong class="text-ink">Sistema experto:</strong> compara cada lectura con los
-                                        rangos
-                                        ideales de la especie y encadena reglas de agronomía; la certeza indica qué tan
-                                        confiable es
-                                        cada conclusión.</p>
-                                    <p><strong class="text-ink">Lógica difusa:</strong> mide qué tan lejos está cada
-                                        variable de su
-                                        rango y lo resume en el índice de salud, dando más peso al pH, la temperatura y
-                                        el sustrato.</p>
-                                    <p><strong class="text-ink">Aprendizaje automático:</strong> una regresión logística
-                                        estima la
-                                        necesidad de ventilar, una red neuronal la de corregir el pH y un Isolation
-                                        Forest detecta
-                                        lecturas atípicas que pueden ser fallas de sensor.</p>
-                                    <p><strong class="text-ink">Aprendizaje continuo:</strong> con las lecturas reales
-                                        de todos los
-                                        cultivos de la especie aprende a anticipar riego y calor en la próxima hora,
-                                        estima la humedad
-                                        del sustrato y reconoce estados típicos y lecturas poco habituales. Se reentrena
-                                        solo cuando
-                                        llegan datos nuevos.</p>
-                                    <p><strong class="text-ink">Agente:</strong> con el modo automático activo ejecuta
-                                        estas
-                                        acciones por su cuenta, con una pausa de 10 minutos entre acciones del mismo
-                                        actuador.</p>
+                                    <p><strong class="text-ink">{t("insight.how.expert")}</strong>{t("insight.how.expertBody")}</p>
+                                    <p><strong class="text-ink">{t("insight.how.fuzzy")}</strong>{t("insight.how.fuzzyBody")}</p>
+                                    <p><strong class="text-ink">{t("insight.how.ml")}</strong>{t("insight.how.mlBody")}</p>
+                                    <p><strong class="text-ink">{t("insight.how.continuous")}</strong>{t("insight.how.continuousBody")}</p>
+                                    <p><strong class="text-ink">{t("insight.how.agent")}</strong>{t("insight.how.agentBody")}</p>
                                 </div>
                             </details>
                         </div>
@@ -272,10 +255,10 @@ export function InsightPanel(props: InsightPanelProps) {
 }
 
 const TREND = {
-    RISING: {icon: TrendingUp, label: "Sube"},
-    FALLING: {icon: TrendingDown, label: "Baja"},
-    STABLE: {icon: Minus, label: "Estable"},
-} as const;
+    RISING: {icon: TrendingUp, label: "insight.trend.RISING"},
+    FALLING: {icon: TrendingDown, label: "insight.trend.FALLING"},
+    STABLE: {icon: Minus, label: "insight.trend.STABLE"},
+} as const satisfies Record<string, { icon: typeof Minus; label: TranslationKey }>;
 
 /** Pronóstico de las próximas horas y de qué variables depende el índice de salud. */
 function Outlook(props: { insight: Insight }) {
@@ -288,8 +271,8 @@ function Outlook(props: { insight: Insight }) {
             <div class="grid gap-5 lg:grid-cols-2">
                 <Show when={forecasts().length > 0}>
                     <section class="card p-5">
-                        <h3 class="font-semibold">Pronóstico de las próximas horas</h3>
-                        <p class="text-sm text-muted">Tendencia de cada variable según las últimas lecturas.</p>
+                        <h3 class="font-semibold">{t("insight.forecast")}</h3>
+                        <p class="text-sm text-muted">{t("insight.forecastBody")}</p>
                         <ul class="mt-3 space-y-2">
                             <For each={forecasts()}>
                                 {(forecast) => {
@@ -299,19 +282,19 @@ function Outlook(props: { insight: Insight }) {
                                     return (
                                         <li class={`flex gap-3 rounded-xl p-3 ${urgent ? "bg-sun-100" : "bg-surface"}`}>
                                             <TrendIcon size={18}
-                                                       class={`mt-0.5 shrink-0 ${urgent ? "text-clay-600" : "text-leaf-700"}`}
-                                                       aria-label={trend.label}/>
+                                                       class={`mt-0.5 shrink-0 ${urgent ? "text-clay-fg" : "text-accent"}`}
+                                                       aria-label={t(trend.label)}/>
                                             <div class="min-w-0">
                                                 <p class="text-sm font-semibold">
                                                     {METRICS[forecast.parameter]?.label ?? forecast.parameter}
                                                     <span class="ml-2 font-normal text-muted">
-                                                        en 3 h ≈ {formatMetric(forecast.parameter, forecast.expectedIn3h)}
+                                                        {t("insight.in3h", {value: formatMetric(forecast.parameter, forecast.expectedIn3h)})}
                                                     </span>
                                                 </p>
                                                 <p class="text-sm text-muted">{forecast.message}</p>
                                                 <Show when={forecast.hoursToLimit != null}>
-                                                    <p class="mt-0.5 text-xs font-semibold text-clay-600">
-                                                        Saldrá del rango ideal en {formatHoursAhead(forecast.hoursToLimit!)}
+                                                    <p class="mt-0.5 text-xs font-semibold text-clay-fg">
+                                                        {t("insight.leavesRange", {time: formatHoursAhead(forecast.hoursToLimit!)})}
                                                     </p>
                                                 </Show>
                                             </div>
@@ -324,8 +307,8 @@ function Outlook(props: { insight: Insight }) {
                 </Show>
                 <Show when={factors().length > 0}>
                     <section class="card p-5">
-                        <h3 class="font-semibold">De qué depende el índice</h3>
-                        <p class="text-sm text-muted">Salud de cada variable; las más bajas son las que restan.</p>
+                        <h3 class="font-semibold">{t("insight.factors")}</h3>
+                        <p class="text-sm text-muted">{t("insight.factorsBody")}</p>
                         <ul class="mt-3 space-y-2.5">
                             <For each={factors()}>
                                 {([parameter, score]) => (

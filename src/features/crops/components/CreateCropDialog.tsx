@@ -8,6 +8,7 @@ import {Alert} from "../../../components/ui/Feedback";
 import {ApiError} from "../../../lib/api/client";
 import {cropApi} from "../../../lib/api/services";
 import {CROP_FORMS, CROP_KINDS, CROP_TYPES} from "../../../lib/catalog";
+import {t} from "../../../lib/i18n";
 import type {
     ActuatorType,
     Crop,
@@ -79,13 +80,13 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
         const k = kind();
         if (!k) return;
         if (name().trim().length < 2) {
-            setError("Ponle un nombre de al menos 2 caracteres");
+            setError(t("create.nameTooShort"));
             return;
         }
         const pl = placement();
         const location = pl.location ?? null;
         if (k === "VIRTUAL" && mode() === "WEATHER" && !location) {
-            setError("Elige la ubicación del cultivo: su clima es el que se simula.");
+            setError(t("create.locationRequired"));
             return;
         }
         const placed = pl.setting || pl.location ? {placement: pl} : {};
@@ -108,41 +109,41 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                 openCrop(result.crop);
             }
         } catch (caught) {
-            setError(caught instanceof ApiError ? caught.message : "No se pudo crear el cultivo");
+            setError(caught instanceof ApiError ? caught.message : t("create.failed"));
         } finally {
             setSaving(false);
         }
     }
 
-    const title = () => step() === "connect" ? "Conecta tu dispositivo"
-        : step() === "details" && kind() ? `Nuevo cultivo ${CROP_KINDS[kind()!].label.toLowerCase()}` : "Nuevo cultivo";
+    const title = () => step() === "connect" ? t("create.titleConnect")
+        : step() === "details" && kind() ? t("create.titleKind", {kind: CROP_KINDS[kind()!].label.toLowerCase()}) : t("create.titleNew");
 
     return (
         <Dialog open={props.open} title={title()} onClose={close} wide={step() !== "kind"}
                 footer={
                     <Switch>
                         <Match when={step() === "kind"}>
-                            <Button variant="secondary" onClick={close}>Cancelar</Button>
+                            <Button variant="secondary" onClick={close}>{t("common.cancel")}</Button>
                             <Button icon={<ArrowRight size={16}/>} disabled={!kind()}
-                                    onClick={() => setStep("details")}>Siguiente</Button>
+                                    onClick={() => setStep("details")}>{t("create.next")}</Button>
                         </Match>
                         <Match when={step() === "details"}>
                             <Button variant="secondary" icon={<ArrowLeft size={16}/>}
-                                    onClick={() => setStep("kind")}>Atrás</Button>
-                            <Button type="submit" form="create-crop" loading={saving()}>Crear cultivo</Button>
+                                    onClick={() => setStep("kind")}>{t("create.back")}</Button>
+                            <Button type="submit" form="create-crop" loading={saving()}>{t("create.submit")}</Button>
                         </Match>
                         <Match when={step() === "connect"}>
                             <Button onClick={() => {
                                 const c = created();
                                 if (c) openCrop(c.crop);
-                            }}>Ya lo guardé, ir al cultivo</Button>
+                            }}>{t("create.goToCrop")}</Button>
                         </Match>
                     </Switch>
                 }>
             <Show when={step() === "kind"}>
                 <div class="space-y-4">
-                    <p class="text-sm text-muted">¿Cómo llegarán las lecturas de este cultivo?</p>
-                    <div class="grid gap-3" role="radiogroup" aria-label="Tipo de cultivo">
+                    <p class="text-sm text-muted">{t("create.howReadings")}</p>
+                    <div class="grid gap-3" role="radiogroup" aria-label={t("create.kindLabel")}>
                         <For each={Object.keys(CROP_KINDS) as CropKind[]}>
                             {(option) => {
                                 const Icon = KIND_ICONS[option];
@@ -150,7 +151,7 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                                     <button type="button" role="radio" aria-checked={kind() === option}
                                             onClick={() => setKind(option)}
                                             class={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${kind() === option
-                                                ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-white hover:bg-surface"}`}>
+                                                ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
                                         <span
                                             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-leaf-700 text-white">
                                             <Icon size={20}/>
@@ -159,9 +160,7 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                                             <span class="block font-semibold">{CROP_KINDS[option].label}</span>
                                             <span class="mt-0.5 block text-sm text-muted">{CROP_KINDS[option].hint}</span>
                                             <span class="mt-1 block text-xs text-muted">
-                                                {option === "REAL"
-                                                    ? "Te damos la clave del dispositivo y la guía para conectarlo."
-                                                    : "Sin hardware ni cuentas externas. Hasta 5 por cuenta."}
+                                                {option === "REAL" ? t("create.realNote") : t("create.virtualNote")}
                                             </span>
                                         </span>
                                     </button>
@@ -170,9 +169,7 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                         </For>
                     </div>
                     <Alert tone="warning">
-                        El tipo no se puede cambiar después: un cultivo real no pasa a virtual ni al revés. Si cambias
-                        de idea,
-                        crea otro.
+                        {t("create.kindWarning")}
                     </Alert>
                 </div>
             </Show>
@@ -184,9 +181,9 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                             <Show when={error()}>
                                 {(err) => <Alert tone="danger">{err()}</Alert>}
                             </Show>
-                            <TextField label="Nombre" placeholder="Lechugas del balcón" value={name()} maxLength={60}
+                            <TextField label={t("create.name")} placeholder={t("create.namePlaceholder")} value={name()} maxLength={60}
                                        onChange={(event) => setName(event.currentTarget.value)}/>
-                            <SelectField label="Especie" value={type()}
+                            <SelectField label={t("create.species")} value={type()}
                                          onChange={(event) => setType(event.currentTarget.value as CropType)}
                                          hint={CROP_TYPES[type()].hint}>
                                 <For each={Object.entries(CROP_TYPES)}>
@@ -194,15 +191,15 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                                 </For>
                             </SelectField>
                             <fieldset>
-                                <legend class="mb-1.5 text-sm font-semibold">Forma del cultivo</legend>
-                                <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Forma del cultivo">
+                                <legend class="mb-1.5 text-sm font-semibold">{t("create.form")}</legend>
+                                <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t("create.form")}>
                                     <For each={Object.keys(CROP_FORMS) as CropForm[]}>
                                         {(option) => (
                                             <button type="button" role="radio" aria-checked={form() === option}
                                                     onClick={() => setForm(option)}
                                                     title={CROP_FORMS[option].hint}
                                                     class={`rounded-xl border px-3 py-2 text-left text-sm font-semibold transition-colors ${form() === option
-                                                        ? "border-leaf-600 bg-leaf-50 text-leaf-800 ring-2 ring-leaf-600/30" : "border-line bg-white hover:bg-surface"}`}>
+                                                        ? "border-leaf-600 bg-leaf-50 text-accent-strong ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
                                                 {CROP_FORMS[option].label}
                                             </button>
                                         )}
@@ -216,32 +213,29 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                                        running={NOTHING_RUNNING} isDay
                                        setting={placement().setting} exposure={placement().exposure}
                                        vigor="healthy"
-                                       label={`Vista previa: ${CROP_TYPES[type()].label} ${CROP_FORMS[form()].phrase}`}/>
+                                       label={t("create.preview", {species: CROP_TYPES[type()].label, form: CROP_FORMS[form()].phrase})}/>
                             <p class="text-xs text-muted">
-                                {currentKind() === "REAL"
-                                    ? "Nace con la bomba de agua, la luz ultravioleta y el ventilador del firmware; puedes sumar más en Control."
-                                    : "Nace con los seis actuadores: bomba, luz ultravioleta, ventilador, humidificador y dosificadores de nutrientes y pH."}
+                                {currentKind() === "REAL" ? t("create.realStarts") : t("create.virtualStarts")}
                             </p>
                         </div>
                         <div class="space-y-2 sm:col-span-2">
-                            <p class="text-sm font-semibold">¿Dónde está? <span class="font-normal text-muted">(puedes cambiarlo luego en Ajustes)</span>
+                            <p class="text-sm font-semibold">{t("create.where")}<span class="font-normal text-muted">{t("create.whereHint")}</span>
                             </p>
                             <PlacementPicker type={type()} value={placement()} onChange={setPlacement}/>
                         </div>
                         <Show when={currentKind() === "VIRTUAL"}>
                             <div class="space-y-3 sm:col-span-2">
-                                <p class="text-sm font-semibold">¿Cómo empieza la simulación?</p>
+                                <p class="text-sm font-semibold">{t("create.simStart")}</p>
                                 <ModePicker value={mode()} onChange={setMode}/>
                                 <Show when={mode() === "WEATHER"}>
                                     <p class="text-xs text-muted">
                                         {placement().location
-                                            ? `Sigue el clima de ${placement().location!.name}, filtrado por el lugar que elegiste.`
-                                            : "Elige arriba la ubicación del cultivo: su clima es el que se simula."}
+                                            ? t("create.weatherFollows", {name: placement().location!.name})
+                                            : t("create.weatherPick")}
                                     </p>
                                 </Show>
                                 <Show when={mode() === "MANUAL"}>
-                                    <p class="text-xs text-muted">Empieza con los valores típicos de la especie;
-                                        muévelos luego en la pestaña Simulación.</p>
+                                    <p class="text-xs text-muted">{t("create.manualStart")}</p>
                                 </Show>
                             </div>
                         </Show>
@@ -252,9 +246,7 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
             <Show when={step() === "connect" && created()?.device}>
                 <div class="space-y-4">
                     <p class="text-sm text-muted">
-                        «{created()!.crop.name}» está listo. Conéctalo con un ESP32 físico o con la simulación del mismo
-                        firmware en
-                        Wokwi: los dos son cultivos reales y usan esta clave.
+                        {t("create.ready", {name: created()!.crop.name})}
                     </p>
                     <ConnectionGuide credentials={created()!.device!}/>
                 </div>

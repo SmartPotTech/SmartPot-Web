@@ -6,12 +6,13 @@ import {TextField} from "../../components/ui/Field";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {ApiError} from "../../lib/api/client";
 import {authApi} from "../../lib/api/services";
+import {t} from "../../lib/i18n";
 import {AuthCard} from "./AuthCard";
 import {useAuth} from "./AuthContext";
 import {validateEmail} from "./validation";
 
 export function LoginPage() {
-    usePageMeta("Ingresar", {index: true, description: "Ingresa a SmartPot para ver y controlar tus cultivos."});
+    usePageMeta(() => t("auth.login.title"), {index: true, description: () => t("auth.login.description")});
     const auth = useAuth();
     const navigate = useNavigate();
     const location = useLocation<{ from?: string }>();
@@ -28,7 +29,7 @@ export function LoginPage() {
         const invalid = validateEmail(email());
         setEmailError(invalid);
         if (invalid || !password()) {
-            setError(invalid ? null : "Escribe tu contraseña");
+            setError(invalid ? null : t("auth.login.passwordRequired"));
             return;
         }
         setLoading(true);
@@ -38,33 +39,33 @@ export function LoginPage() {
             const from = location.state?.from;
             navigate(from && from.startsWith("/app") ? from : "/app", {replace: true});
         } catch (caught) {
-            setError(caught instanceof ApiError ? caught.message : "No pudimos iniciar sesión");
+            setError(caught instanceof ApiError ? caught.message : t("auth.login.failed"));
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <AuthCard title="Ingresa a SmartPot" subtitle="Monitorea y cuida tus cultivos desde cualquier lugar."
-                  footer={<>¿No tienes cuenta? <A href="/register" class="font-semibold text-leaf-700">Créala
-                      gratis</A></>}>
+        <AuthCard title={t("auth.login.heading")} subtitle={t("auth.login.subtitle")}
+                  footer={<>{t("auth.login.noAccount")} <A href="/register"
+                                                              class="font-semibold text-accent">{t("auth.login.createFree")}</A></>}>
             <form onSubmit={submit} class="space-y-4" noValidate>
-                <Show when={auth.notice}><Alert tone="warning">{auth.notice}</Alert></Show>
+                <Show when={auth.notice}><Alert tone="warning">{t(auth.notice!)}</Alert></Show>
                 <Show when={error()}><Alert tone="danger">{error()}</Alert></Show>
-                <TextField label="Correo" type="email" autocomplete="email" value={email()} error={emailError()}
+                <TextField label={t("auth.email")} type="email" autocomplete="email" value={email()} error={emailError()}
                            onChange={(event) => setEmail(event.currentTarget.value)}/>
-                <TextField label="Contraseña" type="password" autocomplete="current-password" value={password()}
+                <TextField label={t("auth.password")} type="password" autocomplete="current-password" value={password()}
                            onChange={(event) => setPassword(event.currentTarget.value)}/>
                 <div class="flex items-center justify-between text-sm">
                     <label class="flex items-center gap-2 text-muted">
                         <input type="checkbox" checked={remember()}
                                onChange={(event) => setRemember(event.currentTarget.checked)}
                                class="h-4 w-4 accent-leaf-700"/>
-                        Mantener sesión iniciada
+                        {t("auth.login.remember")}
                     </label>
-                    <A href="/forgot-password" class="font-semibold text-leaf-700">¿Olvidaste tu contraseña?</A>
+                    <A href="/forgot-password" class="font-semibold text-accent">{t("auth.login.forgot")}</A>
                 </div>
-                <Button type="submit" size="lg" loading={loading()} class="w-full">Ingresar</Button>
+                <Button type="submit" size="lg" loading={loading()} class="w-full">{t("auth.login.submit")}</Button>
             </form>
         </AuthCard>
     );

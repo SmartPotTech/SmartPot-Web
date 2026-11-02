@@ -3,6 +3,7 @@ import {Show} from "solid-js";
 import {METRICS} from "../../../lib/catalog";
 import {formatMetric, rangeStatus} from "../../../lib/format";
 import type {MetricKey, ProfileRange} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 
 export function MetricTile(props: { metric: MetricKey; value?: number; range?: ProfileRange }) {
     const info = () => METRICS[props.metric];
@@ -20,20 +21,20 @@ export function MetricTile(props: { metric: MetricKey; value?: number; range?: P
                 <Show when={statusKey() !== "unknown"}>
                     <span
                         class={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                            statusKey() === "low" ? "text-water-700 bg-water-100"
-                                : statusKey() === "high" ? "text-clay-600 bg-clay-100"
-                                    : "text-leaf-800 bg-leaf-100"
+                            statusKey() === "low" ? "text-link bg-water-100"
+                                : statusKey() === "high" ? "text-clay-fg bg-clay-100"
+                                    : "text-accent-strong bg-leaf-50"
                         }`}>
                         {statusKey() === "low" ? <ArrowDown size={12}/>
                             : statusKey() === "high" ? <ArrowUp size={12}/>
                                 : <Check size={12}/>}
-                        {statusKey() === "low" ? "Bajo" : statusKey() === "high" ? "Alto" : "Ideal"}
+                        {statusKey() === "low" ? t("tile.low") : statusKey() === "high" ? t("tile.high") : t("tile.ideal")}
                     </span>
                 </Show>
             </div>
             <Show when={props.range}>
                 {(range) => (
-                    <p class="mt-1 text-xs text-muted">Ideal: {range().min}–{range().max} {range().unit}</p>
+                    <p class="mt-1 text-xs text-muted">{t("tile.idealRange", {min: range().min, max: range().max, unit: range().unit})}</p>
                 )}
             </Show>
         </div>

@@ -2,12 +2,14 @@ import {KeyRound, LogOut, Save, Trash2} from "lucide-solid";
 import {createSignal, Show} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Dialog} from "../../components/ui/Dialog";
+import {PreferenceSelectors} from "../../components/ui/PreferenceControls";
 import {TextField} from "../../components/ui/Field";
 import {Alert} from "../../components/ui/Feedback";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {ApiError} from "../../lib/api/client";
 import {userApi} from "../../lib/api/services";
 import {formatDateTime} from "../../lib/format";
+import {t} from "../../lib/i18n";
 import {useAuth} from "../auth/AuthContext";
 import {validateName, validatePassword} from "../auth/validation";
 import {McpConnections} from "./McpConnections";
@@ -16,7 +18,7 @@ import {NotificationChannels} from "./NotificationChannels";
 type Message = { tone: "success" | "danger"; text: string } | null;
 
 export function ProfilePage() {
-    usePageMeta("Perfil");
+    usePageMeta(() => t("profile.title"));
     const auth = useAuth();
     const [name, setName] = createSignal(auth.user?.name ?? "");
     const [lastName, setLastName] = createSignal(auth.user?.lastName ?? "");
@@ -29,7 +31,7 @@ export function ProfilePage() {
 
     async function saveProfile(event: SubmitEvent) {
         event.preventDefault();
-        const invalid = validateName(name(), "nombre", 40) ?? validateName(lastName(), "apellido", 60);
+        const invalid = validateName(name(), t("auth.firstNameNoun"), 40) ?? validateName(lastName(), t("auth.lastNameNoun"), 60);
         if (invalid) {
             setProfileMessage({tone: "danger", text: invalid});
             return;
@@ -37,11 +39,11 @@ export function ProfilePage() {
         setBusy("profile");
         try {
             auth.updateUser(await userApi.update({name: name().trim(), lastName: lastName().trim()}));
-            setProfileMessage({tone: "success", text: "Perfil actualizado"});
+            setProfileMessage({tone: "success", text: t("profile.updated")});
         } catch (caught) {
             setProfileMessage({
                 tone: "danger",
-                text: caught instanceof ApiError ? caught.message : "No se pudo guardar",
+                text: caught instanceof ApiError ? caught.message : t("profile.saveFailed"),
             });
         } finally {
             setBusy(null);
@@ -52,7 +54,7 @@ export function ProfilePage() {
         event.preventDefault();
         const invalid = validatePassword(next());
         if (!current() || invalid) {
-            setPasswordMessage({tone: "danger", text: invalid ?? "Escribe tu contraseña actual"});
+            setPasswordMessage({tone: "danger", text: invalid ?? t("profile.currentRequired")});
             return;
         }
         setBusy("password");
@@ -60,11 +62,11 @@ export function ProfilePage() {
             await userApi.changePassword(current(), next());
             setCurrent("");
             setNext("");
-            setPasswordMessage({tone: "success", text: "Contraseña actualizada"});
+            setPasswordMessage({tone: "success", text: t("profile.passwordUpdated")});
         } catch (caught) {
             setPasswordMessage({
                 tone: "danger",
-                text: caught instanceof ApiError ? caught.message : "No se pudo cambiar",
+                text: caught instanceof ApiError ? caught.message : t("profile.changeFailed"),
             });
         } finally {
             setBusy(null);
@@ -75,7 +77,7 @@ export function ProfilePage() {
         setBusy("delete");
         try {
             await userApi.remove();
-            auth.signOut("Tu cuenta y todos tus datos fueron eliminados.");
+            auth.signOut("auth.accountDeleted");
         } catch {
             setBusy(null);
             setConfirmDelete(false);
@@ -85,68 +87,72 @@ export function ProfilePage() {
     return (
         <div class="mx-auto max-w-2xl space-y-6">
             <div>
-                <h1 class="text-3xl font-bold">Perfil</h1>
-                <p class="text-sm text-muted">{auth.user?.email} · miembro desde {formatDateTime(auth.user?.createdAt)}</p>
+                <h1 class="text-3xl font-bold">{t("profile.title")}</h1>
+                <p class="text-sm text-muted">{t("profile.memberSince", {email: auth.user?.email ?? "", date: formatDateTime(auth.user?.createdAt)})}</p>
             </div>
 
             <form onSubmit={saveProfile} class="card space-y-4 p-5" noValidate>
-                <h2 class="text-lg font-semibold">Datos personales</h2>
+                <h2 class="text-lg font-semibold">{t("profile.personalData")}</h2>
                 <Show when={profileMessage()}>
                     {(msg) => <Alert tone={msg().tone}>{msg().text}</Alert>}
                 </Show>
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <TextField label="Nombre" value={name()}
+                    <TextField label={t("auth.firstName")} value={name()}
                                onChange={(event) => setName(event.currentTarget.value)}/>
-                    <TextField label="Apellido" value={lastName()}
+                    <TextField label={t("auth.lastName")} value={lastName()}
                                onChange={(event) => setLastName(event.currentTarget.value)}/>
                 </div>
-                <Button type="submit" icon={<Save size={16}/>} loading={busy() === "profile"}>Guardar</Button>
+                <Button type="submit" icon={<Save size={16}/>} loading={busy() === "profile"}>{t("common.save")}</Button>
             </form>
+
+            <section class="card space-y-4 p-5" aria-labelledby="preferences-title">
+                <div>
+                    <h2 id="preferences-title" class="text-lg font-semibold">{t("profile.preferences")}</h2>
+                    <p class="text-sm text-muted">{t("profile.preferencesHint")}</p>
+                </div>
+                <PreferenceSelectors/>
+            </section>
 
             <NotificationChannels/>
 
             <McpConnections/>
 
             <form onSubmit={changePassword} class="card space-y-4 p-5" noValidate>
-                <h2 class="text-lg font-semibold">Cambiar contraseña</h2>
+                <h2 class="text-lg font-semibold">{t("profile.changePassword")}</h2>
                 <Show when={passwordMessage()}>
                     {(msg) => <Alert tone={msg().tone}>{msg().text}</Alert>}
                 </Show>
-                <TextField label="Contraseña actual" type="password" autocomplete="current-password" value={current()}
+                <TextField label={t("profile.currentPassword")} type="password" autocomplete="current-password" value={current()}
                            onChange={(event) => setCurrent(event.currentTarget.value)}/>
-                <TextField label="Nueva contraseña" type="password" autocomplete="new-password" value={next()}
-                           hint="Mínimo 8 caracteres con mayúscula, minúscula y número"
+                <TextField label={t("profile.newPassword")} type="password" autocomplete="new-password" value={next()}
+                           hint={t("auth.passwordHint")}
                            onChange={(event) => setNext(event.currentTarget.value)}/>
-                <Button type="submit" icon={<KeyRound size={16}/>} loading={busy() === "password"}>Cambiar
-                    contraseña</Button>
+                <Button type="submit" icon={<KeyRound size={16}/>} loading={busy() === "password"}>{t("profile.changePassword")}</Button>
             </form>
 
             <section class="card flex flex-wrap items-center justify-between gap-3 p-5">
                 <div>
-                    <h2 class="text-lg font-semibold">Sesión</h2>
-                    <p class="text-sm text-muted">Cierra la sesión en este dispositivo.</p>
+                    <h2 class="text-lg font-semibold">{t("profile.session")}</h2>
+                    <p class="text-sm text-muted">{t("profile.sessionHint")}</p>
                 </div>
-                <Button variant="secondary" icon={<LogOut size={16}/>} onClick={() => auth.signOut()}>Cerrar
-                    sesión</Button>
+                <Button variant="secondary" icon={<LogOut size={16}/>} onClick={() => auth.signOut()}>{t("nav.signOut")}</Button>
             </section>
 
             <section class="card border-danger-500/30 p-5">
-                <h2 class="text-lg font-semibold text-danger-600">Eliminar cuenta</h2>
-                <p class="mt-1 text-sm text-muted">Se borran tu cuenta, tus cultivos, sus lecturas y tus alertas. No
-                    se puede deshacer.</p>
+                <h2 class="text-lg font-semibold text-danger-fg">{t("profile.deleteAccount")}</h2>
+                <p class="mt-1 text-sm text-muted">{t("profile.deleteHint")}</p>
                 <Button variant="danger" class="mt-4" icon={<Trash2 size={16}/>}
                         onClick={() => setConfirmDelete(true)}>
-                    Eliminar mi cuenta
+                    {t("profile.deleteMine")}
                 </Button>
             </section>
 
-            <Dialog open={confirmDelete()} title="¿Eliminar tu cuenta?" onClose={() => setConfirmDelete(false)}
+            <Dialog open={confirmDelete()} title={t("profile.deleteTitle")} onClose={() => setConfirmDelete(false)}
                     footer={<>
-                        <Button variant="secondary" onClick={() => setConfirmDelete(false)}>Cancelar</Button>
-                        <Button variant="danger" loading={busy() === "delete"} onClick={() => void deleteAccount()}>Sí,
-                            eliminar todo</Button>
+                        <Button variant="secondary" onClick={() => setConfirmDelete(false)}>{t("common.cancel")}</Button>
+                        <Button variant="danger" loading={busy() === "delete"} onClick={() => void deleteAccount()}>{t("profile.deleteConfirm")}</Button>
                     </>}>
-                <p class="text-sm text-muted">Tus cultivos quedarán desconectados y perderás todo el historial.</p>
+                <p class="text-sm text-muted">{t("profile.deleteBody")}</p>
             </Dialog>
         </div>
     );

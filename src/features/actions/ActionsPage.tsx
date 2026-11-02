@@ -9,6 +9,7 @@ import {useResource} from "../../hooks/useResource";
 import {commandApi, cropApi, overviewApi} from "../../lib/api/services";
 import {COMMAND_STATUS} from "../../lib/catalog";
 import {describeAction, formatDateTime, timeAgo} from "../../lib/format";
+import {t} from "../../lib/i18n";
 import type {Command, CommandStatus} from "../../lib/api/types";
 import {FleetActionsList} from "../overview/components/FleetActionsList";
 
@@ -17,7 +18,7 @@ type SourceFilter = "ALL" | Command["source"];
 
 /** Acciones: lo que sugiere el asistente para todos los cultivos y todo lo que se ha ejecutado. */
 export function ActionsPage() {
-    usePageMeta("Acciones");
+    usePageMeta(() => t("actions.title"));
     const [tab, setTab] = createSignal<Tab>("suggested");
     const [status, setStatus] = createSignal<CommandStatus | "ALL">("ALL");
     const [source, setSource] = createSignal<SourceFilter>("ALL");
@@ -25,7 +26,7 @@ export function ActionsPage() {
     const commands = useResource(() => commandApi.listAll(100), [], 20_000);
     const fleet = useResource(() => overviewApi.fleet(), [], 5 * 60_000);
 
-    const cropName = (id: string) => crops.data?.find((crop) => crop.id === id)?.name ?? "Cultivo eliminado";
+    const cropName = (id: string) => crops.data?.find((crop) => crop.id === id)?.name ?? t("actions.deletedCrop");
     const history = () => (commands.data ?? []).filter((command) => (status() === "ALL" || command.status === status())
         && (source() === "ALL" || command.source === source()));
     const executed = () => (commands.data ?? []).filter((command) => command.status === "EXECUTED").length;
@@ -33,22 +34,22 @@ export function ActionsPage() {
 
     return (
         <div class="space-y-6">
-            <PageHeader eyebrow="Centro de acciones" title="Acciones" icon={<ListChecks size={24}/>}
-                        description="Aplica lo que recomienda el asistente a varios cultivos y revisa todo lo que se ha ejecutado.">
+            <PageHeader eyebrow={t("actions.eyebrow")} title={t("actions.title")} icon={<ListChecks size={24}/>}
+                        description={t("actions.description")}>
                 <div class="grid grid-cols-3 gap-3">
-                    <HeaderStat label="Sugeridas ahora" value={fleet.data?.actions.length ?? "—"}/>
-                    <HeaderStat label="Ejecutadas (últimas 100)" value={commands.data ? executed() : "—"}/>
-                    <HeaderStat label="Del agente de IA" value={commands.data ? byAgent() : "—"}/>
+                    <HeaderStat label={t("actions.statSuggested")} value={fleet.data?.actions.length ?? "—"}/>
+                    <HeaderStat label={t("actions.statExecuted")} value={commands.data ? executed() : "—"}/>
+                    <HeaderStat label={t("actions.statAgent")} value={commands.data ? byAgent() : "—"}/>
                 </div>
             </PageHeader>
 
-            <div class="flex gap-2 rounded-xl bg-white p-1 shadow-[var(--shadow-card)] sm:w-fit" role="tablist">
-                <For each={[["suggested", "Sugeridas por la IA", Sparkles], ["history", "Historial", History]] as const}>
+            <div class="flex gap-2 rounded-xl bg-card p-1 shadow-[var(--shadow-card)] sm:w-fit" role="tablist">
+                <For each={[["suggested", "actions.tabSuggested", Sparkles], ["history", "actions.tabHistory", History]] as const}>
                     {([key, label, Icon]) => (
                         <button type="button" role="tab" aria-selected={tab() === key} onClick={() => setTab(key)}
                                 class={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold sm:flex-none
                   ${tab() === key ? "bg-leaf-700 text-white" : "text-muted hover:text-ink"}`}>
-                            <Icon size={16}/> {label}
+                            <Icon size={16}/> {t(label)}
                         </button>
                     )}
                 </For>
@@ -58,24 +59,24 @@ export function ActionsPage() {
                 <section class="card p-5" role="tabpanel">
                     <div class="flex flex-wrap gap-3">
                         <label class="text-sm">
-                            <span class="mr-2 font-semibold">Estado</span>
+                            <span class="mr-2 font-semibold">{t("actions.filterStatus")}</span>
                             <select value={status()}
                                     onChange={(event) => setStatus(event.currentTarget.value as CommandStatus | "ALL")}
-                                    class="rounded-lg border border-line bg-white px-2 py-1">
-                                <option value="ALL">Todos</option>
+                                    class="rounded-lg border border-line bg-card px-2 py-1">
+                                <option value="ALL">{t("actions.all")}</option>
                                 <For each={Object.entries(COMMAND_STATUS)}>
                                     {([value, info]) => <option value={value}>{info.label}</option>}
                                 </For>
                             </select>
                         </label>
                         <label class="text-sm">
-                            <span class="mr-2 font-semibold">Origen</span>
+                            <span class="mr-2 font-semibold">{t("actions.filterSource")}</span>
                             <select value={source()}
                                     onChange={(event) => setSource(event.currentTarget.value as SourceFilter)}
-                                    class="rounded-lg border border-line bg-white px-2 py-1">
-                                <option value="ALL">Todos</option>
-                                <option value="USER">Personas</option>
-                                <option value="AGENT">Agente de IA</option>
+                                    class="rounded-lg border border-line bg-card px-2 py-1">
+                                <option value="ALL">{t("actions.all")}</option>
+                                <option value="USER">{t("actions.sourceUser")}</option>
+                                <option value="AGENT">{t("actions.sourceAgent")}</option>
                             </select>
                         </label>
                     </div>
@@ -84,8 +85,8 @@ export function ActionsPage() {
                     </Show>
                     <Show when={!(commands.loading && !commands.data)} fallback={<PageLoader/>}>
                         <Show when={history().length > 0} fallback={
-                            <div class="mt-4"><EmptyState icon={<History size={24}/>} title="Sin acciones">
-                                Aquí aparecerán las órdenes enviadas a tus cultivos, por ti o por el agente.
+                            <div class="mt-4"><EmptyState icon={<History size={24}/>} title={t("actions.emptyTitle")}>
+                                {t("actions.emptyBody")}
                             </EmptyState></div>
                         }>
                             <ul class="mt-4 divide-y divide-line">
@@ -96,7 +97,7 @@ export function ActionsPage() {
                                                 <p class="font-medium">{describeAction(command.actuatorType, command.action, command.durationSeconds)}</p>
                                                 <p class="text-sm text-muted">
                                                     <A href={`/app/crops/${command.cropId}`}
-                                                       class="font-medium text-leaf-800 hover:underline">
+                                                       class="font-medium text-accent-strong hover:underline">
                                                         {cropName(command.cropId)}
                                                     </A>
                                                     {command.reason ? ` · ${command.reason}` : ""}
@@ -108,8 +109,8 @@ export function ActionsPage() {
                                             <div class="flex flex-col items-end gap-1">
                                                 <div class="flex gap-1.5">
                                                     <Badge tone={command.source === "AGENT" ? "info" : "neutral"}>
-                                                        {command.source === "AGENT" ? <><Bot size={12}/> Agente</> : <>
-                                                            <UserRound size={12}/> Persona</>}
+                                                        {command.source === "AGENT" ? <><Bot size={12}/> {t("actions.badgeAgent")}</> : <>
+                                                            <UserRound size={12}/> {t("actions.badgePerson")}</>}
                                                     </Badge>
                                                     <Badge
                                                         tone={COMMAND_STATUS[command.status].tone}>{COMMAND_STATUS[command.status].label}</Badge>
@@ -129,7 +130,7 @@ export function ActionsPage() {
             }>
                 <section class="card p-5" role="tabpanel">
                     <Show when={fleet.error}>
-                        {(err) => <Alert tone="info" title="El asistente no está disponible">{err()}</Alert>}
+                        {(err) => <Alert tone="info" title={t("actions.unavailable")}>{err()}</Alert>}
                     </Show>
                     <Show when={!(fleet.loading && !fleet.data)} fallback={<PageLoader/>}>
                         <Show when={fleet.data}>
@@ -141,7 +142,7 @@ export function ActionsPage() {
                                             <For each={data().sharedIssues}>
                                                 {(issue) => (
                                                     <li class="flex gap-2 rounded-xl bg-sun-100 p-3 text-sm">
-                                                        <AlertTriangle size={16} class="mt-0.5 shrink-0 text-clay-600"/>
+                                                        <AlertTriangle size={16} class="mt-0.5 shrink-0 text-clay-fg"/>
                                                         <span>{issue.message}
                                                             <span
                                                                 class="block text-xs text-muted">{issue.cropIds.map(cropName).join(", ")}</span>

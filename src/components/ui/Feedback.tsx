@@ -4,10 +4,10 @@ import type {Tone} from "../../lib/catalog";
 
 const BADGE: Record<Tone, string> = {
     neutral: "bg-surface text-muted",
-    info: "bg-water-100 text-water-700",
-    success: "bg-leaf-100 text-leaf-800",
-    warning: "bg-sun-100 text-sun-600",
-    danger: "bg-danger-100 text-danger-600",
+    info: "bg-water-100 text-link",
+    success: "bg-leaf-50 text-accent-strong",
+    warning: "bg-sun-100 text-sun-fg",
+    danger: "bg-danger-100 text-danger-fg",
 };
 
 export function Badge(props: { tone?: Tone; children: JSX.Element }) {
@@ -20,10 +20,10 @@ export function Badge(props: { tone?: Tone; children: JSX.Element }) {
 }
 
 const ALERT_BOX: Record<Exclude<Tone, "neutral">, string> = {
-    info: "border-water-500/30 bg-water-100 text-water-700",
-    success: "border-leaf-500/30 bg-leaf-50 text-leaf-800",
-    warning: "border-sun-500/40 bg-sun-100 text-sun-600",
-    danger: "border-danger-500/30 bg-danger-100 text-danger-600",
+    info: "border-water-500/30 bg-water-100 text-link",
+    success: "border-leaf-500/30 bg-leaf-50 text-accent-strong",
+    warning: "border-sun-500/40 bg-sun-100 text-sun-fg",
+    danger: "border-danger-500/30 bg-danger-100 text-danger-fg",
 };
 
 function AlertIcon(props: { tone: Exclude<Tone, "neutral"> }) {
@@ -63,7 +63,7 @@ export function EmptyState(props: {
 }) {
     return (
         <div class="card flex flex-col items-center px-6 py-12 text-center">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf-50 text-leaf-700">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-leaf-50 text-accent">
                 {props.icon}
             </div>
             <h3 class="text-lg font-semibold">{props.title}</h3>

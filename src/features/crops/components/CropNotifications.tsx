@@ -8,14 +8,15 @@ import {useResource} from "../../../hooks/useResource";
 import {ApiError} from "../../../lib/api/client";
 import {cropChannelApi} from "../../../lib/api/services";
 import {timeAgo} from "../../../lib/format";
+import {t, type TranslationKey} from "../../../lib/i18n";
 import type {Crop, CropChannel, Delivery, LinkCode, NotificationType} from "../../../lib/api/types";
 
 /** Qué puede avisar un cultivo (las novedades de la cuenta no son de un cultivo). */
-const CROP_EVENTS: { type: NotificationType; label: string }[] = [
-    {type: "ALERT", label: "Alertas de sus variables"},
-    {type: "DEVICE", label: "Se desconecta"},
-    {type: "AI", label: "Acciones del asistente"},
-    {type: "COMMAND", label: "Órdenes que fallan o vencen"},
+const CROP_EVENTS: { type: NotificationType; label: TranslationKey }[] = [
+    {type: "ALERT", label: "cropNotif.event.ALERT"},
+    {type: "DEVICE", label: "cropNotif.event.DEVICE"},
+    {type: "AI", label: "cropNotif.event.AI"},
+    {type: "COMMAND", label: "cropNotif.event.COMMAND"},
 ];
 const DIGEST_HOURS = [1, 2, 3, 6, 12, 24];
 
@@ -32,12 +33,10 @@ export function CropNotifications(props: { crop: Crop }) {
             <Show when={channels.data}>
                 <Show when={ready().length > 0} fallback={
                     <section class="card p-5">
-                        <h3 class="flex items-center gap-2 font-semibold"><BellRing size={16} class="text-leaf-700"/> Avisos
-                            fuera de SmartPot</h3>
+                        <h3 class="flex items-center gap-2 font-semibold"><BellRing size={16} class="text-accent"/> {t("cropNotif.outsideTitle")}</h3>
                         <p class="mt-1 text-sm text-muted">
-                            Vincula una aplicación en <A href="/app/profile"
-                                                         class="font-semibold text-water-700 hover:underline">tu
-                            perfil</A> y aquí eliges qué avisa este cultivo, cada cuánto y con quién lo compartes.
+                            {t("cropNotif.linkBefore")}<A href="/app/profile"
+                                                         class="font-semibold text-link hover:underline">{t("cropNotif.linkProfile")}</A>{t("cropNotif.linkAfter")}
                         </p>
                     </section>
                 }>
@@ -72,7 +71,7 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
             if (success) setMessage({tone: "success", text: success});
             props.onChanged();
         } catch (caught) {
-            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo completar"});
+            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : t("channels.failed")});
         } finally {
             setBusy(null);
         }
@@ -84,7 +83,7 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
         delivery: delivery(),
         digestHours: digestHours(),
         dailySummaryAt: daily() ? dailyAt() : "",
-    }), "Avisos guardados");
+    }), t("cropNotif.saved"));
 
     const share = () => void run("share", async () => {
         const created = await cropChannelApi.share(props.crop.id, props.channel.type);
@@ -94,22 +93,20 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
     async function copy(url: string) {
         try {
             await navigator.clipboard.writeText(url);
-            setMessage({tone: "info", text: "Enlace copiado: envíaselo a quien quieras que reciba los avisos."});
+            setMessage({tone: "info", text: t("cropNotif.copied")});
         } catch {
-            setMessage({tone: "danger", text: "No se pudo copiar; selecciona el enlace y cópialo a mano."});
+            setMessage({tone: "danger", text: t("cropNotif.copyFailed")});
         }
     }
 
     return (
-        <section class="card space-y-4 p-5" aria-label={`Avisos por ${props.channel.name}`}>
+        <section class="card space-y-4 p-5" aria-label={t("cropNotif.region", {name: props.channel.name})}>
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <h3 class="flex items-center gap-2 font-semibold"><BellRing size={16} class="text-leaf-700"/> Avisos
-                        por {props.channel.name}</h3>
-                    <p class="text-sm text-muted">Lo que este cultivo te avisa a ti y a los chats con los que lo
-                        compartes.</p>
+                    <h3 class="flex items-center gap-2 font-semibold"><BellRing size={16} class="text-accent"/> {t("cropNotif.byChannel", {name: props.channel.name})}</h3>
+                    <p class="text-sm text-muted">{t("cropNotif.byChannelBody")}</p>
                 </div>
-                <Switch checked={enabled()} label={`Avisos de este cultivo por ${props.channel.name}`}
+                <Switch checked={enabled()} label={t("cropNotif.toggle", {name: props.channel.name})}
                         onChange={setEnabled}/>
             </div>
             <Show when={message()}>
@@ -118,7 +115,7 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
 
             <fieldset disabled={!enabled()} class="space-y-4 disabled:opacity-60">
                 <div>
-                    <p class="text-sm font-semibold">Qué avisar</p>
+                    <p class="text-sm font-semibold">{t("cropNotif.what")}</p>
                     <div class="mt-2 grid gap-2 sm:grid-cols-2">
                         <For each={CROP_EVENTS}>
                             {(item) => (
@@ -128,7 +125,7 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
                                            onChange={(event) => setEvents((current) => event.currentTarget.checked
                                                ? [...new Set([...current, item.type])]
                                                : current.filter((type) => type !== item.type))}/>
-                                    {item.label}
+                                    {t(item.label)}
                                 </label>
                             )}
                         </For>
@@ -136,25 +133,25 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
                 </div>
 
                 <div>
-                    <p class="text-sm font-semibold">Cuándo</p>
+                    <p class="text-sm font-semibold">{t("cropNotif.when")}</p>
                     <div class="mt-2 flex flex-wrap items-center gap-4 text-sm" role="radiogroup"
-                         aria-label="Cuándo avisar">
+                         aria-label={t("cropNotif.whenLabel")}>
                         <label class="flex items-center gap-2">
                             <input type="radio" name={`delivery-${props.channel.type}`} class="accent-leaf-700"
                                    checked={delivery() === "INSTANT"} onChange={() => setDelivery("INSTANT")}/>
-                            Al instante
+                            {t("cropNotif.instant")}
                         </label>
                         <label class="flex items-center gap-2">
                             <input type="radio" name={`delivery-${props.channel.type}`} class="accent-leaf-700"
                                    checked={delivery() === "DIGEST"} onChange={() => setDelivery("DIGEST")}/>
-                            Un resumen cada
+                            {t("cropNotif.digestEvery")}
                         </label>
                         <select value={digestHours()} disabled={delivery() !== "DIGEST"}
-                                aria-label="Horas entre resúmenes"
+                                aria-label={t("cropNotif.digestLabel")}
                                 onChange={(event) => setDigestHours(Number(event.currentTarget.value))}
-                                class="h-9 rounded-lg border border-line bg-white px-2 disabled:opacity-50">
+                                class="h-9 rounded-lg border border-line bg-card px-2 disabled:opacity-50">
                             <For each={DIGEST_HOURS}>
-                                {(hours) => <option value={hours}>{hours === 1 ? "1 hora" : `${hours} horas`}</option>}
+                                {(hours) => <option value={hours}>{t("cropNotif.hours", {count: hours})}</option>}
                             </For>
                         </select>
                     </div>
@@ -164,65 +161,62 @@ function ChannelSettings(props: { crop: Crop; channel: CropChannel; onChanged: (
                     <label class="flex items-center gap-2">
                         <input type="checkbox" class="h-4 w-4 accent-leaf-700" checked={daily()}
                                onChange={(event) => setDaily(event.currentTarget.checked)}/>
-                        <span class="font-semibold">Resumen diario</span> a las
+                        <span class="font-semibold">{t("cropNotif.dailySummary")}</span>{t("cropNotif.at")}
                     </label>
-                    <input type="time" value={dailyAt()} disabled={!daily()} aria-label="Hora del resumen diario"
+                    <input type="time" value={dailyAt()} disabled={!daily()} aria-label={t("cropNotif.dailyLabel")}
                            onChange={(event) => setDailyAt(event.currentTarget.value)}
-                           class="h-9 rounded-lg border border-line bg-white px-2 disabled:opacity-50"/>
-                    <span class="text-xs text-muted">Salud, última lectura y lo que pasó en 24 h.</span>
+                           class="h-9 rounded-lg border border-line bg-card px-2 disabled:opacity-50"/>
+                    <span class="text-xs text-muted">{t("cropNotif.dailyBody")}</span>
                 </div>
             </fieldset>
 
-            <Button icon={<Save size={16}/>} loading={busy() === "save"} onClick={save}>Guardar avisos</Button>
+            <Button icon={<Save size={16}/>} loading={busy() === "save"} onClick={save}>{t("cropNotif.saveAlerts")}</Button>
 
             <div class="border-t border-line pt-4">
-                <p class="text-sm font-semibold">Compartido con</p>
+                <p class="text-sm font-semibold">{t("cropNotif.sharedWith")}</p>
                 <p class="text-xs text-muted">
-                    Si cuidas este cultivo con alguien, compártele un enlace: recibirá en su {props.channel.name} los
-                    mismos
-                    avisos, sin
-                    entrar a tu cuenta. Hasta 10 chats.
+                    {t("cropNotif.shareBody", {name: props.channel.name})}
                 </p>
                 <ul class="mt-2 divide-y divide-line">
                     <For each={props.channel.recipients}>
                         {(recipient) => (
                             <li class="flex items-center justify-between gap-2 py-2 text-sm">
-                                <span>{recipient.displayName ?? "Chat sin nombre"}
+                                <span>{recipient.displayName ?? t("cropNotif.unnamedChat")}
                                     {recipient.addedAt &&
-                                        <span class="text-muted"> · desde {timeAgo(recipient.addedAt)}</span>}</span>
+                                        <span class="text-muted">{t("cropNotif.since", {time: timeAgo(recipient.addedAt)})}</span>}</span>
                                 <Button size="sm" variant="ghost" icon={<Trash2 size={14}/>}
                                         loading={busy() === `remove-${recipient.id}`}
-                                        aria-label={`Dejar de compartir con ${recipient.displayName ?? "este chat"}`}
+                                        aria-label={t("cropNotif.stopShareLabel", {name: recipient.displayName ?? t("cropNotif.thisChat")})}
                                         onClick={() => void run(`remove-${recipient.id}`,
-                                            () => cropChannelApi.removeRecipient(props.crop.id, props.channel.type, recipient.id), "Dejaste de compartirlo")}>
-                                    Quitar
+                                            () => cropChannelApi.removeRecipient(props.crop.id, props.channel.type, recipient.id), t("cropNotif.stopped"))}>
+                                    {t("cropNotif.remove")}
                                 </Button>
                             </li>
                         )}
                     </For>
                     <Show when={props.channel.recipients.length === 0}>
-                        <li class="py-2 text-sm text-muted">Todavía no lo compartes.</li>
+                        <li class="py-2 text-sm text-muted">{t("cropNotif.notShared")}</li>
                     </Show>
                 </ul>
                 <Button size="sm" variant="secondary" class="mt-2" icon={<Share2 size={14}/>}
                         loading={busy() === "share"}
                         disabled={props.channel.recipients.length >= 10} onClick={share}>
-                    Compartir con otro chat
+                    {t("cropNotif.shareButton")}
                 </Button>
                 <Show when={code()}>
                     {(c) => (
                         <div class="mt-3 space-y-2 rounded-xl bg-surface p-3 text-sm">
-                            <p>Envía este enlace; vence {timeAgo(c().expiresAt)} y sirve una sola vez.</p>
+                            <p>{t("cropNotif.sendLink", {time: timeAgo(c().expiresAt)})}</p>
                             <p class="break-all font-mono text-xs">{c().url}</p>
                             <div class="flex flex-wrap gap-2">
                                 <Button size="sm" variant="secondary" icon={<Copy size={14}/>}
-                                        onClick={() => void copy(c().url)}>Copiar enlace</Button>
+                                        onClick={() => void copy(c().url)}>{t("cropNotif.copyLink")}</Button>
                                 <Button size="sm" variant="ghost" icon={<ExternalLink size={14}/>}
-                                        onClick={() => window.open(c().url, "_blank", "noopener,noreferrer")}>Abrir</Button>
+                                        onClick={() => window.open(c().url, "_blank", "noopener,noreferrer")}>{t("cropNotif.open")}</Button>
                                 <Button size="sm" variant="ghost" onClick={() => {
                                     setCode(null);
                                     props.onChanged();
-                                }}>Ya lo usaron</Button>
+                                }}>{t("cropNotif.used")}</Button>
                             </div>
                         </div>
                     )}

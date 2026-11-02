@@ -1,4 +1,5 @@
 import {createEffect} from "solid-js";
+import {t} from "../lib/i18n";
 
 const BASE_TITLE = "SmartPot";
 
@@ -15,14 +16,14 @@ function setMeta(name: string, content: string) {
 /** Título y robots por página: la landing se indexa; la app privada no. */
 export function usePageMeta(
     title: string | (() => string),
-    {index = false, description}: { index?: boolean; description?: string } = {},
+    {index = false, description}: { index?: boolean; description?: string | (() => string) } = {},
 ) {
     createEffect(() => {
         const resolved = typeof title === "function" ? title() : title;
         document.title = resolved
             ? `${resolved} · ${BASE_TITLE}`
-            : `${BASE_TITLE} — Monitoreo inteligente de cultivos hidropónicos`;
+            : `${BASE_TITLE} — ${t("meta.defaultTitle")}`;
         setMeta("robots", index ? "index, follow" : "noindex, nofollow");
-        if (description) setMeta("description", description);
+        if (description) setMeta("description", typeof description === "function" ? description() : description);
     });
 }

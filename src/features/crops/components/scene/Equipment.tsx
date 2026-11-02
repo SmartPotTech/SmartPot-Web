@@ -1,6 +1,7 @@
 import {For, type JSX, Show} from "solid-js";
 import type {ActuatorType} from "../../../../lib/api/types";
 import {ACTUATORS} from "../../../../lib/catalog";
+import {t} from "../../../../lib/i18n";
 import {GROUND} from "./Backdrop";
 
 const METAL = "#5B6B63";
@@ -12,7 +13,7 @@ function Actuator(props: { type: ActuatorType; on: boolean; children: JSX.Elemen
     const label = () => ACTUATORS[props.type].label;
     return (
         <g data-actuator={props.type} data-on={String(props.on)}>
-            <title>{`${label()}: ${props.on ? "encendido" : "apagado"}`}</title>
+            <title>{`${label()}: ${props.on ? t("hero.actuatorOn") : t("hero.actuatorOff")}`}</title>
             {props.children}
         </g>
     );

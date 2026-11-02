@@ -12,6 +12,7 @@ import {ApiError} from "../../lib/api/client";
 import {cropApi} from "../../lib/api/services";
 import {ACTUATORS, CROP_TYPES, QUICK_ACTIONS} from "../../lib/catalog";
 import {describeAction, formatDuration} from "../../lib/format";
+import {t} from "../../lib/i18n";
 import type {ActuatorType, CommandAction, Crop} from "../../lib/api/types";
 import {BulkResultList} from "./BulkResultList";
 import {useBulkCommand} from "./useBulkCommand";
@@ -20,7 +21,7 @@ const DURATIONS = [5, 15, 30, 60, 300, 600, 900, 1800, 3600];
 
 /** Control general: modo automático y órdenes a varios cultivos a la vez. */
 export function ControlPage() {
-    usePageMeta("Control general");
+    usePageMeta(() => t("control.title"));
     const crops = useResource(() => cropApi.list(), [], 30_000);
     const list = () => crops.data ?? [];
     const [excluded, setExcluded] = createSignal<Set<string>>(new Set());
@@ -53,7 +54,7 @@ export function ControlPage() {
             else await cropApi.setAutomationBulk(enabled, cropIds);
             await crops.reload();
         } catch (caught) {
-            setAutomationError(caught instanceof ApiError ? caught.message : "No se pudo cambiar el modo automático");
+            setAutomationError(caught instanceof ApiError ? caught.message : t("control.autoFailed"));
         } finally {
             setAutomationBusy(null);
         }
@@ -71,14 +72,14 @@ export function ControlPage() {
 
     return (
         <div class="space-y-6">
-            <PageHeader eyebrow="Todos tus cultivos a la vez" title="Control general"
+            <PageHeader eyebrow={t("control.eyebrow")} title={t("control.title")}
                         icon={<SlidersHorizontal size={24}/>}
-                        description="Activa el modo automático o envía la misma orden a varios cultivos sin entrar a cada uno.">
+                        description={t("control.description")}>
                 <Show when={list().length > 0}>
                     <div class="grid grid-cols-3 gap-3">
-                        <HeaderStat label="Cultivos" value={list().length}/>
-                        <HeaderStat label="En modo automático" value={automated()}/>
-                        <HeaderStat label="Seleccionados" value={selected().length}/>
+                        <HeaderStat label={t("control.statCrops")} value={list().length}/>
+                        <HeaderStat label={t("control.statAutomatic")} value={automated()}/>
+                        <HeaderStat label={t("control.statSelected")} value={selected().length}/>
                     </div>
                 </Show>
             </PageHeader>
@@ -88,8 +89,8 @@ export function ControlPage() {
             </Show>
             <Show when={!(crops.loading && !crops.data)} fallback={<PageLoader/>}>
                 <Show when={list().length > 0} fallback={
-                    <EmptyState icon={<SlidersHorizontal size={26}/>} title="Sin cultivos para controlar">
-                        Crea un cultivo para poder controlar sus actuadores desde aquí.
+                    <EmptyState icon={<SlidersHorizontal size={26}/>} title={t("control.emptyTitle")}>
+                        {t("control.emptyBody")}
                     </EmptyState>
                 }>
                     <div class="grid gap-6 lg:grid-cols-2">
@@ -97,18 +98,16 @@ export function ControlPage() {
                             <div class="flex flex-wrap items-start justify-between gap-3">
                                 <div>
                                     <h2 class="flex items-center gap-2 text-lg font-semibold"><Bot size={18}
-                                                                                                   class="text-leaf-700"/> Modo
-                                        automático</h2>
-                                    <p class="text-sm text-muted">El agente de IA actúa por su cuenta en los cultivos
-                                        activados.</p>
+                                                                                                   class="text-accent"/> {t("control.autoTitle")}</h2>
+                                    <p class="text-sm text-muted">{t("control.autoBody")}</p>
                                 </div>
                                 <div class="flex gap-2">
                                     <Button size="sm" loading={automationBusy() === "all-on"}
                                             onClick={() => void setAutomation("all-on", true)}>
-                                        Activar en todos
+                                        {t("control.enableAll")}
                                     </Button>
                                     <Button size="sm" variant="secondary" loading={automationBusy() === "all-off"}
-                                            onClick={() => void setAutomation("all-off", false)}>Desactivar</Button>
+                                            onClick={() => void setAutomation("all-off", false)}>{t("control.disableAll")}</Button>
                                 </div>
                             </div>
                             <Show when={automationError()}>
@@ -120,10 +119,10 @@ export function ControlPage() {
                                         <li class="flex items-center justify-between gap-3 py-3">
                                             <div class="min-w-0">
                                                 <p class="truncate font-medium">{crop.name}</p>
-                                                <p class="text-xs text-muted">{CROP_TYPES[crop.type].label} · {crop.device.online ? "En línea" : "Desconectada"}</p>
+                                                <p class="text-xs text-muted">{CROP_TYPES[crop.type].label} · {crop.device.online ? t("control.online") : t("control.offline")}</p>
                                             </div>
                                             <Switch checked={crop.automationEnabled}
-                                                    label={`Modo automático de ${crop.name}`}
+                                                    label={t("control.autoOf", {name: crop.name})}
                                                     disabled={automationBusy() !== null}
                                                     onChange={(enabled) => void setAutomation(crop.id, enabled, [crop.id])}/>
                                         </li>
@@ -134,20 +133,18 @@ export function ControlPage() {
 
                         <section class="card p-5">
                             <h2 class="flex items-center gap-2 text-lg font-semibold"><Zap size={18}
-                                                                                           class="text-leaf-700"/> Órdenes
-                                en bloque</h2>
-                            <p class="text-sm text-muted">Elige los cultivos y la orden. Se omiten los que no tienen ese
-                                actuador, los que ya están así y los que esperan otra orden.</p>
+                                                                                           class="text-accent"/> {t("control.bulkTitle")}</h2>
+                            <p class="text-sm text-muted">{t("control.bulkBody")}</p>
 
                             <fieldset class="mt-4">
-                                <legend class="text-sm font-semibold">Cultivos</legend>
+                                <legend class="text-sm font-semibold">{t("control.crops")}</legend>
                                 <div class="mt-2 flex flex-wrap gap-2">
                                     <For each={list()}>
                                         {(crop) => {
                                             const on = () => !excluded().has(crop.id);
                                             return (
                                                 <label class={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm
-                          ${on() ? "border-leaf-600 bg-leaf-50 text-leaf-800" : "border-line text-muted"}`}>
+                          ${on() ? "border-leaf-600 bg-leaf-50 text-accent-strong" : "border-line text-muted"}`}>
                                                     <input type="checkbox" class="accent-leaf-700" checked={on()}
                                                            onChange={() => toggleCrop(crop.id)}/>
                                                     {crop.name}
@@ -159,7 +156,7 @@ export function ControlPage() {
                             </fieldset>
 
                             <div class="mt-5">
-                                <p class="text-sm font-semibold">Atajos</p>
+                                <p class="text-sm font-semibold">{t("control.shortcuts")}</p>
                                 <div class="mt-2 flex flex-wrap gap-2">
                                     <For each={QUICK_ACTIONS}>
                                         {(quick) => (
@@ -180,7 +177,7 @@ export function ControlPage() {
                             <form onSubmit={submit} class="mt-5 grid grid-cols-2 gap-3 rounded-xl bg-surface p-4"
                                   noValidate>
                                 <div class="col-span-2">
-                                    <SelectField label="Actuador" value={actuator()} onChange={(event) => {
+                                    <SelectField label={t("control.actuator")} value={actuator()} onChange={(event) => {
                                         const next = event.currentTarget.value as ActuatorType;
                                         setActuator(next);
                                         setDuration(ACTUATORS[next].defaultSeconds ?? 15);
@@ -190,12 +187,12 @@ export function ControlPage() {
                                         </For>
                                     </SelectField>
                                 </div>
-                                <SelectField label="Acción" value={action()}
+                                <SelectField label={t("control.action")} value={action()}
                                              onChange={(event) => setAction(event.currentTarget.value as CommandAction)}>
-                                    <option value="ACTIVATE">Encender</option>
-                                    <option value="DEACTIVATE">Apagar</option>
+                                    <option value="ACTIVATE">{t("control.turnOn")}</option>
+                                    <option value="DEACTIVATE">{t("control.turnOff")}</option>
                                 </SelectField>
-                                <SelectField label="Duración" value={String(duration())}
+                                <SelectField label={t("control.duration")} value={String(duration())}
                                              disabled={action() === "DEACTIVATE"}
                                              onChange={(event) => setDuration(Number(event.currentTarget.value))}>
                                     <For each={DURATIONS}>
@@ -205,8 +202,10 @@ export function ControlPage() {
                                 <Button type="submit" class="col-span-2" icon={<Send size={16}/>}
                                         loading={bulk.sending === "custom"}
                                         disabled={selected().length === 0}>
-                                    {describeAction(actuator(), action(), action() === "ACTIVATE" ? duration() : null)} en {selected().length}{" "}
-                                    {selected().length === 1 ? "cultivo" : "cultivos"}
+                                    {t("control.submit", {
+                                        action: describeAction(actuator(), action(), action() === "ACTIVATE" ? duration() : null),
+                                        count: selected().length,
+                                    })}
                                 </Button>
                             </form>
 

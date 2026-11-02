@@ -1,5 +1,6 @@
 import {createEffect, createSignal, type JSX, onCleanup} from "solid-js";
 import {clearApiCache, configureApi} from "../../lib/api/client";
+import type {TranslationKey} from "../../lib/i18n";
 import type {AuthResponse, User} from "../../lib/api/types";
 import {AuthContext, type AuthState} from "./AuthContext";
 import {
@@ -12,16 +13,16 @@ import {
     updateStoredUser,
 } from "./session";
 
-const EXPIRED = "Tu sesión expiró. Inicia sesión de nuevo.";
+const EXPIRED: TranslationKey = "auth.sessionExpired";
 let handleUnauthorized: () => void = () => undefined;
 
 configureApi({getToken: currentSessionToken, onUnauthorized: () => handleUnauthorized()});
 
 export function AuthProvider(props: { children: JSX.Element }) {
     const [session, setSession] = createSignal<Session | null>(loadSession());
-    const [notice, setNotice] = createSignal<string | null>(null);
+    const [notice, setNotice] = createSignal<TranslationKey | null>(null);
 
-    const signOut = (reason?: string) => {
+    const signOut = (reason?: TranslationKey) => {
         clearSession();
         clearApiCache();
         setSession(null);

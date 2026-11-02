@@ -5,6 +5,7 @@ import {Alert} from "../../../components/ui/Feedback";
 import {ApiError} from "../../../lib/api/client";
 import {virtualDeviceApi} from "../../../lib/api/services";
 import type {Place} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 
 export interface PickedLocation {
     name: string;
@@ -30,7 +31,7 @@ export function LocationPicker(props: {
         try {
             setResults(await virtualDeviceApi.places(query().trim()));
         } catch (caught) {
-            setError(caught instanceof ApiError ? caught.message : "No se pudo buscar el lugar");
+            setError(caught instanceof ApiError ? caught.message : t("location.searchFailed"));
         } finally {
             setBusy(null);
         }
@@ -38,7 +39,7 @@ export function LocationPicker(props: {
 
     function locate() {
         if (!("geolocation" in navigator)) {
-            setError("Este navegador no comparte la ubicación; busca el lugar por su nombre.");
+            setError(t("location.noGeolocation"));
             return;
         }
         setBusy("locate");
@@ -47,14 +48,14 @@ export function LocationPicker(props: {
             (position) => {
                 setBusy(null);
                 props.onChange({
-                    name: "Mi ubicación",
+                    name: t("location.myLocation"),
                     latitude: Math.round(position.coords.latitude * 1e4) / 1e4,
                     longitude: Math.round(position.coords.longitude * 1e4) / 1e4,
                 });
             },
             () => {
                 setBusy(null);
-                setError("No se pudo obtener tu ubicación; busca el lugar por su nombre.");
+                setError(t("location.denied"));
             },
             {timeout: 10_000, maximumAge: 600_000},
         );
@@ -71,18 +72,18 @@ export function LocationPicker(props: {
                 )}
             </Show>
             <form onSubmit={search} class="flex flex-wrap gap-2" role="search">
-                <label class="sr-only" for="place-search">Buscar ciudad o municipio</label>
+                <label class="sr-only" for="place-search">{t("location.searchLabel")}</label>
                 <input id="place-search" value={query()} onInput={(event) => setQuery(event.currentTarget.value)}
-                       placeholder="Ciudad o municipio" maxLength={80}
-                       class="h-9 min-w-0 flex-1 rounded-lg border border-line bg-white px-3 text-sm"/>
+                       placeholder={t("location.placeholder")} maxLength={80}
+                       class="h-9 min-w-0 flex-1 rounded-lg border border-line bg-card px-3 text-sm"/>
                 <Button type="submit" size="sm" variant="secondary" icon={<Search size={14}/>}
                         loading={busy() === "search"}>
-                    Buscar
+                    {t("location.search")}
                 </Button>
                 <Button type="button" size="sm" variant="ghost" icon={<LocateFixed size={14}/>}
                         loading={busy() === "locate"}
                         onClick={locate}>
-                    Usar mi ubicación
+                    {t("location.useMine")}
                 </Button>
             </form>
             <Show when={error()}>
@@ -90,8 +91,8 @@ export function LocationPicker(props: {
             </Show>
             <Show when={results()}>
                 {(list) => (
-                    <Show when={list().length > 0} fallback={<p class="text-sm text-muted">No encontramos ese lugar.</p>}>
-                        <ul class="divide-y divide-line rounded-xl border border-line bg-white">
+                    <Show when={list().length > 0} fallback={<p class="text-sm text-muted">{t("location.notFound")}</p>}>
+                        <ul class="divide-y divide-line rounded-xl border border-line bg-card">
                             <For each={list()}>
                                 {(place) => {
                                     const regionText = [place.region, place.country].filter(Boolean).join(", ");

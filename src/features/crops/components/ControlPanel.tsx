@@ -9,6 +9,7 @@ import {actuatorApi, commandApi} from "../../../lib/api/services";
 import {ACTUATORS, COMMAND_STATUS} from "../../../lib/catalog";
 import {describeAction, formatDateTime, formatDuration, timeAgo} from "../../../lib/format";
 import type {Actuator, ActuatorType, Command, CommandAction, Crop} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 import {pendingCommands, runningActuators} from "../live";
 
 interface ControlPanelProps {
@@ -60,7 +61,7 @@ export function ControlPanel(props: ControlPanelProps) {
             await task();
             props.onChanged();
         } catch (caught) {
-            setError(caught instanceof ApiError ? caught.message : "No se pudo completar la acción");
+            setError(caught instanceof ApiError ? caught.message : t("control.actionFailed"));
         } finally {
             setBusy(null);
         }
@@ -77,17 +78,17 @@ export function ControlPanel(props: ControlPanelProps) {
             props.onChanged();
         } catch (caught) {
             setSending((current) => ({...current, [actuator.type]: undefined}));
-            setError(caught instanceof ApiError ? caught.message : "No se pudo enviar la orden");
+            setError(caught instanceof ApiError ? caught.message : t("control.sendFailed"));
             props.onChanged();
         }
     }
 
     function status(actuator: Actuator, on: boolean, waiting: CommandAction | undefined): string {
-        if (waiting) return waiting === "ACTIVATE" ? "Encendiendo… esperando al dispositivo" : "Apagando… esperando al dispositivo";
-        if (!on) return actuator.lastChangedAt ? `Apagado · ${timeAgo(actuator.lastChangedAt)}` : "Apagado";
-        if (actuator.active) return "Encendido hasta que lo apagues";
+        if (waiting) return waiting === "ACTIVATE" ? t("control.statusTurningOn") : t("control.statusTurningOff");
+        if (!on) return actuator.lastChangedAt ? t("control.statusOffAgo", {time: timeAgo(actuator.lastChangedAt)}) : t("control.statusOff");
+        if (actuator.active) return t("control.statusOnManual");
         const until = actuator.runningUntil ? Date.parse(actuator.runningUntil) : null;
-        return until ? `Encendido · se apaga en ${formatDuration(Math.max(1, Math.round((until - now()) / 1000)))}` : "Encendido";
+        return until ? t("control.statusOnFor", {time: formatDuration(Math.max(1, Math.round((until - now()) / 1000)))}) : t("control.statusOn");
     }
 
     return (
@@ -95,18 +96,16 @@ export function ControlPanel(props: ControlPanelProps) {
             <section class="card flex items-start justify-between gap-4 p-5">
                 <div class="flex gap-3">
                     <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-leaf-50 text-leaf-700">
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-leaf-50 text-accent">
                         <Bot size={20}/></div>
                     <div>
-                        <h3 class="font-semibold">Modo automático</h3>
+                        <h3 class="font-semibold">{t("control.panelAutoTitle")}</h3>
                         <p class="text-sm text-muted">
-                            El agente de IA ejecuta sus recomendaciones sobre los actuadores de este cultivo, con una
-                            pausa de 10 minutos
-                            entre acciones del mismo actuador.
+                            {t("control.panelAutoBody")}
                         </p>
                     </div>
                 </div>
-                <Switch label="Modo automático" checked={props.crop.automationEnabled} disabled={busy() === "automation"}
+                <Switch label={t("control.panelAutoTitle")} checked={props.crop.automationEnabled} disabled={busy() === "automation"}
                         onChange={(enabled) => void run("automation", () => props.onAutomation(enabled))}/>
             </section>
 
@@ -114,17 +113,14 @@ export function ControlPanel(props: ControlPanelProps) {
                 {(err) => <Alert tone="danger">{err()}</Alert>}
             </Show>
             <Show when={!online()}>
-                <Alert tone="warning" title="El cultivo está desconectado">
-                    Los actuadores se controlan
-                    cuando {props.crop.kind === "VIRTUAL" ? "la simulación" : "el dispositivo"} vuelve a
-                    conectarse.
+                <Alert tone="warning" title={t("control.disconnected")}>
+                    {t("control.disconnectedBody", {who: props.crop.kind === "VIRTUAL" ? t("control.whoSimulation") : t("control.whoDevice")})}
                 </Alert>
             </Show>
 
             <section class="card p-5">
-                <h3 class="font-semibold">Actuadores</h3>
-                <p class="text-sm text-muted">Enciende o apaga cada uno con su switch; al encender eliges por cuánto
-                    tiempo.</p>
+                <h3 class="font-semibold">{t("control.actuators")}</h3>
+                <p class="text-sm text-muted">{t("control.actuatorsBody")}</p>
                 <ul class="mt-3 divide-y divide-line">
                     <For each={props.actuators}>
                         {(actuator) => {
@@ -137,32 +133,32 @@ export function ControlPanel(props: ControlPanelProps) {
                                     data-actuator-row={actuator.type}>
                                     <div class="min-w-0">
                                         <p class="font-medium">{info.label}</p>
-                                        <p class={`text-xs ${waiting() ? "text-water-700" : on() ? "text-leaf-700" : "text-muted"}`}>
+                                        <p class={`text-xs ${waiting() ? "text-link" : on() ? "text-accent" : "text-muted"}`}>
                                             {status(actuator, on(), waiting())}
                                         </p>
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <Show when={!on() && !waiting()}>
-                                            <select value={chosen()} aria-label={`Duración de ${info.label}`}
+                                            <select value={chosen()} aria-label={t("control.durationOf", {name: info.label})}
                                                     disabled={!online()}
                                                     onChange={(event) => setDurations((current) => ({
                                                         ...current,
                                                         [actuator.type]: Number(event.currentTarget.value),
                                                     }))}
-                                                    class="h-9 rounded-lg border border-line bg-white px-2 text-sm disabled:opacity-50">
+                                                    class="h-9 rounded-lg border border-line bg-card px-2 text-sm disabled:opacity-50">
                                                 <For each={info.durations}>
                                                     {(seconds) => (
                                                         <option value={seconds}>{formatDuration(seconds)}</option>
                                                     )}
                                                 </For>
                                                 <Show when={info.unlimited}>
-                                                    <option value={UNLIMITED}>Sin límite</option>
+                                                    <option value={UNLIMITED}>{t("control.unlimited")}</option>
                                                 </Show>
                                             </select>
                                         </Show>
                                         <Switch checked={on()} label={info.label} disabled={!online() || Boolean(waiting())}
                                                 onChange={(next) => void toggle(actuator, next)}/>
-                                        <Button size="sm" variant="ghost" aria-label={`Quitar ${info.label}`}
+                                        <Button size="sm" variant="ghost" aria-label={t("control.removeActuator", {name: info.label})}
                                                 disabled={on() || Boolean(waiting())}
                                                 loading={busy() === `${actuator.id}-remove`}
                                                 onClick={() => void run(`${actuator.id}-remove`, () => actuatorApi.remove(props.crop.id, actuator.id))}>
@@ -174,36 +170,36 @@ export function ControlPanel(props: ControlPanelProps) {
                         }}
                     </For>
                     <Show when={props.actuators.length === 0}>
-                        <p class="py-3 text-sm text-muted">Este cultivo no tiene actuadores.</p>
+                        <p class="py-3 text-sm text-muted">{t("control.noActuators")}</p>
                     </Show>
                 </ul>
                 <Show when={available().length > 0}>
                     <div class="mt-3 flex flex-wrap items-end gap-2 border-t border-line pt-4">
-                        <SelectField label="Agregar actuador" class="min-w-56 flex-1" value={newType()}
+                        <SelectField label={t("control.addActuator")} class="min-w-56 flex-1" value={newType()}
                                      onChange={(event) => setNewType(event.currentTarget.value as ActuatorType)}>
-                            <option value="">Elige un tipo</option>
+                            <option value="">{t("control.chooseType")}</option>
                             <For each={available()}>
                                 {(type) => <option value={type}>{ACTUATORS[type].label}</option>}
                             </For>
                         </SelectField>
                         <Button icon={<Plus size={16}/>} disabled={!newType()} loading={busy() === "add"}
                                 onClick={() => {
-                                    const t = newType();
-                                    if (t) {
+                                    const type = newType();
+                                    if (type) {
                                         void run("add", async () => {
-                                            await actuatorApi.add(props.crop.id, t);
+                                            await actuatorApi.add(props.crop.id, type);
                                             setNewType("");
                                         });
                                     }
                                 }}>
-                            Agregar
+                            {t("control.add")}
                         </Button>
                     </div>
                 </Show>
             </section>
 
             <section class="card p-5">
-                <h3 class="font-semibold">Últimos comandos</h3>
+                <h3 class="font-semibold">{t("control.lastCommands")}</h3>
                 <ul class="mt-3 divide-y divide-line text-sm">
                     <For each={props.commands}>
                         {(command) => (
@@ -213,7 +209,7 @@ export function ControlPanel(props: ControlPanelProps) {
                                         {describeAction(command.actuatorType, command.action, command.durationSeconds)}
                                     </p>
                                     <p class="text-xs text-muted">
-                                        {command.source === "AGENT" ? "Agente de IA" : "Tú"} · {formatDateTime(command.createdAt)}
+                                        {command.source === "AGENT" ? t("control.sourceAgent") : t("control.sourceYou")} · {formatDateTime(command.createdAt)}
                                         {command.message ? ` · ${command.message}` : ""}
                                     </p>
                                 </div>
@@ -223,7 +219,7 @@ export function ControlPanel(props: ControlPanelProps) {
                         )}
                     </For>
                     <Show when={props.commands.length === 0}>
-                        <p class="py-2 text-muted">Todavía no se han enviado comandos.</p>
+                        <p class="py-2 text-muted">{t("control.noCommands")}</p>
                     </Show>
                 </ul>
             </section>

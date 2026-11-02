@@ -1,15 +1,16 @@
 import {CheckCircle2, CircleSlash, XCircle} from "lucide-solid";
 import {For} from "solid-js";
 import type {BulkCommandResult} from "../../lib/api/types";
+import {t} from "../../lib/i18n";
 
 /** Resultado de una orden en bloque, cultivo por cultivo. */
 export function BulkResultList(props: { result: BulkCommandResult }) {
     return (
         <div class="rounded-xl bg-surface p-3" role="status">
             <p class="text-sm font-semibold">
-                {props.result.sent} {props.result.sent === 1 ? "enviado" : "enviados"}
-                {props.result.skipped > 0 && ` · ${props.result.skipped} ${props.result.skipped === 1 ? "omitido" : "omitidos"}`}
-                {props.result.failed > 0 && ` · ${props.result.failed} con error`}
+                {t("bulk.sent", {count: props.result.sent})}
+                {props.result.skipped > 0 && t("bulk.skipped", {count: props.result.skipped})}
+                {props.result.failed > 0 && t("bulk.failed", {count: props.result.failed})}
             </p>
             <ul class="mt-2 space-y-1.5">
                 <For each={props.result.results}>
@@ -24,7 +25,7 @@ export function BulkResultList(props: { result: BulkCommandResult }) {
                                 <span class="font-medium">{item.cropName}</span>
                                 <span class="text-muted">
                                     {" · "}
-                                    {item.status === "SENT" ? "Enviado" : item.status === "SKIPPED" ? "Omitido" : "Falló"}
+                                    {item.status === "SENT" ? t("bulk.itemSent") : item.status === "SKIPPED" ? t("bulk.itemSkipped") : t("bulk.itemFailed")}
                                     {item.message ? `: ${item.message}` : ""}
                                 </span>
                             </span>

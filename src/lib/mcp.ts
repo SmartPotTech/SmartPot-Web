@@ -1,6 +1,8 @@
+import {t} from "./i18n";
+
 /** Lo que se pega en la configuración de un cliente MCP para usar una conexión de SmartPot por HTTP. */
 export function mcpClientConfig(mcpUrl: string, token: string): string {
-    const url = mcpUrl ? `${mcpUrl.replace(/\/+$/, "")}/mcp` : "<URL del servidor MCP>/mcp";
+    const url = mcpUrl ? `${mcpUrl.replace(/\/+$/, "")}/mcp` : `${t("mcp.urlPlaceholder")}/mcp`;
     return JSON.stringify(
         {
             mcpServers: {
@@ -18,8 +20,24 @@ export function mcpClientConfig(mcpUrl: string, token: string): string {
 
 /** Vigencias que ofrece la PWA; `undefined` es sin vencimiento. */
 export const CONNECTION_EXPIRY: { label: string; days?: number }[] = [
-    {label: "Sin vencimiento"},
-    {label: "30 días", days: 30},
-    {label: "90 días", days: 90},
-    {label: "1 año", days: 365},
+    {
+        get label() {
+            return t("mcp.expiry.never");
+        }
+    },
+    {
+        get label() {
+            return t("mcp.expiry.30");
+        }, days: 30
+    },
+    {
+        get label() {
+            return t("mcp.expiry.90");
+        }, days: 90
+    },
+    {
+        get label() {
+            return t("mcp.expiry.365");
+        }, days: 365
+    },
 ];

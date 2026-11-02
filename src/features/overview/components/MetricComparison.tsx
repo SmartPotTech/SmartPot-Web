@@ -7,10 +7,15 @@ import {overviewApi} from "../../../lib/api/services";
 import {MAX_COMPARED, METRICS, PRIMARY_METRICS} from "../../../lib/catalog";
 import {nearestIndex, pointerX, timeTicks, xTickCount} from "../../../lib/chart";
 import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
+import {intlLocale, t} from "../../../lib/i18n";
 import type {Crop, MetricKey} from "../../../lib/api/types";
 import {useComparedCrops} from "../useComparedCrops";
 
-const PERIODS = [{hours: 6, label: "6 h"}, {hours: 24, label: "24 h"}, {hours: 168, label: "7 días"}];
+const PERIODS = [
+    {hours: 6, label: () => "6 h"},
+    {hours: 24, label: () => "24 h"},
+    {hours: 168, label: () => t("compare.days7")},
+];
 
 export function MetricComparison(props: { crops: Crop[] }) {
     const [metric, setMetric] = createSignal<MetricKey>("temperature");
@@ -108,31 +113,33 @@ export function MetricComparison(props: { crops: Crop[] }) {
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
                     <h2 class="flex items-center gap-2 text-lg font-semibold">
-                        <ChartLine size={18} class="text-leaf-700"/> Comparar cultivos
+                        <ChartLine size={18} class="text-accent"/> {t("compare.title")}
                     </h2>
-                    <p class="text-sm text-muted">Promedio
-                        de {info().label.toLowerCase()} cada {series.data?.bucketMinutes ?? "…"} min.</p>
+                    <p class="text-sm text-muted">{t("compare.average", {
+                        metric: info().label.toLowerCase(),
+                        minutes: series.data?.bucketMinutes ?? "…",
+                    })}</p>
                 </div>
-                <div class="flex rounded-xl bg-surface p-1" role="group" aria-label="Periodo">
+                <div class="flex rounded-xl bg-surface p-1" role="group" aria-label={t("compare.period")}>
                     <For each={PERIODS}>
                         {(period) => (
                             <button type="button" aria-pressed={hours() === period.hours}
                                     onClick={() => setHours(period.hours)}
                                     class={`touch-target rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === period.hours
                                         ? "bg-leaf-700 text-white" : "text-muted hover:text-ink"}`}>
-                                {period.label}
+                                {period.label()}
                             </button>
                         )}
                     </For>
                 </div>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Variable">
+            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label={t("compare.variable")}>
                 <For each={PRIMARY_METRICS}>
                     {(key) => (
                         <button type="button" aria-pressed={metric() === key} onClick={() => setMetric(key)}
                                 class={`touch-target rounded-full border px-3 py-1 text-sm font-medium transition-colors ${metric() === key
-                                    ? "border-leaf-700 bg-leaf-50 text-leaf-800" : "border-line text-muted hover:border-leaf-500"}`}>
+                                    ? "border-leaf-700 bg-leaf-50 text-accent-strong" : "border-line text-muted hover:border-leaf-500"}`}>
                             {METRICS[key].label}
                         </button>
                     )}
@@ -143,10 +150,10 @@ export function MetricComparison(props: { crops: Crop[] }) {
                 {(err) => <div class="mt-4"><Alert tone="danger">{err()}</Alert></div>}
             </Show>
             <div class="relative mt-4 h-72 select-none" role="img" ref={box.ref}
-                 aria-label={`Comparación de ${info().label.toLowerCase()} entre ${visible().length} cultivos`}>
+                 aria-label={t("compare.chartLabel", {metric: info().label.toLowerCase(), count: visible().length})}>
                 <Show when={chart()} fallback={
                     <p class="flex h-full items-center justify-center text-sm text-muted">
-                        {series.loading ? "Cargando lecturas…" : "No hay lecturas en este periodo para los cultivos elegidos."}
+                        {series.loading ? t("compare.loading") : t("compare.noData")}
                     </p>
                 }>
                     {(g) => {
@@ -166,9 +173,9 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                         {(tick) => (
                                             <g>
                                                 <line x1={g().padLeft} x2={g().width - g().padRight}
-                                                      y1={tick.y} y2={tick.y} stroke="#E4EEE9"/>
+                                                      y1={tick.y} y2={tick.y} class="stroke-line"/>
                                                 <text x={g().padLeft - 8} y={tick.y + 4} text-anchor="end"
-                                                      fill="#5B6B63" font-size="11">
+                                                      class="fill-muted" font-size="11">
                                                     {Math.round(tick.value * 10) / 10}
                                                 </text>
                                             </g>
@@ -183,9 +190,9 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                     <For each={g().xTicks}>
                                         {(tick) => (
                                             <text x={tick.x} y={g().height - 6} text-anchor={tick.anchor}
-                                                  fill="#5B6B63" font-size="11">
+                                                  class="fill-muted" font-size="11">
                                                 {hours() > 24
-                                                    ? new Date(tick.time).toLocaleDateString("es-CO", {weekday: "short"})
+                                                    ? new Date(tick.time).toLocaleDateString(intlLocale(), {weekday: "short"})
                                                     : formatTime(tick.time)}
                                             </text>
                                         )}
@@ -193,14 +200,14 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                     <Show when={hoveredRow()}>
                                         {(row) => (
                                             <line x1={row().x} x2={row().x} y1={g().padTop}
-                                                  y2={g().height - g().padBottom} stroke="#D5E3DC"/>
+                                                  y2={g().height - g().padBottom} class="stroke-line"/>
                                         )}
                                     </Show>
                                 </svg>
                                 <Show when={hoveredRow()}>
                                     {(row) => (
                                         <div
-                                            class="pointer-events-none absolute right-3 top-2 rounded-xl border border-line bg-white/95 px-3 py-1.5 text-xs shadow-sm">
+                                            class="pointer-events-none absolute right-3 top-2 rounded-xl border border-line bg-card/95 px-3 py-1.5 text-xs shadow-sm">
                                             <p class="font-medium text-muted">
                                                 {formatDateTime(new Date(row().time).toISOString())}
                                             </p>
@@ -222,7 +229,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                 </Show>
             </div>
 
-            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label="Cultivos comparados">
+            <div class="mt-4 flex flex-wrap gap-2" role="group" aria-label={t("compare.compared")}>
                 <For each={props.crops}>
                     {(crop) => {
                         const color = () => compared.colorOf(crop.id);
@@ -230,11 +237,11 @@ export function MetricComparison(props: { crops: Crop[] }) {
                         return (
                             <button type="button" aria-pressed={Boolean(color())} disabled={disabled()}
                                     onClick={() => compared.toggle(crop.id)}
-                                    title={disabled() ? `Máximo ${MAX_COMPARED} cultivos a la vez` : undefined}
+                                    title={disabled() ? t("compare.max", {max: MAX_COMPARED}) : undefined}
                                     class={`touch-target flex items-center gap-2 rounded-full border px-3 py-1 text-sm transition-colors disabled:opacity-40
-                    ${color() ? "border-line bg-white text-ink" : "border-dashed border-line text-muted"}`}>
-                                <span class="h-2.5 w-2.5 rounded-full"
-                                      style={{"background-color": color() ?? "#D5E3DC"}}/>
+                    ${color() ? "border-line bg-card text-ink" : "border-dashed border-line text-muted"}`}>
+                                <span class={`h-2.5 w-2.5 rounded-full ${color() ? "" : "bg-line"}`}
+                                      style={{"background-color": color()}}/>
                                 {crop.name}
                             </button>
                         );

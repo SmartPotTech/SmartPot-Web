@@ -19,7 +19,7 @@ export function Logo(props: { size?: number; inverse?: boolean }) {
     return (
         <span class="inline-flex items-center gap-2.5">
             <LogoMark size={props.size}/>
-            <span class={`font-display text-xl font-bold tracking-tight ${props.inverse ? "text-white" : "text-leaf-900"}`}>
+            <span class={`font-display text-xl font-bold tracking-tight ${props.inverse ? "text-white" : "text-accent-strong"}`}>
                 Smart<span class="text-leaf-500">Pot</span>
             </span>
         </span>

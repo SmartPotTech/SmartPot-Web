@@ -8,8 +8,9 @@ import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {ApiError} from "../../lib/api/client";
 import {actuatorApi, commandApi, cropApi, insightApi, readingApi, virtualDeviceApi} from "../../lib/api/services";
-import {CROP_FORMS, CROP_TYPES, HEALTH, METRICS, PRIMARY_METRICS} from "../../lib/catalog";
+import {CROP_FORMS, CROP_KINDS, CROP_TYPES, HEALTH, healthLabel, METRICS, PRIMARY_METRICS} from "../../lib/catalog";
 import {formatMetric, timeAgo} from "../../lib/format";
+import {t, type TranslationKey} from "../../lib/i18n";
 import type {CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
 import {subscribeTelemetryStream} from "../../services/stream";
 import {ControlPanel} from "./components/ControlPanel";
@@ -23,23 +24,23 @@ import {SimulationPanel} from "./components/SimulationPanel";
 import {useCropProfiles} from "./useCropProfiles";
 
 /** Los reales se configuran en Dispositivo; los virtuales, en Simulación. */
-const TABS: { id: string; label: string; only?: CropKind }[] = [
-    {id: "summary", label: "Resumen"},
-    {id: "assistant", label: "Asistente IA"},
-    {id: "control", label: "Control"},
-    {id: "history", label: "Historial"},
-    {id: "device", label: "Dispositivo", only: "REAL"},
-    {id: "simulation", label: "Simulación", only: "VIRTUAL"},
-    {id: "settings", label: "Ajustes"},
+const TABS: { id: string; label: TranslationKey; only?: CropKind }[] = [
+    {id: "summary", label: "detail.tab.summary"},
+    {id: "assistant", label: "detail.tab.assistant"},
+    {id: "control", label: "detail.tab.control"},
+    {id: "history", label: "detail.tab.history"},
+    {id: "device", label: "detail.tab.device", only: "REAL"},
+    {id: "simulation", label: "detail.tab.simulation", only: "VIRTUAL"},
+    {id: "settings", label: "detail.tab.settings"},
 ];
 
 /** Enlaces antiguos: la ilustración ya vive sobre todas las secciones. */
 const ALIASES: Record<string, string> = {live: "summary", virtual: "simulation"};
 
 const RANGES = [
-    {hours: 6, label: "6 h"},
-    {hours: 24, label: "24 h"},
-    {hours: 168, label: "7 días"},
+    {hours: 6, label: () => "6 h"},
+    {hours: 24, label: () => "24 h"},
+    {hours: 168, label: () => t("compare.days7")},
 ];
 
 /** Tras una orden, el estado se vuelve a pedir en estos momentos para ver pronto la confirmación del dispositivo. */
@@ -113,7 +114,7 @@ export default function CropDetailPage() {
     );
     const profiles = useCropProfiles();
 
-    usePageMeta(() => crop.data?.name ?? "Cultivo");
+    usePageMeta(() => crop.data?.name ?? t("detail.defaultTitle"));
 
     const openTab = (id: string) => setSearchParams({tab: id === "summary" ? undefined : id}, {replace: true});
 
@@ -128,7 +129,7 @@ export default function CropDetailPage() {
             link.click();
             URL.revokeObjectURL(url);
         } catch (caught) {
-            setExportError(caught instanceof ApiError ? caught.message : "No se pudo exportar");
+            setExportError(caught instanceof ApiError ? caught.message : t("detail.exportFailed"));
         }
     }
 
@@ -137,9 +138,9 @@ export default function CropDetailPage() {
             <Show when={crop.data} fallback={
                 <div class="space-y-4">
                     <A href="/app/crops"
-                       class="touch-target inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft
-                        size={16}/> Mis cultivos</A>
-                    <Alert tone="danger">{crop.error ?? "El cultivo no existe"}</Alert>
+                       class="touch-target inline-flex items-center gap-1 text-sm font-semibold text-accent"><ArrowLeft
+                        size={16}/> {t("detail.backToCrops")}</A>
+                    <Alert tone="danger">{crop.error ?? t("detail.notFound")}</Alert>
                 </div>
             }>
                 {(current) => {
@@ -151,24 +152,28 @@ export default function CropDetailPage() {
                         <div class="space-y-6">
                             <div>
                                 <A href="/app/crops"
-                                   class="touch-target inline-flex items-center gap-1 text-sm font-semibold text-leaf-700"><ArrowLeft
-                                    size={16}/> Mis cultivos</A>
+                                   class="touch-target inline-flex items-center gap-1 text-sm font-semibold text-accent"><ArrowLeft
+                                    size={16}/> {t("detail.backToCrops")}</A>
                                 <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
                                     <div>
                                         <h1 class="text-3xl font-bold">{current().name}</h1>
                                         <p class="text-sm text-muted">
-                                            {CROP_TYPES[current().type].label} {CROP_FORMS[current().form].phrase} · {current().device.online
-                                            ? "En línea" : "Desconectado"} · última lectura {timeAgo(latest()?.measuredAt)}
+                                            {t("detail.headline", {
+                                                species: CROP_TYPES[current().type].label,
+                                                form: CROP_FORMS[current().form].phrase,
+                                                status: current().device.online ? t("card.online") : t("card.offline"),
+                                                time: timeAgo(latest()?.measuredAt),
+                                            })}
                                         </p>
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         <Show when={virtual()}>
-                                            <Badge tone="info">Virtual</Badge>
+                                            <Badge tone="info">{CROP_KINDS.VIRTUAL.label}</Badge>
                                         </Show>
                                         <Show when={current().health}>
                                             {(h) => (
                                                 <Badge tone={HEALTH[h().level]?.tone ?? "neutral"}>
-                                                    Salud {Math.round(h().index)}/100 · {h().label}
+                                                    {t("detail.healthBadge", {index: Math.round(h().index), label: healthLabel(h())})}
                                                 </Badge>
                                             )}
                                         </Show>
@@ -180,14 +185,14 @@ export default function CropDetailPage() {
                                       simulation={simulation.data} weather={weather.data} onOpenTab={openTab}/>
 
                             <nav class="-mx-4 flex gap-1 overflow-x-auto border-b border-line px-4"
-                                 aria-label="Secciones del cultivo">
+                                 aria-label={t("detail.sections")}>
                                 <For each={tabs()}>
                                     {(item) => (
                                         <button type="button" onClick={() => openTab(item.id)}
                                                 aria-current={tab() === item.id ? "page" : undefined}
                                                 class={`shrink-0 border-b-2 px-3 py-2.5 text-sm font-semibold transition-colors ${tab() === item.id
-                                                    ? "border-leaf-600 text-leaf-800" : "border-transparent text-muted hover:text-ink"}`}>
-                                            {item.label}
+                                                    ? "border-leaf-600 text-accent-strong" : "border-transparent text-muted hover:text-ink"}`}>
+                                            {t(item.label)}
                                         </button>
                                     )}
                                 </For>
@@ -196,10 +201,8 @@ export default function CropDetailPage() {
                             <Show when={tab() === "summary"}>
                                 <div class="space-y-5">
                                     <Show when={!latest()}>
-                                        <Alert tone="info" title="Aún no hay lecturas">
-                                            {virtual()
-                                                ? "La simulación publica la primera lectura en unos segundos; su configuración está en la pestaña Simulación."
-                                                : "Conecta tu ESP32 o la simulación de Wokwi con la guía de la pestaña Dispositivo; las lecturas aparecerán aquí en segundos."}
+                                        <Alert tone="info" title={t("detail.noReadings")}>
+                                            {virtual() ? t("detail.noReadingsVirtual") : t("detail.noReadingsReal")}
                                         </Alert>
                                     </Show>
                                     <div class="grid grid-cols-2 gap-3 lg:grid-cols-3">
@@ -213,12 +216,12 @@ export default function CropDetailPage() {
                                     <section class="card p-5">
                                         <div class="flex flex-wrap items-center justify-between gap-3">
                                             <h2 class="text-lg font-semibold">
-                                                {METRICS[metric()].label} · últimas {RANGES.find((range) => range.hours === hours())?.label}
+                                                {t("detail.metricLast", {metric: METRICS[metric()].label, range: RANGES.find((range) => range.hours === hours())?.label() ?? ""})}
                                             </h2>
                                             <select value={metric()}
                                                     onChange={(event) => setMetric(event.currentTarget.value as MetricKey)}
-                                                    aria-label="Variable"
-                                                    class="h-9 rounded-lg border border-line bg-white px-2 text-sm">
+                                                    aria-label={t("detail.variable")}
+                                                    class="h-9 rounded-lg border border-line bg-card px-2 text-sm">
                                                 <For each={PRIMARY_METRICS}>
                                                     {(key) => <option value={key}>{METRICS[key].label}</option>}
                                                 </For>
@@ -231,7 +234,7 @@ export default function CropDetailPage() {
                                         <Show when={profile()}>
                                             {(prof) => (
                                                 <p class="mt-2 text-xs text-muted">
-                                                    La franja verde es el rango ideal para {prof().name.toLowerCase()}.
+                                                    {t("detail.greenBand", {species: prof().name.toLowerCase()})}
                                                 </p>
                                             )}
                                         </Show>
@@ -263,19 +266,19 @@ export default function CropDetailPage() {
                                             <For each={RANGES}>
                                                 {(range) => (
                                                     <button type="button" onClick={() => setHours(range.hours)}
-                                                            class={`touch-target rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === range.hours ? "bg-white text-leaf-800 shadow-sm" : "text-muted"}`}>
-                                                        {range.label}
+                                                            class={`touch-target rounded-lg px-3 py-1.5 text-sm font-semibold ${hours() === range.hours ? "bg-card text-accent-strong shadow-sm" : "text-muted"}`}>
+                                                        {range.label()}
                                                     </button>
                                                 )}
                                             </For>
                                         </div>
                                         <Button variant="secondary" size="sm" icon={<FileDown size={16}/>}
-                                                onClick={() => void exportCsv(current().name)}>Exportar CSV</Button>
+                                                onClick={() => void exportCsv(current().name)}>{t("detail.exportCsv")}</Button>
                                     </div>
                                     <Show when={exportError()}>
                                         {(err) => <Alert tone="danger">{err()}</Alert>}
                                     </Show>
-                                    <p class="text-sm text-muted">{readings.data?.length ?? 0} lecturas en el periodo.</p>
+                                    <p class="text-sm text-muted">{t("detail.readingsInPeriod", {count: readings.data?.length ?? 0})}</p>
                                     <div class="grid gap-5 lg:grid-cols-2">
                                         <For each={PRIMARY_METRICS}>
                                             {(key) => (
@@ -308,9 +311,8 @@ export default function CropDetailPage() {
                                 }>
                                     {(sim) => (
                                         <Show when={sim().available} fallback={
-                                            <Alert tone="info" title="El simulador no está disponible">
-                                                Este servidor no tiene el simulador de cultivos virtuales encendido. La
-                                                configuración sigue guardada.
+                                            <Alert tone="info" title={t("hero.simUnavailable")}>
+                                                {t("detail.simUnavailable")}
                                             </Alert>
                                         }>
                                             <Show when={`${sim().active}-${sim().updatedAt ?? ""}`} keyed>

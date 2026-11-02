@@ -1,6 +1,7 @@
 import {createSignal} from "solid-js";
 import {ApiError} from "../../lib/api/client";
 import {commandApi} from "../../lib/api/services";
+import {t} from "../../lib/i18n";
 import type {ActuatorType, BulkCommandResult, CommandAction} from "../../lib/api/types";
 
 export interface BulkOrder {
@@ -24,7 +25,7 @@ export function useBulkCommand(onDone?: () => void) {
             onDone?.();
         } catch (caught) {
             setResult(null);
-            setError(caught instanceof ApiError ? caught.message : "No se pudo enviar la orden");
+            setError(caught instanceof ApiError ? caught.message : t("bulk.sendFailed"));
         } finally {
             setSending(null);
         }

@@ -14,6 +14,7 @@ import {createSignal, For, type JSX, onCleanup, onMount, Show} from "solid-js";
 import {ACTUATORS, CROP_FORMS, CROP_TYPES, describePlacement} from "../../../lib/catalog";
 import {formatMetric, timeAgo} from "../../../lib/format";
 import type {Actuator, ActuatorType, Command, Crop, VirtualDevice, Weather} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 import {isDaylight, liveStatus, runningActuators, vigorOf} from "../live";
 import {CropScene} from "./scene/CropScene";
 
@@ -47,13 +48,13 @@ function Unlit(props: {
         <div
             class="flex aspect-[36/22] w-full flex-col items-center justify-center gap-2 bg-surface px-6 text-center">
             <span
-                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-50 text-leaf-700">{props.icon}</span>
+                class="flex h-12 w-12 items-center justify-center rounded-2xl bg-leaf-50 text-accent">{props.icon}</span>
             <p class="font-semibold">{props.title}</p>
             <p class="max-w-sm text-sm text-muted">{props.children}</p>
             <Show when={props.link}>
                 {(link) => (
                     <button type="button" onClick={() => link().onClick()}
-                            class="text-sm font-semibold text-water-700 hover:underline">
+                            class="text-sm font-semibold text-link hover:underline">
                         {link().label}
                     </button>
                 )}
@@ -91,41 +92,44 @@ export function CropHero(props: CropHeroProps) {
     const species = () => `${CROP_TYPES[props.crop.type].label} ${CROP_FORMS[props.crop.form].phrase}`;
     const on = () => props.actuators.filter((actuator) => running().has(actuator.type));
     const described = () => describePlacement(placement());
-    const where = () => described() ?? (outdoor() ? "al aire libre" : "lugar sin definir");
-    const scenery = () => described() ?? (outdoor() ? "al aire libre" : "bajo techo");
+    const where = () => described() ?? (outdoor() ? t("hero.outdoors") : t("hero.undefined"));
+    const scenery = () => described() ?? (outdoor() ? t("hero.outdoors") : t("hero.indoors"));
     const place = () => outdoor() && weather() ? `${scenery()}, ${weather()!.label.toLowerCase()}` : scenery();
-    const label = () => `${species()}, ${place()}, ${day() ? "de día" : "de noche"}; ${on().length > 0
-        ? `encendidos: ${on().map((actuator) => ACTUATORS[actuator.type].label.toLowerCase()).join(", ")}`
-        : "actuadores apagados"}`;
+    const label = () => t("hero.label", {
+        species: species(),
+        place: place(),
+        daytime: day() ? t("hero.day") : t("hero.night"),
+        actuators: on().length > 0
+            ? t("hero.on", {list: on().map((actuator) => ACTUATORS[actuator.type].label.toLowerCase()).join(", ")})
+            : t("hero.allOff"),
+    });
 
     return (
-        <section class="card overflow-hidden" aria-label="Ilustración del cultivo">
+        <section class="card overflow-hidden" aria-label={t("hero.illustration")}>
             <div class="grid md:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
                 <div class="relative">
                     <Show when={connected()} fallback={
                         <Show when={status() === "paused"} fallback={
                             <Show when={status() === "unavailable"} fallback={
                                 <Show when={virtual()} fallback={
-                                    <Unlit icon={<WifiOff size={24}/>} title="Tu cultivo no está conectado"
-                                           link={{label: "Ver cómo conectarlo", onClick: () => props.onOpenTab("device")}}>
-                                        Sin conexión no hay nada que ilustrar. La última señal
-                                        llegó {timeAgo(props.crop.device.lastSeenAt)}.
+                                    <Unlit icon={<WifiOff size={24}/>} title={t("hero.notConnected")}
+                                           link={{label: t("hero.howConnect"), onClick: () => props.onOpenTab("device")}}>
+                                        {t("hero.notConnectedBody", {time: timeAgo(props.crop.device.lastSeenAt)})}
                                     </Unlit>
                                 }>
-                                    <Unlit icon={<PlugZap size={24}/>} title="Conectando la simulación…">
-                                        En unos segundos el cultivo publica su primera lectura y aparece aquí.
+                                    <Unlit icon={<PlugZap size={24}/>} title={t("hero.connecting")}>
+                                        {t("hero.connectingBody")}
                                     </Unlit>
                                 </Show>
                             }>
-                                <Unlit icon={<ServerOff size={24}/>} title="El simulador no está disponible">
-                                    Este servidor no tiene el simulador de cultivos virtuales encendido. Tus datos siguen
-                                    guardados.
+                                <Unlit icon={<ServerOff size={24}/>} title={t("hero.simUnavailable")}>
+                                    {t("hero.simUnavailableBody")}
                                 </Unlit>
                             </Show>
                         }>
-                            <Unlit icon={<PauseCircle size={24}/>} title="La simulación está en pausa"
-                                   link={{label: "Ir a Simulación", onClick: () => props.onOpenTab("simulation")}}>
-                                Sin lecturas no hay nada que ilustrar. Reanúdala y el cultivo vuelve a crecer aquí.
+                            <Unlit icon={<PauseCircle size={24}/>} title={t("hero.paused")}
+                                   link={{label: t("hero.goSimulation"), onClick: () => props.onOpenTab("simulation")}}>
+                                {t("hero.pausedBody")}
                             </Unlit>
                         </Show>
                     }>
@@ -138,8 +142,8 @@ export function CropHero(props: CropHeroProps) {
                                    label={label()}/>
                         <Show when={status() === "waiting"}>
                             <span
-                                class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-leaf-800 shadow">
-                                Esperando la primera lectura…
+                                class="absolute left-3 top-3 rounded-full bg-card/90 px-3 py-1 text-xs font-semibold text-accent-strong shadow">
+                                {t("hero.waitingFirst")}
                             </span>
                         </Show>
                     </Show>
@@ -148,7 +152,7 @@ export function CropHero(props: CropHeroProps) {
                 <div class="space-y-4 border-t border-line p-5 md:border-l md:border-t-0">
                     <div>
                         <Show when={virtual()}>
-                            <p class="text-xs font-semibold uppercase tracking-wide text-leaf-700">Cultivo virtual</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-accent">{t("hero.virtualCrop")}</p>
                         </Show>
                         <p class="mt-0.5 font-display text-lg font-semibold">{species()}</p>
                         <p class="mt-1 text-sm text-muted">
@@ -156,7 +160,7 @@ export function CropHero(props: CropHeroProps) {
                             <Show when={!placement()?.setting}>
                                 {" · "}
                                 <button type="button" onClick={() => props.onOpenTab("settings")}
-                                        class="font-semibold text-water-700 hover:underline">Indicar dónde está
+                                        class="font-semibold text-link hover:underline">{t("hero.setPlace")}
                                 </button>
                             </Show>
                         </p>
@@ -165,26 +169,28 @@ export function CropHero(props: CropHeroProps) {
                                 <Show when={weather()}>
                                     {(w) => (
                                         <>
-                                            Afuera: {w().label.toLowerCase()} · {w().temperature.toFixed(1)} °C ·
-                                            humedad{" "}
-                                            {Math.round(w().humidity)} %
-                                            {w().precipitation > 0 && ` · lluvia ${w().precipitation.toFixed(1)} mm`}
+                                            {t("hero.outside", {
+                                                label: w().label.toLowerCase(),
+                                                temperature: w().temperature.toFixed(1),
+                                                humidity: Math.round(w().humidity),
+                                            })}
+                                            {w().precipitation > 0 && t("hero.rain", {value: w().precipitation.toFixed(1)})}
                                             {" · "}
                                         </>
                                     )}
                                 </Show>
-                                {day() ? "de día" : "de noche"}
-                                {measures()?.brightness != null && ` · luz ${formatMetric("brightness", measures()!.brightness)}`}
+                                {day() ? t("hero.day") : t("hero.night")}
+                                {measures()?.brightness != null && t("hero.light", {value: formatMetric("brightness", measures()!.brightness)})}
                                 {!weather() && measures()?.temperature != null && ` · ${formatMetric("temperature", measures()!.temperature)}`}
                             </p>
                         </Show>
                         <Show when={props.simulation?.weatherError}>
-                            {(err) => <p class="mt-1 text-xs text-clay-600">{err()}</p>}
+                            {(err) => <p class="mt-1 text-xs text-clay-fg">{err()}</p>}
                         </Show>
                     </div>
 
                     <Show when={props.actuators.length > 0}>
-                        <ul class="flex flex-wrap gap-1.5" aria-label="Estado de los actuadores">
+                        <ul class="flex flex-wrap gap-1.5" aria-label={t("hero.actuatorStatus")}>
                             <For each={props.actuators}>
                                 {(actuator) => {
                                     const Icon = ICONS[actuator.type];
@@ -195,7 +201,7 @@ export function CropHero(props: CropHeroProps) {
                                             <Icon size={13} class="shrink-0"/>
                                             <span>{ACTUATORS[actuator.type].label}</span>
                                             <span
-                                                class={active() ? "text-leaf-100" : "text-muted"}>· {active() ? "encendido" : "apagado"}</span>
+                                                class={active() ? "text-leaf-100" : "text-muted"}>· {active() ? t("hero.actuatorOn") : t("hero.actuatorOff")}</span>
                                         </li>
                                     );
                                 }}

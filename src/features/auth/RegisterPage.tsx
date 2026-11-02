@@ -6,6 +6,7 @@ import {TextField} from "../../components/ui/Field";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {ApiError} from "../../lib/api/client";
 import {authApi} from "../../lib/api/services";
+import {t} from "../../lib/i18n";
 import {AuthCard} from "./AuthCard";
 import {useAuth} from "./AuthContext";
 import {passwordStrength, validateEmail, validateName, validatePassword} from "./validation";
@@ -13,10 +14,7 @@ import {passwordStrength, validateEmail, validateName, validatePassword} from ".
 type Fields = "name" | "lastName" | "email" | "password";
 
 export function RegisterPage() {
-    usePageMeta("Crear cuenta", {
-        index: true,
-        description: "Crea tu cuenta gratis de SmartPot y crea tu primer cultivo, real o virtual."
-    });
+    usePageMeta(() => t("auth.register.title"), {index: true, description: () => t("auth.register.description")});
     const auth = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = createSignal<Record<Fields, string>>({name: "", lastName: "", email: "", password: ""});
@@ -32,8 +30,8 @@ export function RegisterPage() {
         event.preventDefault();
         const current = form();
         const found = {
-            name: validateName(current.name, "nombre", 40),
-            lastName: validateName(current.lastName, "apellido", 60),
+            name: validateName(current.name, t("auth.firstNameNoun"), 40),
+            lastName: validateName(current.lastName, t("auth.lastNameNoun"), 60),
             email: validateEmail(current.email),
             password: validatePassword(current.password),
         };
@@ -49,7 +47,7 @@ export function RegisterPage() {
                 setError(caught.message);
                 setErrors(caught.fields as Partial<Record<Fields, string>>);
             } else {
-                setError("No pudimos crear tu cuenta");
+                setError(t("auth.register.failed"));
             }
         } finally {
             setLoading(false);
@@ -57,26 +55,25 @@ export function RegisterPage() {
     }
 
     return (
-        <AuthCard title="Crea tu cuenta" subtitle="Gratis y en menos de un minuto."
-                  footer={<>¿Ya tienes cuenta? <A href="/login"
-                                                  class="font-semibold text-leaf-700">Ingresa</A></>}>
+        <AuthCard title={t("auth.register.heading")} subtitle={t("auth.register.subtitle")}
+                  footer={<>{t("auth.register.haveAccount")} <A href="/login"
+                                                  class="font-semibold text-accent">{t("auth.register.signIn")}</A></>}>
             <form onSubmit={submit} class="space-y-4" noValidate>
                 <Show when={error()}><Alert tone="danger">{error()}</Alert></Show>
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <TextField label="Nombre" autocomplete="given-name" value={form().name} error={errors().name}
+                    <TextField label={t("auth.firstName")} autocomplete="given-name" value={form().name} error={errors().name}
                                onChange={update("name")}/>
-                    <TextField label="Apellido" autocomplete="family-name" value={form().lastName} error={errors().lastName}
+                    <TextField label={t("auth.lastName")} autocomplete="family-name" value={form().lastName} error={errors().lastName}
                                onChange={update("lastName")}/>
                 </div>
-                <TextField label="Correo" type="email" autocomplete="email" value={form().email} error={errors().email}
+                <TextField label={t("auth.email")} type="email" autocomplete="email" value={form().email} error={errors().email}
                            onChange={update("email")}/>
-                <TextField label="Contraseña" type="password" autocomplete="new-password" value={form().password}
+                <TextField label={t("auth.password")} type="password" autocomplete="new-password" value={form().password}
                            error={errors().password} onChange={update("password")}
-                           hint={form().password ? `Seguridad: ${strength().label}` : "Mínimo 8 caracteres con mayúscula, minúscula y número"}/>
-                <Button type="submit" size="lg" loading={loading()} class="w-full">Crear cuenta</Button>
+                           hint={form().password ? t("auth.register.strength", {label: strength().label}) : t("auth.passwordHint")}/>
+                <Button type="submit" size="lg" loading={loading()} class="w-full">{t("auth.register.title")}</Button>
                 <p class="text-center text-xs text-muted">
-                    Tus datos solo se usan para tu cuenta y tus cultivos. Puedes eliminarlos cuando quieras desde tu
-                    perfil.
+                    {t("auth.register.privacy")}
                 </p>
             </form>
         </AuthCard>

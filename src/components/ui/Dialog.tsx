@@ -1,5 +1,6 @@
 import {X} from "lucide-solid";
 import {createEffect, type JSX, Show} from "solid-js";
+import {t} from "../../lib/i18n";
 
 interface DialogProps {
     open: boolean;
@@ -32,14 +33,14 @@ export function Dialog(props: DialogProps) {
                 props.onClose();
             }}
             aria-labelledby="dialog-title"
-            class={`m-auto ${props.wide ? "w-[min(94vw,46rem)]" : "w-[min(92vw,34rem)]"} rounded-[var(--radius-card)] border border-line bg-white p-0 text-ink
+            class={`m-auto ${props.wide ? "w-[min(94vw,46rem)]" : "w-[min(92vw,34rem)]"} rounded-[var(--radius-card)] border border-line bg-card p-0 text-ink
         shadow-2xl backdrop:bg-leaf-950/50 backdrop:backdrop-blur-sm`}
         >
             <Show when={props.open}>
                 <div class="flex max-h-[85vh] flex-col">
                     <header class="flex items-center justify-between border-b border-line px-5 py-4">
                         <h2 id="dialog-title" class="text-lg font-semibold">{props.title}</h2>
-                        <button type="button" onClick={() => props.onClose()} aria-label="Cerrar"
+                        <button type="button" onClick={() => props.onClose()} aria-label={t("common.close")}
                                 class="rounded-lg p-1.5 text-muted hover:bg-surface hover:text-ink">
                             <X size={18}/>
                         </button>

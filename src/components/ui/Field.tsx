@@ -1,6 +1,6 @@
 import {createUniqueId, type JSX, Show, splitProps} from "solid-js";
 
-const CONTROL = `h-11 w-full rounded-xl border bg-white px-3 text-sm text-ink placeholder:text-muted/70
+const CONTROL = `h-11 w-full rounded-xl border bg-card px-3 text-sm text-ink placeholder:text-muted/70
   transition-colors focus:border-leaf-500 focus:outline-none focus:ring-2 focus:ring-leaf-500/25`;
 
 interface FieldProps {
@@ -33,7 +33,7 @@ export function TextField(props: FieldProps & JSX.InputHTMLAttributes<HTMLInputE
                     <p class="mt-1 text-xs text-muted">{local.hint}</p>
                 </Show>
             }>
-                <p id={`${id}-error`} class="mt-1 text-sm text-danger-600">{local.error}</p>
+                <p id={`${id}-error`} class="mt-1 text-sm text-danger-fg">{local.error}</p>
             </Show>
         </div>
     );
@@ -59,7 +59,7 @@ export function SelectField(props: FieldProps & JSX.SelectHTMLAttributes<HTMLSel
                     <p class="mt-1 text-xs text-muted">{local.hint}</p>
                 </Show>
             }>
-                <p class="mt-1 text-sm text-danger-600">{local.error}</p>
+                <p class="mt-1 text-sm text-danger-fg">{local.error}</p>
             </Show>
         </div>
     );

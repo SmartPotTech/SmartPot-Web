@@ -5,6 +5,7 @@ import {nearestIndex, pointerX, timeTicks, xTickCount} from "../../../lib/chart"
 import {downsampleLTTB} from "../../../lib/lttb";
 import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
 import type {MetricKey, ProfileRange, Reading} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 
 interface ReadingsChartProps {
     readings: Reading[];
@@ -100,11 +101,11 @@ export function ReadingsChart(props: ReadingsChartProps) {
     return (
         <Show when={data().length > 0} fallback={
             <p class="flex h-40 items-center justify-center text-sm text-muted">
-                Sin lecturas de {info().label.toLowerCase()} en este periodo.
+                {t("chart.noReadings", {metric: info().label.toLowerCase()})}
             </p>
         }>
             <div style={{"height": `${props.height ?? 280}px`}} role="img" ref={box.ref}
-                 aria-label={`Gráfica de ${info().label.toLowerCase()} con ${data().length} lecturas`}
+                 aria-label={t("chart.label", {metric: info().label.toLowerCase(), count: data().length})}
                  class="relative w-full select-none">
                 <Show when={geometry()}>
                     {(g) => {
@@ -124,9 +125,9 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                         {(tick) => (
                                             <g>
                                                 <line x1={g().padLeft} x2={g().width - g().padRight}
-                                                      y1={tick.y} y2={tick.y} stroke="#E4EEE9"/>
+                                                      y1={tick.y} y2={tick.y} class="stroke-line"/>
                                                 <text x={g().padLeft - 8} y={tick.y + 4} text-anchor="end"
-                                                      fill="#5B6B63" font-size="11">
+                                                      class="fill-muted" font-size="11">
                                                     {Math.round(tick.value * 10) / 10}
                                                 </text>
                                             </g>
@@ -143,7 +144,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                     <For each={g().xTicks}>
                                         {(tick) => (
                                             <text x={tick.x} y={g().height - 6} text-anchor={tick.anchor}
-                                                  fill="#5B6B63" font-size="11">
+                                                  class="fill-muted" font-size="11">
                                                 {formatTime(tick.time)}
                                             </text>
                                         )}
@@ -152,9 +153,9 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                         {(pt) => (
                                             <>
                                                 <line x1={pt().x} x2={pt().x} y1={g().padTop}
-                                                      y2={g().height - g().padBottom} stroke="#D5E3DC"/>
+                                                      y2={g().height - g().padBottom} class="stroke-line"/>
                                                 <circle cx={pt().x} cy={pt().y} r="4.5" fill={info().color}
-                                                        stroke="#FFFFFF" stroke-width="2"/>
+                                                        class="stroke-card" stroke-width="2"/>
                                             </>
                                         )}
                                     </Show>
@@ -162,7 +163,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                 <Show when={hovered()}>
                                     {(pt) => (
                                         <div
-                                            class="pointer-events-none absolute right-3 top-2 rounded-xl border border-line bg-white/95 px-3 py-1.5 text-xs shadow-sm">
+                                            class="pointer-events-none absolute right-3 top-2 rounded-xl border border-line bg-card/95 px-3 py-1.5 text-xs shadow-sm">
                                             <p class="font-medium text-muted">{formatDateTime(pt().iso)}</p>
                                             <p class="font-semibold text-ink">
                                                 {info().label}: {formatMetric(props.metric, pt().value)}

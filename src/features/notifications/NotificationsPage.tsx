@@ -8,6 +8,7 @@ import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {notificationApi} from "../../lib/api/services";
 import {formatDateTime} from "../../lib/format";
+import {t} from "../../lib/i18n";
 import type {AppNotification} from "../../lib/api/types";
 
 const ICONS: Record<AppNotification["type"], typeof Bell> = {
@@ -19,7 +20,7 @@ const ICONS: Record<AppNotification["type"], typeof Bell> = {
 };
 
 export function NotificationsPage() {
-    usePageMeta("Alertas");
+    usePageMeta(() => t("notifications.title"));
     const notifications = useResource(() => notificationApi.list(), [], 30_000);
     const list = () => notifications.data ?? [];
 
@@ -31,11 +32,11 @@ export function NotificationsPage() {
     return (
         <div class="space-y-6">
             <div class="flex flex-wrap items-end justify-between gap-3">
-                <h1 class="text-3xl font-bold">Alertas</h1>
+                <h1 class="text-3xl font-bold">{t("notifications.title")}</h1>
                 <Show when={list().some((item) => !item.read)}>
                     <Button variant="secondary" size="sm" icon={<CheckCheck size={16}/>}
                             onClick={() => void act(notificationApi.markAllRead())}>
-                        Marcar todas como leídas
+                        {t("notifications.markAll")}
                     </Button>
                 </Show>
             </div>
@@ -44,8 +45,8 @@ export function NotificationsPage() {
             </Show>
             <Show when={!(notifications.loading && !notifications.data)} fallback={<PageLoader/>}>
                 <Show when={list().length > 0} fallback={
-                    <EmptyState icon={<Bell size={26}/>} title="Sin alertas">
-                        Aquí verás los avisos de tus cultivos, de sus dispositivos y del asistente de IA.
+                    <EmptyState icon={<Bell size={26}/>} title={t("notifications.emptyTitle")}>
+                        {t("notifications.emptyBody")}
                     </EmptyState>
                 }>
                     <ul class="space-y-2">
@@ -55,7 +56,7 @@ export function NotificationsPage() {
                                 return (
                                     <li class={`card flex gap-3 p-4 ${item.read ? "opacity-75" : "border-leaf-300"}`}>
                                         <div class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
-                      ${item.type === "ALERT" ? "bg-sun-100 text-sun-600" : "bg-leaf-50 text-leaf-700"}`}>
+                      ${item.type === "ALERT" ? "bg-sun-100 text-sun-fg" : "bg-leaf-50 text-accent"}`}>
                                             <Icon size={18}/>
                                         </div>
                                         <div class="min-w-0 flex-1">
@@ -66,19 +67,19 @@ export function NotificationsPage() {
                                                 <Show when={item.cropId}>
                                                     {(cId) => (
                                                         <A href={`/app/crops/${cId()}`}
-                                                           class="touch-target font-semibold text-leaf-700">Ver cultivo</A>
+                                                           class="touch-target font-semibold text-accent">{t("notifications.viewCrop")}</A>
                                                     )}
                                                 </Show>
                                                 <Show when={!item.read}>
-                                                    <button type="button" class="touch-target font-semibold text-leaf-700"
+                                                    <button type="button" class="touch-target font-semibold text-accent"
                                                             onClick={() => void act(notificationApi.markRead(item.id))}>
-                                                        Marcar como leída
+                                                        {t("notifications.markRead")}
                                                     </button>
                                                 </Show>
                                             </div>
                                         </div>
-                                        <button type="button" aria-label="Eliminar alerta"
-                                                class="touch-target self-start rounded-lg p-1.5 text-muted hover:text-danger-600"
+                                        <button type="button" aria-label={t("notifications.delete")}
+                                                class="touch-target self-start rounded-lg p-1.5 text-muted hover:text-danger-fg"
                                                 onClick={() => void act(notificationApi.remove(item.id))}>
                                             <Trash2 size={16}/>
                                         </button>

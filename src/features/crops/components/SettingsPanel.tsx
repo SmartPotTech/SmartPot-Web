@@ -9,6 +9,7 @@ import {ApiError} from "../../../lib/api/client";
 import {cropApi} from "../../../lib/api/services";
 import {CROP_FORMS, CROP_KINDS, CROP_TYPES} from "../../../lib/catalog";
 import type {Crop, CropForm, CropType, Placement} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 import {CropNotifications} from "./CropNotifications";
 import {PlacementPicker} from "./PlacementPicker";
 
@@ -36,11 +37,11 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
                 form: props.crop.form,
                 placement: placement(),
             }));
-            setPlacementMessage({tone: "success", text: "Lugar guardado: la ilustración y el asistente ya lo usan"});
+            setPlacementMessage({tone: "success", text: t("settings.placementSaved")});
         } catch (caught) {
             setPlacementMessage({
                 tone: "danger",
-                text: caught instanceof ApiError ? caught.message : "No se pudo guardar",
+                text: caught instanceof ApiError ? caught.message : t("settings.saveFailed"),
             });
         } finally {
             setPlacing(false);
@@ -50,7 +51,7 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
     async function save(event: SubmitEvent) {
         event.preventDefault();
         if (name().trim().length < 2) {
-            setMessage({tone: "danger", text: "El nombre debe tener al menos 2 caracteres"});
+            setMessage({tone: "danger", text: t("settings.nameTooShort")});
             return;
         }
         setSaving(true);
@@ -61,9 +62,9 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
                 form: form(),
                 placement: props.crop.placement ?? undefined,
             }));
-            setMessage({tone: "success", text: "Cambios guardados"});
+            setMessage({tone: "success", text: t("settings.changesSaved")});
         } catch (caught) {
-            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo guardar"});
+            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : t("settings.saveFailed")});
         } finally {
             setSaving(false);
         }
@@ -75,7 +76,7 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
             await cropApi.remove(props.crop.id);
             navigate("/app/crops", {replace: true});
         } catch (caught) {
-            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo eliminar"});
+            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : t("settings.deleteFailed")});
             setDeleting(false);
             setOpen(false);
         }
@@ -84,75 +85,70 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
     return (
         <div class="space-y-5">
             <form onSubmit={save} class="card space-y-4 p-5">
-                <h3 class="font-semibold">Datos del cultivo</h3>
+                <h3 class="font-semibold">{t("settings.dataTitle")}</h3>
                 <Show when={message()}>
                     {(msg) => <Alert tone={msg().tone}>{msg().text}</Alert>}
                 </Show>
-                <TextField label="Nombre" value={name()} maxLength={60}
+                <TextField label={t("create.name")} value={name()} maxLength={60}
                            onChange={(event) => setName(event.currentTarget.value)}/>
-                <SelectField label="Especie" value={type()}
+                <SelectField label={t("create.species")} value={type()}
                              onChange={(event) => setType(event.currentTarget.value as CropType)}
-                             hint="Cambiar la especie cambia los rangos ideales que usa el asistente.">
+                             hint={t("settings.speciesHint")}>
                     <For each={Object.entries(CROP_TYPES)}>
                         {([value, info]) => <option value={value}>{info.label}</option>}
                     </For>
                 </SelectField>
-                <SelectField label="Forma del cultivo" value={form()}
+                <SelectField label={t("create.form")} value={form()}
                              onChange={(event) => setForm(event.currentTarget.value as CropForm)}
-                             hint={`${CROP_FORMS[form()].hint} Cambia cómo se ilustra el cultivo.`}>
+                             hint={t("settings.formHint", {hint: CROP_FORMS[form()].hint})}>
                     <For each={Object.entries(CROP_FORMS)}>
                         {([value, info]) => <option value={value}>{info.label}</option>}
                     </For>
                 </SelectField>
                 <div class="rounded-xl bg-surface px-3 py-2 text-sm">
                     <p><span
-                        class="font-semibold">Tipo: {CROP_KINDS[props.crop.kind].label}.</span> {CROP_KINDS[props.crop.kind].hint}
+                        class="font-semibold">{t("settings.kind", {kind: CROP_KINDS[props.crop.kind].label})}</span> {CROP_KINDS[props.crop.kind].hint}
                     </p>
-                    <p class="mt-0.5 text-xs text-muted">No se puede cambiar: para pasar de real a virtual, o al
-                        revés, crea otro cultivo.</p>
+                    <p class="mt-0.5 text-xs text-muted">{t("settings.kindFixed")}</p>
                 </div>
-                <Button type="submit" icon={<Save size={16}/>} loading={saving()}>Guardar cambios</Button>
+                <Button type="submit" icon={<Save size={16}/>} loading={saving()}>{t("settings.saveChanges")}</Button>
             </form>
 
             <section class="card space-y-4 p-5" aria-labelledby="placement-title">
                 <div>
                     <h3 id="placement-title" class="flex items-center gap-2 font-semibold">
-                        <MapPinned size={16} class="text-leaf-700"/> Dónde está
+                        <MapPinned size={16} class="text-accent"/> {t("settings.whereTitle")}
                     </h3>
                     <p class="text-sm text-muted">
-                        Cambia cómo se ilustra y lo que recomienda el asistente{props.crop.kind === "VIRTUAL"
-                        ? "; en un cultivo virtual también cambia el clima que simula" : ""}.
+                        {t("settings.whereBody", {extra: props.crop.kind === "VIRTUAL" ? t("settings.whereExtra") : ""})}
                     </p>
                 </div>
                 <Show when={placementMessage()}>
                     {(msg) => <Alert tone={msg().tone}>{msg().text}</Alert>}
                 </Show>
                 <PlacementPicker type={props.crop.type} value={placement()} onChange={setPlacement}/>
-                <Button icon={<Save size={16}/>} loading={placing()} onClick={() => void savePlacement()}>Guardar
-                    lugar</Button>
+                <Button icon={<Save size={16}/>} loading={placing()} onClick={() => void savePlacement()}>{t("settings.savePlace")}</Button>
             </section>
 
             <CropNotifications crop={props.crop}/>
 
             <section class="card border-danger-500/30 p-5">
-                <h3 class="font-semibold text-danger-600">Eliminar cultivo</h3>
-                <p class="mt-1 text-sm text-muted">Se borran sus lecturas, comandos y actuadores; la clave del
-                    dispositivo deja de funcionar y, si es virtual, se apaga su simulación.</p>
+                <h3 class="font-semibold text-danger-fg">{t("settings.deleteTitle")}</h3>
+                <p class="mt-1 text-sm text-muted">{t("settings.deleteBody")}</p>
                 <Button variant="danger" class="mt-4" icon={<Trash2 size={16}/>}
-                        onClick={() => setOpen(true)}>Eliminar</Button>
+                        onClick={() => setOpen(true)}>{t("common.delete")}</Button>
             </section>
 
-            <Dialog open={open()} title="Eliminar cultivo" onClose={() => setOpen(false)}
+            <Dialog open={open()} title={t("settings.deleteTitle")} onClose={() => setOpen(false)}
                     footer={<>
-                        <Button variant="secondary" onClick={() => setOpen(false)}>Cancelar</Button>
+                        <Button variant="secondary" onClick={() => setOpen(false)}>{t("common.cancel")}</Button>
                         <Button variant="danger" loading={deleting()} disabled={confirmName() !== props.crop.name}
                                 onClick={() => void remove()}>
-                            Eliminar definitivamente
+                            {t("settings.deleteForever")}
                         </Button>
                     </>}>
-                <p class="mb-3 text-sm text-muted">Esta acción no se puede deshacer.
-                    Escribe <strong>{props.crop.name}</strong> para confirmar.</p>
-                <TextField label="Nombre del cultivo" value={confirmName()}
+                <p class="mb-3 text-sm text-muted">{t("settings.deleteWarning")}<strong>{props.crop.name}</strong>{t("settings.deleteToConfirm")}</p>
+                <TextField label={t("settings.cropName")} value={confirmName()}
                            onChange={(event) => setConfirmName(event.currentTarget.value)}/>
             </Dialog>
         </div>

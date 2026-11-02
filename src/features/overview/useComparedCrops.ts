@@ -1,5 +1,5 @@
 import {createSignal} from "solid-js";
-import {CROP_COLORS, MAX_COMPARED} from "../../lib/catalog";
+import {CROP_COLORS, cropColor, MAX_COMPARED} from "../../lib/catalog";
 import type {Crop} from "../../lib/api/types";
 
 /**
@@ -32,7 +32,7 @@ export function useComparedCrops(cropsInput: Crop[] | (() => Crop[])) {
         },
         colorOf: (cropId: string) => {
             const slot = current()[cropId];
-            return slot === undefined ? undefined : CROP_COLORS[slot];
+            return slot === undefined ? undefined : cropColor(slot);
         },
         get isFull() {
             return Object.keys(current()).length >= MAX_COMPARED;

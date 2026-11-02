@@ -1,5 +1,6 @@
 import {createEffect, createMemo, createSignal, onCleanup, untrack} from "solid-js";
 import {ApiError} from "../lib/api/client";
+import {t} from "../lib/i18n";
 
 export interface Resource<T> {
     readonly data: T | undefined;
@@ -35,7 +36,7 @@ export function useResource<T>(
             setDataSignal(() => value);
             setError(null);
         } catch (caught) {
-            setError(caught instanceof ApiError ? caught.message : "Ocurrió un error inesperado.");
+            setError(caught instanceof ApiError ? caught.message : t("api.errorUnexpected"));
         } finally {
             setLoadedKey(forKey);
         }

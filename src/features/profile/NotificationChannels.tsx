@@ -7,14 +7,15 @@ import {useResource} from "../../hooks/useResource";
 import {ApiError} from "../../lib/api/client";
 import {channelApi} from "../../lib/api/services";
 import {timeAgo} from "../../lib/format";
+import {t, type TranslationKey} from "../../lib/i18n";
 import type {ChannelLink, ChannelOption, LinkCode, NotificationType} from "../../lib/api/types";
 
-const EVENT_LABELS: Record<NotificationType, string> = {
-    ALERT: "Alertas del cultivo",
-    DEVICE: "Cultivo desconectado",
-    AI: "Acciones del asistente",
-    COMMAND: "Comandos que fallan o vencen",
-    INFO: "Novedades de la cuenta",
+const EVENT_LABELS: Record<NotificationType, TranslationKey> = {
+    ALERT: "channels.event.ALERT",
+    DEVICE: "channels.event.DEVICE",
+    AI: "channels.event.AI",
+    COMMAND: "channels.event.COMMAND",
+    INFO: "channels.event.INFO",
 };
 const EVENTS = Object.keys(EVENT_LABELS) as NotificationType[];
 
@@ -39,7 +40,7 @@ export function NotificationChannels() {
             if (success) setMessage({tone: "success", text: success});
             await channels.reload();
         } catch (caught) {
-            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : "No se pudo completar"});
+            setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : t("channels.failed")});
         } finally {
             setBusy(null);
         }
@@ -57,12 +58,10 @@ export function NotificationChannels() {
         <section class="card space-y-4 p-5" aria-labelledby="channels-title">
             <div>
                 <h2 id="channels-title" class="flex items-center gap-2 text-lg font-semibold">
-                    <AppWindow size={18} class="text-leaf-700"/> Aplicaciones
+                    <AppWindow size={18} class="text-accent"/> {t("channels.title")}
                 </h2>
                 <p class="text-sm text-muted">
-                    Recibe los avisos de tus cultivos donde ya conversas. Cada cultivo elige en Ajustes qué avisa, cada
-                    cuánto y
-                    con quién lo compartes.
+                    {t("channels.description")}
                 </p>
             </div>
             <Show when={message()}>
@@ -77,8 +76,8 @@ export function NotificationChannels() {
                                 onLink={() => void startLink()}
                                 onRefresh={() => void channels.reload()}
                                 onUpdate={(link, body) => void run(`update-${link.id}`, () => channelApi.update(link.id, body))}
-                                onTest={(link) => void run(`test-${link.id}`, () => channelApi.test(link.id), "Mensaje de prueba enviado")}
-                                onUnlink={(link) => void run(`unlink-${link.id}`, () => channelApi.unlink(link.id), "Canal desvinculado")}/>
+                                onTest={(link) => void run(`test-${link.id}`, () => channelApi.test(link.id), t("channels.testSent"))}
+                                onUnlink={(link) => void run(`unlink-${link.id}`, () => channelApi.unlink(link.id), t("channels.unlinked"))}/>
                 )}
             </For>
         </section>
@@ -106,25 +105,25 @@ export function ChannelRow(props: ChannelRowProps) {
                  aria-disabled="true">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <p class="font-semibold text-muted">{props.option.name}</p>
-                    <Badge tone="neutral">No disponible</Badge>
+                    <Badge tone="neutral">{t("channels.unavailable")}</Badge>
                 </div>
                 <Show when={props.option.description}>
                     <p class="mt-1 text-muted">{props.option.description}</p>
                 </Show>
-                <Button size="sm" class="mt-3" disabled>Vincular {props.option.name}</Button>
+                <Button size="sm" class="mt-3" disabled>{t("channels.linkButton", {name: props.option.name})}</Button>
                 <details class="mt-3 text-xs text-muted">
-                    <summary class="touch-target cursor-pointer font-semibold">Detalle técnico</summary>
+                    <summary class="touch-target cursor-pointer font-semibold">{t("channels.technical")}</summary>
                     <p class="mt-1">
-                        Este servidor aún no ofrece {props.option.name}. Quien lo administra debe definir{" "}
+                        {t("channels.notOffered", {name: props.option.name})}
                         <For each={requirements()}>
                             {(name, index) => (
                                 <span>
                                     <code>{name}</code>
-                                    {index() < requirements().length - 2 ? ", " : index() === requirements().length - 2 ? " y " : ""}
+                                    {index() < requirements().length - 2 ? ", " : index() === requirements().length - 2 ? t("channels.and") : ""}
                                 </span>
                             )}
                         </For>{" "}
-                        en el entorno de SmartPot-API y reiniciarla.
+                        {t("channels.restart")}
                     </p>
                 </details>
             </div>
@@ -137,27 +136,24 @@ export function ChannelRow(props: ChannelRowProps) {
                         <p class="mt-1 text-sm text-muted">{props.option.description}</p>
                     </Show>
                     <p class="mt-1 text-sm text-muted">
-                        Toca «Vincular»: se abrirá {props.option.name} con un código de un solo uso.
-                        Presiona <strong>Iniciar</strong> en el
-                        chat del bot y listo.
+                        {t("channels.linkHelp", {name: props.option.name})}<strong>{t("channels.linkHelpStart")}</strong>{t("channels.linkHelpEnd")}
                     </p>
                     <div class="mt-3 flex flex-wrap gap-2">
                         <Button size="sm" icon={<ExternalLink size={14}/>} loading={props.busy === "link"}
                                 onClick={props.onLink}>
-                            Vincular {props.option.name}
+                            {t("channels.linkButton", {name: props.option.name})}
                         </Button>
                         <Show when={props.code}>
-                            <Button size="sm" variant="secondary" onClick={props.onRefresh}>Ya lo vinculé</Button>
+                            <Button size="sm" variant="secondary" onClick={props.onRefresh}>{t("channels.alreadyLinked")}</Button>
                         </Show>
                     </div>
                     <Show when={props.code}>
                         {(c) => (
                             <p class="mt-2 text-xs text-muted">
-                                Si no se abrió, entra a <a class="font-semibold text-water-700 underline" href={c().url}
+                                {t("channels.notOpened")}<a class="font-semibold text-link underline" href={c().url}
                                                            target="_blank"
-                                                           rel="noopener noreferrer">{c().url.replace(/\?.*$/, "")}</a> y
-                                escribe <code>/start {c().code}</code>.
-                                El código vence {timeAgo(c().expiresAt)}.
+                                                           rel="noopener noreferrer">{c().url.replace(/\?.*$/, "")}</a>{t("channels.andType")}<code>/start {c().code}</code>.{" "}
+                                {t("channels.codeExpires", {time: timeAgo(c().expiresAt)})}
                             </p>
                         )}
                     </Show>
@@ -178,21 +174,21 @@ export function ChannelRow(props: ChannelRowProps) {
                                     <p class="flex items-center gap-2 font-semibold">{props.option.name}
                                         <Badge
                                             tone={currentLink().enabled ? "success" : "neutral"}>
-                                            {currentLink().enabled ? "Activo" : "En pausa"}
+                                            {currentLink().enabled ? t("channels.active") : t("channels.paused")}
                                         </Badge>
                                     </p>
                                     <p class="text-sm text-muted">
-                                        Vinculado a {currentLink().displayName ?? "tu chat"}
-                                        {currentLink().address && <> · id del chat <code>{currentLink().address}</code></>}
-                                        {currentLink().lastDeliveredAt ? ` · último aviso ${timeAgo(currentLink().lastDeliveredAt)}` : ""}
+                                        {t("channels.linkedTo", {name: currentLink().displayName ?? t("channels.yourChat")})}
+                                        {currentLink().address && <>{t("channels.chatId")}<code>{currentLink().address}</code></>}
+                                        {currentLink().lastDeliveredAt ? t("channels.lastAlert", {time: timeAgo(currentLink().lastDeliveredAt)}) : ""}
                                     </p>
                                 </div>
                                 <Switch checked={currentLink().enabled}
-                                        label={`Recibir avisos por ${props.option.name}`}
+                                        label={t("channels.receiveVia", {name: props.option.name})}
                                         onChange={(enabled) => props.onUpdate(currentLink(), {enabled})}/>
                             </div>
                             <fieldset class="mt-3">
-                                <legend class="text-sm font-semibold">Qué quieres recibir por defecto</legend>
+                                <legend class="text-sm font-semibold">{t("channels.defaults")}</legend>
                                 <div class="mt-2 grid gap-2 sm:grid-cols-2">
                                     <For each={EVENTS}>
                                         {(event) => (
@@ -200,7 +196,7 @@ export function ChannelRow(props: ChannelRowProps) {
                                                 <input type="checkbox" class="h-4 w-4 accent-leaf-700"
                                                        checked={currentLink().events.includes(event)}
                                                        onChange={(changed) => toggle(event, changed.currentTarget.checked)}/>
-                                                {EVENT_LABELS[event]}
+                                                {t(EVENT_LABELS[event])}
                                             </label>
                                         )}
                                     </For>
@@ -209,10 +205,10 @@ export function ChannelRow(props: ChannelRowProps) {
                             <div class="mt-3 flex flex-wrap gap-2">
                                 <Button size="sm" variant="secondary" icon={<Send size={14}/>}
                                         loading={props.busy === `test-${currentLink().id}`}
-                                        onClick={() => props.onTest(currentLink())}>Enviar prueba</Button>
+                                        onClick={() => props.onTest(currentLink())}>{t("channels.test")}</Button>
                                 <Button size="sm" variant="ghost" icon={<Unlink size={14}/>}
                                         loading={props.busy === `unlink-${currentLink().id}`}
-                                        onClick={() => props.onUnlink(currentLink())}>Desvincular</Button>
+                                        onClick={() => props.onUnlink(currentLink())}>{t("channels.unlink")}</Button>
                             </div>
                         </div>
                     );

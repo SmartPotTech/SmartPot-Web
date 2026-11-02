@@ -8,12 +8,13 @@ import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {cropApi} from "../../lib/api/services";
 import {greeting} from "../../lib/format";
+import {t} from "../../lib/i18n";
 import {useAuth} from "../auth/AuthContext";
 import {CreateCropDialog} from "./components/CreateCropDialog";
 import {CropCard} from "./components/CropCard";
 
 export function CropsPage() {
-    usePageMeta("Mis cultivos");
+    usePageMeta(() => t("crops.title"));
     const auth = useAuth();
     const crops = useResource(() => cropApi.list(), [], 30_000);
     const [creating, setCreating] = createSignal(false);
@@ -24,15 +25,14 @@ export function CropsPage() {
 
     return (
         <div class="space-y-6">
-            <PageHeader eyebrow={`${greeting()}, ${auth.user?.name ?? ""}`} title="Mis cultivos" icon={<Sprout size={24}/>}
-                        description="Tus cultivos reales y virtuales con sus lecturas, su asistente y su control. Entra a uno para verlo en vivo."
-                        actions={<Button variant="light" icon={<Plus size={18}/>} onClick={() => setCreating(true)}>Nuevo
-                            cultivo</Button>}>
+            <PageHeader eyebrow={`${greeting()}, ${auth.user?.name ?? ""}`} title={t("crops.title")} icon={<Sprout size={24}/>}
+                        description={t("crops.description")}
+                        actions={<Button variant="light" icon={<Plus size={18}/>} onClick={() => setCreating(true)}>{t("crops.new")}</Button>}>
                 <Show when={list().length > 0}>
                     <div class="grid grid-cols-3 gap-3">
-                        <HeaderStat label="Cultivos" value={list().length}/>
-                        <HeaderStat label="En línea" value={online()}/>
-                        <HeaderStat label="Necesitan atención" value={attention()}/>
+                        <HeaderStat label={t("crops.statCrops")} value={list().length}/>
+                        <HeaderStat label={t("crops.statOnline")} value={online()}/>
+                        <HeaderStat label={t("crops.statAttention")} value={attention()}/>
                     </div>
                 </Show>
             </PageHeader>
@@ -42,12 +42,9 @@ export function CropsPage() {
             </Show>
             <Show when={!(crops.loading && !crops.data)} fallback={<PageLoader/>}>
                 <Show when={!(list().length === 0 && !crops.error)} fallback={
-                    <EmptyState icon={<Sprout size={26}/>} title="Crea tu primer cultivo"
-                                action={<Button icon={<Plus size={18}/>} onClick={() => setCreating(true)}>Nuevo
-                                    cultivo</Button>}>
-                        Elige si es real (un ESP32, físico o en Wokwi) o virtual (lo simula SmartPot), su especie y su
-                        forma: maceta,
-                        tubos NFT, torre o balsa.
+                    <EmptyState icon={<Sprout size={26}/>} title={t("crops.emptyTitle")}
+                                action={<Button icon={<Plus size={18}/>} onClick={() => setCreating(true)}>{t("crops.new")}</Button>}>
+                        {t("crops.emptyBody")}
                     </EmptyState>
                 }>
                     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

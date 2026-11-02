@@ -1,4 +1,5 @@
 import type {DeviceCredentials} from "../../lib/api/types";
+import {t} from "../../lib/i18n";
 
 /** Dónde corre el firmware: un ESP32 físico en tu red o el ESP32 simulado de Wokwi. */
 export type FirmwareTarget = "esp32" | "wokwi";
@@ -17,13 +18,13 @@ export function firmwareConfig(
 ): string {
     const wifi = target === "wokwi"
         ? `WIFI = {\n    "ssid": "Wokwi-GUEST",\n    "password": "",\n}`
-        : `WIFI = {\n    "ssid": "<NOMBRE_DE_TU_RED>",\n    "password": "<CLAVE_DE_TU_RED>",\n}`;
-    const ca = credentials.tls ? (caCertificate?.trim() || "<CA_DE_SMARTPOT>") : "";
+        : `WIFI = {\n    "ssid": "${t("firmware.networkName")}",\n    "password": "${t("firmware.networkPassword")}",\n}`;
+    const ca = credentials.tls ? (caCertificate?.trim() || t("firmware.ca")) : "";
     return `${wifi}
 
 SMARTPOT = {
     "crop_id": "${credentials.username}",
-    "device_key": "${credentials.key ?? "<CLAVE_DEL_DISPOSITIVO>"}",
+    "device_key": "${credentials.key ?? t("firmware.deviceKey")}",
     "host": "${credentials.host}",
     "port": ${credentials.port},
     "tls": ${credentials.tls ? "True" : "False"},

@@ -1,4 +1,5 @@
 import {API_URL} from "../../config/env";
+import {t, type TranslationKey} from "../i18n";
 
 const TIMEOUT_MS = 15_000;
 const MAX_ETAG_ENTRIES = 64;
@@ -49,14 +50,14 @@ interface RequestOptions {
     accept?: "json" | "text";
 }
 
-const FALLBACK_MESSAGES: Record<number, string> = {
-    400: "Revisa los datos enviados.",
-    401: "Tu sesión expiró. Inicia sesión de nuevo.",
-    403: "No tienes permiso para realizar esta acción.",
-    404: "No encontramos lo que buscas.",
-    409: "Ya existe un registro con esos datos.",
-    429: "Hiciste demasiadas solicitudes. Espera un momento.",
-    503: "El servicio no está disponible en este momento.",
+const FALLBACK_MESSAGES: Record<number, TranslationKey> = {
+    400: "api.error400",
+    401: "api.error401",
+    403: "api.error403",
+    404: "api.error404",
+    409: "api.error409",
+    429: "api.error429",
+    503: "api.error503",
 };
 
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -90,8 +91,8 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         if (signal?.aborted) throw error;
         const offline = typeof navigator !== "undefined" && !navigator.onLine;
         throw new ApiError(0, offline
-            ? "Estás sin conexión. Revisa tu internet e inténtalo de nuevo."
-            : "No pudimos conectar con SmartPot. Inténtalo de nuevo en unos segundos.");
+            ? t("api.offline")
+            : t("api.unreachable"));
     } finally {
         clearTimeout(timeout);
     }
@@ -106,7 +107,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     }
 
     if (!response.ok) {
-        let message = FALLBACK_MESSAGES[response.status] ?? "Ocurrió un error inesperado.";
+        let message = t(FALLBACK_MESSAGES[response.status] ?? "api.errorUnexpected");
         let fields: Record<string, string> = {};
         try {
             const data = await response.json();

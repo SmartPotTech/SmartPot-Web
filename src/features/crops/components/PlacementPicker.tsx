@@ -2,6 +2,7 @@ import {Home, Trees} from "lucide-solid";
 import {For, Show} from "solid-js";
 import {EXPOSURES, LIGHT_NEEDS, PLACEMENT_SETTINGS} from "../../../lib/catalog";
 import type {CropType, Placement, PlacementSetting, SunExposure} from "../../../lib/api/types";
+import {t} from "../../../lib/i18n";
 import {LocationPicker} from "./LocationPicker";
 
 const SETTING_ICONS: Record<PlacementSetting, typeof Home> = {INDOOR: Home, OUTDOOR: Trees};
@@ -24,7 +25,7 @@ export function PlacementPicker(props: PlacementPickerProps) {
     const need = () => LIGHT_NEEDS[props.type];
     return (
         <div class="space-y-3">
-            <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Dónde está">
+            <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t("placement.where")}>
                 <For each={SETTINGS}>
                     {(option) => {
                         const Icon = SETTING_ICONS[option];
@@ -36,9 +37,9 @@ export function PlacementPicker(props: PlacementPickerProps) {
                                         exposure: props.value.exposure ?? need().exposure,
                                     })}
                                     class={`rounded-xl border p-3 text-left transition-colors ${setting() === option
-                                        ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-white hover:bg-surface"}`}>
+                                        ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
                                 <span class="flex items-center gap-2 text-sm font-semibold">
-                                    <Icon size={16} class="text-leaf-700"/>
+                                    <Icon size={16} class="text-accent"/>
                                     {PLACEMENT_SETTINGS[option].label}
                                 </span>
                                 <span class="mt-0.5 block text-xs text-muted">{PLACEMENT_SETTINGS[option].hint}</span>
@@ -50,7 +51,7 @@ export function PlacementPicker(props: PlacementPickerProps) {
 
             <Show when={setting()}>
                 {(currentSetting) => (
-                    <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Cuánto sol recibe">
+                    <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t("placement.sun")}>
                         <For each={EXPOSURE_ORDER}>
                             {(option) => {
                                 const info = () => EXPOSURES[option][currentSetting()];
@@ -59,11 +60,11 @@ export function PlacementPicker(props: PlacementPickerProps) {
                                     <button type="button" role="radio" aria-checked={props.value.exposure === option}
                                             onClick={() => props.onChange({...props.value, exposure: option})}
                                             class={`rounded-xl border px-3 py-2 text-left transition-colors ${props.value.exposure === option
-                                                ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-white hover:bg-surface"}`}>
+                                                ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
                                         <span class="block text-sm font-semibold">
                                             {info().label}
                                             <Show when={ideal()}>
-                                                <span class="ml-1.5 text-xs text-leaf-700">· ideal</span>
+                                                <span class="ml-1.5 text-xs text-accent">{t("placement.ideal")}</span>
                                             </Show>
                                         </span>
                                         <span class="block text-xs text-muted">{info().hint}</span>
@@ -75,15 +76,14 @@ export function PlacementPicker(props: PlacementPickerProps) {
                 )}
             </Show>
             <p class="text-xs text-muted">
-                {need().note} Puedes ponerlo donde quieras: si el lugar afecta su salud, el asistente te recomendará
-                moverlo.
+                {t("placement.note", {note: need().note})}
             </p>
 
             <div class="space-y-1.5">
-                <p class="text-sm font-semibold">Ubicación <span
-                    class="font-normal text-muted">(opcional)</span></p>
+                <p class="text-sm font-semibold">{t("placement.location")}<span
+                    class="font-normal text-muted">{t("placement.optional")}</span></p>
                 <p class="text-xs text-muted">
-                    Sirve para ilustrarlo con el clima del lugar y para comparar los sensores con el clima de afuera.
+                    {t("placement.locationHint")}
                 </p>
                 <LocationPicker value={props.value.location ?? null}
                                 onChange={(location) => props.onChange({...props.value, location})}/>

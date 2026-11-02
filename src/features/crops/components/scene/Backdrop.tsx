@@ -1,5 +1,7 @@
 import {For, Show} from "solid-js";
 import type {PlacementSetting, SunExposure, WeatherCondition} from "../../../../lib/api/types";
+import {themed} from "../../../../lib/catalog";
+import {resolvedTheme} from "../../../../lib/theme";
 
 export const WIDTH = 360;
 export const HEIGHT = 220;
@@ -112,7 +114,7 @@ function Outdoor(props: { id: string; condition: WeatherCondition; isDay: boolea
                     <rect x="30" y="146" width="300" height="8" rx="4"/>
                 </g>
             </Show>
-            <rect x="0" y={GROUND} width={WIDTH} height={HEIGHT - GROUND} fill="#DDF5EA"/>
+            <rect x="0" y={GROUND} width={WIDTH} height={HEIGHT - GROUND} fill={themed("#DDF5EA", "#12503A")}/>
         </g>
     );
 }
@@ -127,9 +129,9 @@ function Indoor(props: {
     condition?: WeatherCondition | null;
     exposure?: SunExposure | null;
 }) {
-    const wall = () => (props.isDay ? ["#EEFAF4", "#DDF5EA"] : ["#0B3D2B", "#06281C"]);
+    const wall = () => (props.isDay ? (resolvedTheme() === "dark" ? ["#1B5E45", "#12503A"] : ["#EEFAF4", "#DDF5EA"]) : ["#0B3D2B", "#06281C"]);
     const sky = () => skyFor(props.condition ?? "MOSTLY_CLEAR", props.isDay)[0];
-    const frame = () => (props.isDay ? "#D5E3DC" : "#0A5A3C");
+    const frame = () => (props.isDay ? themed("#D5E3DC", "#2E7B5C") : "#0A5A3C");
     const sunny = () => props.isDay && (!props.condition || ["CLEAR", "MOSTLY_CLEAR", "PARTLY_CLOUDY"].includes(props.condition));
     const wet = () => props.condition === "RAIN" || props.condition === "STORM" || props.condition === "DRIZZLE";
     const closed = () => props.exposure === "SHADE";
@@ -167,7 +169,7 @@ function Indoor(props: {
             <Show when={props.exposure === "FULL_SUN" && props.isDay && sunny()}>
                 <polygon data-sunbeam="" points="284,70 344,72 250,200 140,200" fill="#F2B632" opacity="0.14"/>
             </Show>
-            <rect x="0" y={GROUND} width={WIDTH} height={HEIGHT - GROUND} fill={props.isDay ? "#D5E3DC" : "#0A5A3C"}/>
+            <rect x="0" y={GROUND} width={WIDTH} height={HEIGHT - GROUND} fill={props.isDay ? themed("#D5E3DC", "#18523D") : "#0A5A3C"}/>
         </g>
     );
 }

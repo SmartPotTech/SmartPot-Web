@@ -6,8 +6,8 @@ type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
     primary: "bg-leaf-700 text-white hover:bg-leaf-800 disabled:bg-leaf-700/50",
-    secondary: "border border-line bg-white text-ink hover:border-leaf-500 hover:text-leaf-800",
-    ghost: "text-leaf-800 hover:bg-leaf-50",
+    secondary: "border border-line bg-card text-ink hover:border-leaf-500 hover:text-accent-strong",
+    ghost: "text-accent-strong hover:bg-leaf-50",
     danger: "bg-danger-500 text-white hover:bg-danger-600 disabled:bg-danger-500/50",
     /** Sobre fondos verdes oscuros (encabezados de página). */
     light: "border border-white/25 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50",
