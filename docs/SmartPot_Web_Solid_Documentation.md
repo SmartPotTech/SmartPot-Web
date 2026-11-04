@@ -1,79 +1,76 @@
 <!-- portada
-eyebrow: Documentación del componente
-titulo: SmartPot-Web-Solid
-acento: Web-Solid
-subtitulo: La aplicación de nueva generación de SmartPot
-bajada: PWA instalable sobre SolidJS sin Virtual DOM: panel general, gráficos SVG nativos, revalidación condicional por ETag, creación de cultivos reales o virtuales, ilustración reactiva de cada cultivo, asistente de IA, control, aprendizaje, alertas y Telegram.
-documento: SmartPot-Web-Solid
-version: 1.0 · octubre 2026
+eyebrow: Component Documentation · Documentación del componente
+titulo: SmartPot-Web
+acento: Web
+subtitulo: Next-Generation Progressive Web App · Aplicación web progresiva de nueva generación
+bajada: Installable SolidJS PWA without Virtual DOM: overview dashboard, native SVG charts, conditional ETag revalidation, live SSE streaming, real and virtual crops, reactive SVG crop scene, AI assistant, control, continuous learning, alerts, Telegram, MCP connections, dark mode, and full English/Spanish i18n.
+documento: SmartPot-Web
+version: 1.1 · November 2026
 equipo: SmartPotTech
 proyecto: smartpot.app
 -->
 
-# SmartPot-Web-Solid
+# SmartPot-Web
 
-## Ficha del documento
+[English](#1-purpose) | [Español](#9-propósito-español)
 
-| Campo                          | Valor                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Proyecto                       | SmartPot · [smartpot.app](https://smartpot.app)                                                                                                                                                                                                                                                                                                                                                                                                         |
-| Componente                     | [SmartPot-Web-Solid](https://github.com/SmartPotTech/SmartPot-Web-Solid)                                                                                                                                                                                                                                                                                                                                                                                |
-| Versión                        | 1.0 · octubre 2026                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| Alcance                        | Arquitectura reactiva en SolidJS, pantallas, gráficos SVG nativos, creación de cultivos, ilustración del cultivo, sesión sincronizada entre pestañas, caché ETag, identidad visual, seguridad web, configuración y pruebas                                                                                                                                                                                                                               |
-| Documentación de la plataforma | [Documentación de migración](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Migration.md), [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md), [recorrido del proyecto](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Project_Journey.md) y [diagramas generales](https://github.com/SmartPotTech/.github/blob/main/docs/README.md#diagramas-generales) |
-| Mantenimiento                  | Se genera desde `docs/` de este repositorio con las herramientas de `.github/docs/tools`; se actualiza con cada cambio del componente                                                                                                                                                                                                                                                                                                                   |
+<!-- parte: PART I · EN | The Component (English) -->
 
-<!-- parte: PARTE I | El componente -->
+## 1. Purpose
 
-## 1. Propósito
+### Document Sheet
 
-### En palabras simples
+| Field                  | Value                                                                                                                                                                                                                                                                                                        |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Project                | SmartPot · [smartpot.app](https://smartpot.app)                                                                                                                                                                                                                                                              |
+| Component              | [SmartPot-Web](https://github.com/SmartPotTech/SmartPot-Web)                                                                                                                                                                                                                                                 |
+| Version                | 1.1 · November 2026                                                                                                                                                                                                                                                                                          |
+| Scope                  | Reactive SolidJS architecture, screens, native SVG charts, crop creation, live SVG crop scene, cross-tab `HttpOnly` cookie session + CSRF, `ETag` cache, bilingual i18n (`en`/`es`), dark mode, web security, configuration, and tests                                                                     |
+| Platform Documentation | [Migration Documentation](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Migration.md), [Technical Documentation](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md), and [Project Journey](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Project_Journey.md) |
+| Maintenance            | Generated from `docs/` in this repository using `.github/docs/tools`; updated alongside component changes                                                                                                                                                                                                    |
 
-SmartPot-Web-Solid es la nueva generación de la aplicación web progresiva (PWA) de SmartPot, reescrita en **SolidJS +
-TypeScript + Vite** para sustituir a la versión en React dentro del proceso de migración de la plataforma (`demo-beta`).
-Conserva idéntica toda la experiencia funcional y visual: muestra cada cultivo en vivo, lo compara con el rango ideal de
-su especie, deja crear cultivos reales o virtuales, dar órdenes a los actuadores y ver qué piensa y qué aprende el
-asistente, reduciendo el peso del paquete y el trabajo del navegador mediante reactividad de grano fino sin Virtual DOM,
-gráficos SVG nativos y revalidación condicional por `ETag`.
+### In Plain Terms
 
-| Pantalla                      | Qué permite                                                                                                                                                                                                                                     |
-|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Inicio público                | Presentación, funciones, especies y preguntas frecuentes; indexable                                                                                                                                                                             |
-| Panel general                 | Salud de cada cultivo, comparación de una variable en SVG nativo, últimas lecturas y análisis de la IA de toda la cuenta                                                                                                                        |
-| Mis cultivos                  | Tarjetas con tipo, especie, forma, estado y salud; asistente de creación                                                                                                                                                                        |
-| Detalle                       | La ilustración del cultivo en su lugar sobre todas las secciones: resumen, asistente IA con el consejo de lugar, control con switches, historial, dispositivo (reales) o simulación (virtuales) y ajustes con el lugar y los avisos del cultivo |
-| Control general y acciones    | Modo automático y órdenes en bloque; sugerencias e historial de órdenes                                                                                                                                                                         |
-| Aprendizaje, alertas y perfil | Lo que aprende la IA, notificaciones, Aplicaciones (Telegram), datos y contraseña                                                                                                                                                               |
+`SmartPot-Web` is the Progressive Web Application (PWA) of SmartPot, built with **SolidJS + TypeScript + Vite**. It displays every crop live, compares sensor readings against the ideal range for its species, lets users create real or virtual crops, send actuator commands, and inspect what the AI assistant diagnoses and learns, while minimizing bundle size and browser work via fine-grained reactivity without a Virtual DOM, native SVG charts, live SSE streaming with LTTB downsampling, conditional `ETag` revalidation, dark mode, and full bilingual support (**English and Spanish**).
 
-## 2. Arquitectura del componente
+| Screen                        | Capabilities                                                                                                                                                                           |
+|-------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Public Landing                | Product overview, features, supported species, and FAQ; search-engine indexable                                                                                                        |
+| Overview Dashboard            | Health ranking of every crop, single-metric comparison in native SVG, latest readings table, and AI fleet analysis across the account                                                  |
+| My Crops                      | Crop cards with kind, species, form, device status, and health; step-by-step creation wizard                                                                                           |
+| Crop Detail                   | Live SVG illustration of the crop in its placement above all tabs: summary, AI assistant with placement advice, switch controls, history, device (real) or simulation (virtual), settings |
+| General Control & Actions     | Automatic mode and bulk commands; AI-suggested fleet actions and command history                                                                                                       |
+| Learning, Alerts & Profile    | Continuous AI learning metrics, notifications, Applications (Telegram), personal MCP connections (`spt_...`), profile data, and password                                               |
 
-<!-- diagrama: SmartPot_Web_Solid_Global_Component | titulo=SmartPot-Web-Solid por dentro | lamina=H -->
+## 2. Component Architecture
+
+<!-- diagrama: SmartPot_Web_Solid_Global_Component | titulo=SmartPot-Web Internal Architecture | lamina=H -->
 
 ```mermaid
 %%{init: {"theme": "base", "fontFamily": "Segoe UI, Arial, sans-serif", "themeVariables": {"fontFamily": "Segoe UI, Arial, sans-serif", "fontSize": "15px", "primaryColor": "#DDF5EA", "primaryTextColor": "#17261F", "primaryBorderColor": "#067A52", "secondaryColor": "#E3F2FB", "secondaryTextColor": "#17261F", "secondaryBorderColor": "#1F6FA0", "tertiaryColor": "#F2F7F4", "tertiaryTextColor": "#17261F", "tertiaryBorderColor": "#D5E3DC", "lineColor": "#5B6B63", "textColor": "#17261F", "mainBkg": "#DDF5EA", "nodeBorder": "#067A52", "clusterBkg": "#F7FAF8", "clusterBorder": "#D5E3DC", "edgeLabelBackground": "#FFFFFF", "actorBkg": "#067A52", "actorBorder": "#0B3D2B", "actorTextColor": "#FFFFFF", "actorLineColor": "#5B6B63", "signalColor": "#17261F", "signalTextColor": "#17261F", "labelBoxBkgColor": "#0B3D2B", "labelBoxBorderColor": "#0B3D2B", "labelTextColor": "#FFFFFF", "loopTextColor": "#0B3D2B", "noteBkgColor": "#FDF4DD", "noteBorderColor": "#C98D12", "noteTextColor": "#17261F", "activationBkgColor": "#DDF5EA", "activationBorderColor": "#067A52", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F2F7F4"}, "layout": "elk", "elk": {"nodePlacementStrategy": "BRANDES_KOEPF", "mergeEdges": false, "cycleBreakingStrategy": "GREEDY"}}}%%
 flowchart LR
-  person(["Persona<br/>navegador o PWA instalada"])
-  subgraph imagen["Imagen smartpot-web-solid · nginx sin privilegios"]
+  person(["Person<br/>browser or installed PWA"])
+  subgraph imagen["Image smartpot-web · unprivileged nginx"]
     direction TB
-    nginx["nginx<br/>CSP · CORP · X-Frame-Options · Permissions-Policy<br/>API_URL → /config.js y connect-src"]
-    sw["sw.js<br/>app shell y recursos con hash<br/>la API nunca en caché"]
+    nginx["nginx<br/>CSP · CORP · X-Frame-Options · Permissions-Policy<br/>API_URL → /config.js and connect-src"]
+    sw["sw.js<br/>cached app shell and hashed assets<br/>API always from network"]
   end
-  subgraph app["src · SolidJS + TypeScript (sin Virtual DOM)"]
+  subgraph app["src · SolidJS + TypeScript (no Virtual DOM)"]
     direction TB
-    router["app · @solidjs/router<br/>landing pública · /app protegida"]
-    auth["features/auth<br/>sesión sincronizada entre pestañas · ingreso · registro"]
-    overview["features/overview · control · actions<br/>panel general · comparativas SVG nativas · órdenes en bloque"]
+    router["app · @solidjs/router<br/>public landing · protected /app"]
+    auth["features/auth<br/>cross-tab HttpOnly session · login · register"]
+    overview["features/overview · control · actions<br/>overview dashboard · native SVG charts · bulk commands"]
     crops["features/crops<br/>CreateCropDialog · CropHero · CropScene<br/>ReadingsChart SVG · SimulationPanel · DevicePanel"]
-    learning["features/learning · notifications · profile<br/>aprendizaje · alertas · Telegram"]
-    landing["features/landing · pwa<br/>FAQ · instalación"]
-    lib["lib<br/>api/client con ETag 304 · services · types<br/>catalog · format"]
+    learning["features/learning · notifications · profile<br/>learning · alerts · Telegram · MCP"]
+    landing["features/landing · pwa<br/>FAQ · install"]
+    lib["lib<br/>api/client with ETag 304 & CSRF · services · types<br/>catalog · format · theme · i18n (es/en)"]
   end
-  api["SmartPot-API-Go<br/>/api/v1"]
+  api["SmartPot-API<br/>/api/v1"]
   person --> nginx --> router
   sw -.-> router
   router --> auth & overview & crops & learning & landing
   auth & overview & crops & learning --> lib
-  lib -->|"fetch + Bearer JWT + If-None-Match"| api
+  lib -->|"fetch + credentials + X-CSRF-Token + If-None-Match"| api
   classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
   classDef water fill:#E3F2FB,stroke:#1F6FA0,color:#17261F
   classDef sun fill:#FDF4DD,stroke:#C98D12,color:#17261F
@@ -88,14 +85,96 @@ flowchart LR
   class lib muted
 ```
 
-Cada función vive en `src/features/<función>` con sus páginas, componentes y pruebas. `lib/api` es el único lugar que
-habla con la API: arma las peticiones con el token, gestiona la caché condicional por `ETag`, traduce los errores a
-`ApiError` en español y declara los tipos de cada respuesta. `useResource` carga y refresca las señales de SolidJS
-mientras la pestaña está visible.
+Each domain feature lives in `src/features/<feature>` with its pages, components, and tests. `lib/api` is the single gateway to the API: it sends requests with `credentials: "include"` and `X-CSRF-Token`, manages the conditional `ETag` cache, maps errors to localized `ApiError` instances (`en`/`es`), and declares response types. `useResource` loads and refreshes SolidJS signals while the tab is visible.
 
-<!-- parte: PARTE II | Cultivos -->
+<!-- parte: PART II · EN | Crops & Live Scene (English) -->
 
-## 3. Crear un cultivo
+## 3. Creating a Crop
+
+| Decision   | Detail                                                                                                                                                             |
+|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Kind       | Real (an ESP32 running the firmware, physical or in Wokwi) or Virtual (simulated by SmartPot). Cannot be changed later; Settings explains how to create another    |
+| Form       | Pot, NFT tubes, vertical tower, or floating raft; can be changed in Settings and updates the live illustration                                                     |
+| Placement  | Indoor or outdoor, sun exposure, and city/coordinates; editable in Settings                                                                                        |
+| Preview    | Live SVG crop scene with the selected species, form, and initial actuators                                                                                         |
+| Real       | Displays the device key once along with the wiring guide, firmware repository, and ready-to-copy `config.py` with WiFi and embedded Broker CA (`/ca.crt`)          |
+| Virtual    | Day/night cycle, real local weather, or manual sliders; opens the crop with full simulation controls in the Simulation tab                                         |
+
+## 4. Reactive Crop Illustration and Native SVG Charts
+
+| Element            | Visual Representation                                                                                                                                                    |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Pot                | Reservoir with water pump, drip tube feeding the substrate, and nutrient/pH dosers on the lid                                                                            |
+| NFT Tubes          | Three channels with four plants each, inlet manifold, and return line; nutrient film flows when the pump is active                                                       |
+| Vertical Tower     | Column with staggered pockets; pump lifts the solution and droplets cascade inside                                                                                       |
+| Floating Raft      | Deep-water basin with floating raft, submerged roots, and rising air-stone bubbles                                                                                       |
+| UV Grow Light      | Overhead LED bar; illuminates the canopy when active                                                                                                                     |
+| Fan & Humidifier   | Spinning blades with airflow lines; rising mist plume                                                                                                                    |
+| Plants             | Species-accurate geometry (rosette lettuce, broadleaf spinach, paired basil leaves, staked tomato with flowers/fruit, strawberry, bell pepper) colored by health vigor   |
+
+## 5. Session, Conditional ETag Cache, Internationalization, and Security
+
+| Control               | Detail                                                                                                                                                                 |
+|-----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CSP & CORP            | `script-src 'self'`, `style-src 'self'`, `connect-src` restricted to the API, and `Cross-Origin-Resource-Policy: same-origin`                                          |
+| Security Headers      | `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy`, and `Permissions-Policy` (geolocation restricted to same-origin and explicit user action)                       |
+| `ETag` Revalidation   | Client sends `If-None-Match` on `GET` requests; `SmartPot-API` replies `304 Not Modified` when unchanged and invalidates cache on any write                            |
+| Session & CSRF        | `HttpOnly` cookie (`smartpot_session`) + signed double-submit CSRF token (`smartpot_csrf` / `X-CSRF-Token`), synchronized across tabs via `BroadcastChannel`           |
+| Bilingual (`en`/`es`) | Reactive dictionary (`src/lib/i18n/en.ts`, `es.ts`) and dynamic API/AI message translation (`serverText.ts`) so the entire UI switches languages instantaneously       |
+| Device Key            | Displayed only once upon real crop creation or key rotation                                                                                                            |
+
+## 6. Configuration
+
+| Variable       | Location              | Purpose                                                                                             |
+|----------------|-----------------------|-----------------------------------------------------------------------------------------------------|
+| `VITE_API_URL` | `.env` in development | Target API URL for `bun run dev`                                                                    |
+| `API_URL`      | Container runtime     | Injected at startup into `/config.js` and the Nginx CSP header so a single image runs in any env    |
+| `MCP_URL`      | Container runtime     | Optional public URL of `SmartPot-MCP` shown when generating MCP client snippets in Profile          |
+
+## 7. Testing
+
+Run `bun run lint`, `bun run typecheck`, `bun run test`, and `bun run build`. The Vitest and `@solidjs/testing-library` suite covers the HTTP client, `ETag` revalidation (`304 Not Modified`), `HttpOnly` session and CSRF flow, form validations, login, crop components, actuator switches, AI insights, continuous learning, Telegram channels, MCP connections, live SVG scenes, dark mode, `es`/`en` internationalization, and SEO/PWA compliance.
+
+## 8. Operations
+
+| Task          | Command / Mechanism                                                                                      |
+|---------------|----------------------------------------------------------------------------------------------------------|
+| Docker Image  | `ghcr.io/smartpottech/smartpot-web`: compiled with Bun Alpine and served by unprivileged Nginx           |
+| `demo-beta`   | Runs as `web-smartpot` in `.github/docker/demo-beta/compose.yaml`                                        |
+| Icons         | `bun run icons` regenerates all PWA PNG icons and Open Graph images from SVG sources                     |
+| Browser Cache | Service worker version bump replaces the cached app shell on reload                                      |
+
+<!-- parte: PARTE I · ES | El Componente (Español) -->
+
+## 9. Propósito (Español)
+
+### Ficha del documento
+
+| Campo                          | Valor                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Proyecto                       | SmartPot · [smartpot.app](https://smartpot.app)                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Componente                     | [SmartPot-Web](https://github.com/SmartPotTech/SmartPot-Web)                                                                                                                                                                                                                                                                                                                                                                                            |
+| Versión                        | 1.1 · noviembre 2026                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Alcance                        | Arquitectura reactiva en SolidJS, pantallas, gráficos SVG nativos, creación de cultivos, ilustración del cultivo, sesión `HttpOnly` + CSRF sincronizada entre pestañas, caché ETag, soporte bilingüe (`es`/`en`), modo oscuro, identidad visual, seguridad web, configuración y pruebas                                                                                                                                                               |
+| Documentación de la plataforma | [Documentación de migración](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Migration.md), [documentación técnica](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Technical_Documentation.md), [recorrido del proyecto](https://github.com/SmartPotTech/.github/blob/main/docs/SmartPot_Project_Journey.md) y [diagramas generales](https://github.com/SmartPotTech/.github/blob/main/docs/README.md#diagramas-generales) |
+| Mantenimiento                  | Se genera desde `docs/` de este repositorio con las herramientas de `.github/docs/tools`; se actualiza con cada cambio del componente                                                                                                                                                                                                                                                                                                                   |
+
+### En palabras simples
+
+`SmartPot-Web` es la aplicación web progresiva (PWA) de SmartPot, construida en **SolidJS + TypeScript + Vite**. Muestra cada cultivo en vivo, lo compara con el rango ideal de su especie, permite crear cultivos reales o virtuales, dar órdenes a los actuadores y ver qué diagnostica y qué aprende el asistente de IA, reduciendo el peso del paquete y el trabajo del navegador mediante reactividad de grano fino sin Virtual DOM, gráficos SVG nativos, flujo en vivo por SSE con reducción LTTB, revalidación condicional por `ETag`, modo oscuro y soporte bilingüe completo (**español e inglés**).
+
+| Pantalla                      | Qué permite                                                                                                                                                                                                                                     |
+|-------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Inicio público                | Presentación, funciones, especies y preguntas frecuentes; indexable                                                                                                                                                                             |
+| Panel general                 | Salud de cada cultivo, comparación de una variable en SVG nativo, últimas lecturas y análisis de la IA de toda la cuenta                                                                                                                        |
+| Mis cultivos                  | Tarjetas con tipo, especie, forma, estado y salud; asistente de creación                                                                                                                                                                        |
+| Detalle                       | La ilustración del cultivo en su lugar sobre todas las secciones: resumen, asistente IA con el consejo de lugar, control con switches, historial, dispositivo (reales) o simulación (virtuales) y ajustes con el lugar y los avisos del cultivo |
+| Control general y acciones    | Modo automático y órdenes en bloque; sugerencias e historial de órdenes                                                                                                                                                                         |
+| Aprendizaje, alertas y perfil | Lo que aprende la IA, notificaciones, Aplicaciones (Telegram), Conexiones MCP (`spt_...`), datos y contraseña                                                                                                                                   |
+
+<!-- parte: PARTE II · ES | Cultivos e Ilustración (Español) -->
+
+## 10. Crear un cultivo
 
 <!-- diagrama: SmartPot_Web_Solid_01_Crop_Creation_Flow | titulo=Asistente para crear un cultivo -->
 
@@ -136,7 +215,7 @@ flowchart TB
 | Real         | Muestra la clave una sola vez y la guía: circuito y pines, firmware y `config.py` con la red WiFi y la CA del broker (que toma de `/ca.crt`), o el proyecto de Wokwi con la red `Wokwi-GUEST` |
 | Virtual      | Día y noche, clima real (buscador de lugares o ubicación del dispositivo) o manual; abre el cultivo y su configuración queda en la pestaña Simulación                                         |
 
-## 4. Ilustración reactiva del cultivo y gráficos SVG nativos
+## 11. Ilustración reactiva del cultivo y gráficos SVG nativos
 
 <!-- diagrama: SmartPot_Web_Solid_02_Live_Scene | titulo=Cómo se dibuja la ilustración reactiva del cultivo | lamina=H -->
 
@@ -197,26 +276,20 @@ flowchart LR
 | Ventilador y humidificador | Aspas que giran con corriente de aire; bruma que sube                                                                                                                                                                                                                                 |
 | Plantas                    | La especie tal como es: lechuga en roseta, espinaca de hoja ancha, albahaca de hojas pareadas, tomate con tutor, flores y frutos rojos, fresa con flor blanca y frutos, pimentón rojo y amarillo; las hojas con el color de su salud: verde sano, amarillento en riesgo, ocre crítico |
 
-Gracias a las señales de SolidJS (`createSignal`, `createMemo`), la escena SVG (`CropScene`) y los gráficos de series
-temporales (`ReadingsChart` y `MetricComparison`) actualizan únicamente los atributos y nodos que cambian en cada
-lectura o cuenta regresiva, sin Virtual DOM ni dependencias de gráficos externas.
+<!-- parte: PARTE III · ES | Operación (Español) -->
 
-<!-- parte: PARTE III | Operación -->
-
-## 5. Sesión, caché condicional ETag y seguridad
+## 12. Sesión, caché condicional ETag, internacionalización y seguridad
 
 <!-- diagrama: SmartPot_Web_Solid_03_Session_And_Cache | titulo=Sesión sincronizada y caché condicional ETag -->
 
 ```mermaid
 %%{init: {"theme": "base", "fontFamily": "Segoe UI, Arial, sans-serif", "themeVariables": {"fontFamily": "Segoe UI, Arial, sans-serif", "fontSize": "15px", "primaryColor": "#DDF5EA", "primaryTextColor": "#17261F", "primaryBorderColor": "#067A52", "secondaryColor": "#E3F2FB", "secondaryTextColor": "#17261F", "secondaryBorderColor": "#1F6FA0", "tertiaryColor": "#F2F7F4", "tertiaryTextColor": "#17261F", "tertiaryBorderColor": "#D5E3DC", "lineColor": "#5B6B63", "textColor": "#17261F", "mainBkg": "#DDF5EA", "nodeBorder": "#067A52", "clusterBkg": "#F7FAF8", "clusterBorder": "#D5E3DC", "edgeLabelBackground": "#FFFFFF", "actorBkg": "#067A52", "actorBorder": "#0B3D2B", "actorTextColor": "#FFFFFF", "actorLineColor": "#5B6B63", "signalColor": "#17261F", "signalTextColor": "#17261F", "labelBoxBkgColor": "#0B3D2B", "labelBoxBorderColor": "#0B3D2B", "labelTextColor": "#FFFFFF", "loopTextColor": "#0B3D2B", "noteBkgColor": "#FDF4DD", "noteBorderColor": "#C98D12", "noteTextColor": "#17261F", "activationBkgColor": "#DDF5EA", "activationBorderColor": "#067A52", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F2F7F4"}}}%%
 flowchart TB
-  login(["Ingreso"]) --> keep{"¿Mantener sesión iniciada?"}
-  keep -->|"Sí"| local["JWT en localStorage<br/>sincronizado entre pestañas (storage)"]
-  keep -->|"No"| session["JWT en sessionStorage"]
-  local & session --> request["lib/api/client<br/>Authorization: Bearer + If-None-Match"]
+  login(["Ingreso"]) --> cookie["Cookie HttpOnly smartpot_session<br/>+ smartpot_csrf sincronizada con BroadcastChannel"]
+  cookie --> request["lib/api/client<br/>credentials: include + X-CSRF-Token + If-None-Match"]
   request --> resp{"Respuesta de la API"}
   resp -->|"401"| logout["Limpia caché ETag, cierra la sesión<br/>en todas las pestañas y vuelve al ingreso"]
-  resp -->|"4xx y 5xx"| error["ApiError con el mensaje en español"]
+  resp -->|"4xx y 5xx"| error["ApiError traducido al idioma activo (es/en)"]
   resp -->|"304 Not Modified"| cached["Reutiliza la respuesta en memoria<br/>sin transferir ni parsear JSON"]
   resp -->|"2xx"| data["Guarda ETag y actualiza las señales"]
   cached --> data
@@ -234,43 +307,28 @@ flowchart TB
   classDef deep fill:#0B3D2B,stroke:#06281C,color:#FFFFFF
   classDef muted fill:#F2F7F4,stroke:#5B6B63,color:#17261F
   class login,data core
-  class keep,resp sun
-  class local,session,request,cached leaf
+  class resp sun
+  class cookie,request,cached leaf
   class logout,error clay
   class shell,net water
 ```
 
-| Control                 | Detalle                                                                                                                                                                             |
-|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| CSP y CORP              | `script-src 'self'`, `style-src 'self'`, `connect-src` limitado a la API y `Cross-Origin-Resource-Policy: same-origin`                                                              |
-| Cabeceras               | `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy` (geolocalización solo del propio sitio y solo cuando la persona la pide)                               |
-| Revalidación `ETag`     | El cliente envía `If-None-Match` en lecturas `GET`; `SmartPot-API-Go` responde `304 Not Modified` sin cuerpo cuando los datos no cambiaron, e invalida la caché tras cualquier cambio |
-| Sesión multipestaña     | JWT en `sessionStorage`, o en `localStorage` con «Mantener sesión iniciada»; los cambios de sesión se propagan entre pestañas mediante `window.addEventListener("storage")`         |
-| Clave del dispositivo   | Solo se muestra al crear un cultivo real o al rotarla                                                                                                                               |
-| SEO                     | Metadatos, Open Graph, JSON-LD (`Organization`, `WebSite`, `SoftwareApplication`, `FAQPage`), `robots.txt` y `sitemap.xml`; `/app` no se indexa                                     |
+| Control                 | Detalle                                                                                                                                                                            |
+|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CSP y CORP              | `script-src 'self'`, `style-src 'self'`, `connect-src` limitado a la API y `Cross-Origin-Resource-Policy: same-origin`                                                             |
+| Cabeceras               | `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` y `Permissions-Policy` (geolocalización solo del propio sitio y solo cuando la persona la pide)                              |
+| Revalidación `ETag`     | El cliente envía `If-None-Match` en lecturas `GET`; `SmartPot-API` responde `304 Not Modified` sin cuerpo cuando los datos no cambiaron, e invalida la caché tras cualquier cambio |
+| Sesión multipestaña     | Cookie `HttpOnly` (`smartpot_session`) + protección CSRF (`smartpot_csrf` / `X-CSRF-Token`); los cambios de sesión se propagan entre pestañas con `BroadcastChannel`               |
+| Bilingüe (`es`/`en`)    | Diccionarios reactivos (`src/lib/i18n/es.ts`, `en.ts`) y traducción de mensajes de API e IA (`serverText.ts`) para alternar el idioma completo al instante                         |
+| Clave del dispositivo   | Solo se muestra al crear un cultivo real o al rotarla                                                                                                                              |
+| SEO                     | Metadatos, Open Graph, JSON-LD (`Organization`, `WebSite`, `SoftwareApplication`, `FAQPage`), `robots.txt` y `sitemap.xml`; `/app` no se indexa                                    |
 
-## 6. Configuración
+## 13. Configuración, Pruebas y Operación
 
 | Variable       | Dónde                | Uso                                                                                              |
 |----------------|----------------------|--------------------------------------------------------------------------------------------------|
 | `VITE_API_URL` | `.env` en desarrollo | URL de la API para `bun run dev`                                                                 |
 | `API_URL`      | Contenedor           | Se escribe al arrancar en `/config.js` y en la CSP: la misma imagen sirve para cualquier entorno |
+| `MCP_URL`      | Contenedor           | URL pública opcional de `SmartPot-MCP` mostrada al generar la configuración en Perfil            |
 
-## 7. Pruebas
-
-`bun run lint`, `bun run typecheck`, `bun run test` y `bun run build`. Las 66 pruebas de Vitest y `@solidjs/testing-library` cubren
-el cliente HTTP, la revalidación condicional por `ETag` (`304 Not Modified`) y sus errores, la sesión, las validaciones,
-el ingreso, los componentes del cultivo, los switches, el asistente con pronóstico, consejo de lugar y lo aprendido, la
-comparación de modelos, Aplicaciones y avisos por cultivo, el panel general, la ilustración del cultivo (formas,
-especies, lugar, actuadores, clima y conexión), la Simulación en dos partes, la creación real o virtual, la guía de
-conexión con la CA y los requisitos de SEO y PWA.
-
-## 8. Operación
-
-| Tarea               | Cómo                                                                                                    |
-|---------------------|---------------------------------------------------------------------------------------------------------|
-| Imagen              | `ghcr.io/smartpottech/smartpot-web-solid`: compilada con Bun Alpine y servida con nginx sin privilegios  |
-| Entorno `demo-beta` | Sustituye a `smartpot-web` en `.github/docker/demo-beta/compose.yaml` y `compose.build.yaml`            |
-| Íconos              | `bun run icons` regenera los PNG de la PWA desde los SVG                                                |
-| Servidor Bun        | `bun run start` ejecuta el servidor nativo con balanceo `SO_REUSEPORT` y despacho Brotli/Gzip          |
-| Caché del navegador | Una versión nueva del service worker reemplaza el app shell al recargar                                 |
+`bun run lint`, `bun run typecheck`, `bun run test` y `bun run build` validan todo el componente. La imagen pública `ghcr.io/smartpottech/smartpot-web` se compila con Bun Alpine y se sirve con nginx sin privilegios.

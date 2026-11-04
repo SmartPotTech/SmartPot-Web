@@ -5,7 +5,7 @@ import zlib from 'node:zlib';
 const distDir = path.resolve('dist');
 
 if (!fs.existsSync(distDir)) {
-  console.log('Directorio dist/ no encontrado, omitiendo pre-compresión.');
+  console.log('Directory dist/ not found, skipping pre-compression.');
   process.exit(0);
 }
 
@@ -39,4 +39,4 @@ function compressDirectory(dir) {
 }
 
 compressDirectory(distDir);
-console.log('Pre-compresión estática (Gzip nivel 9 y Brotli calidad 11) completada con éxito.');
+console.log('Static pre-compression (Gzip level 9 and Brotli quality 11) completed successfully.');
