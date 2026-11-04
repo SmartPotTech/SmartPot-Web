@@ -11,7 +11,7 @@ import type {
     PlacementSetting,
     SunExposure,
 } from "./api/types";
-import {locale, t, type TranslationKey} from "./i18n";
+import {t, type TranslationKey} from "./i18n";
 import {resolvedTheme} from "./theme";
 
 /** Objeto cuyos textos se traducen al leerlos: dentro de JSX o de un efecto siguen al idioma activo. */
@@ -224,9 +224,9 @@ const health = (level: HealthLevel, tone: Tone, light: string, dark: string): { 
         {get: () => themed(light, dark), enumerable: true},
     ) as { label: string; tone: Tone; color: string };
 
-/** El índice trae su etiqueta del servidor (en español); en otros idiomas se usa la del nivel. */
-export function healthLabel(value: { level: HealthLevel; label: string }): string {
-    return locale() === "es" ? value.label : (HEALTH[value.level]?.label ?? value.label);
+/** Devuelve la etiqueta localizada del nivel de salud del cultivo. */
+export function healthLabel(value: { level: HealthLevel; label?: string }): string {
+    return HEALTH[value.level]?.label ?? value.label ?? "";
 }
 
 export const HEALTH: Record<HealthLevel, { label: string; tone: Tone; color: string }> = {

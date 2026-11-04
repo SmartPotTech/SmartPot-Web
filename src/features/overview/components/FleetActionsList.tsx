@@ -4,6 +4,7 @@ import {Button} from "../../../components/ui/Button";
 import {Alert} from "../../../components/ui/Feedback";
 import {describeAction} from "../../../lib/format";
 import {t} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 import type {Crop, FleetAction} from "../../../lib/api/types";
 import {BulkResultList} from "../../control/BulkResultList";
 import {useBulkCommand} from "../../control/useBulkCommand";
@@ -38,7 +39,7 @@ export function FleetActionsList(props: FleetActionsListProps) {
                                 <li class="flex flex-wrap items-center justify-between gap-3 py-3">
                                     <div class="min-w-0">
                                         <p class="font-medium">{describeAction(action.actuator, action.action, action.durationSeconds)}</p>
-                                        <p class="text-sm text-muted">{action.reason}</p>
+                                        <p class="text-sm text-muted">{st(action.reason)}</p>
                                         <p class="mt-0.5 text-xs text-accent">{names(action.cropIds)}</p>
                                     </div>
                                     <Button size="sm" icon={<Play size={14}/>} loading={bulk.sending === key}

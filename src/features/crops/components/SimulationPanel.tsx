@@ -16,6 +16,7 @@ import type {
     VirtualMode,
 } from "../../../lib/api/types";
 import {t, type TranslationKey} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 import {LocationPicker, type PickedLocation} from "./LocationPicker";
 
 const MODES: { id: VirtualMode; label: TranslationKey; hint: TranslationKey; icon: typeof CloudSun }[] = [
@@ -166,7 +167,7 @@ export function SimulationPanel(props: SimulationPanelProps) {
                                     time: timeAgo(props.simulation.lastPublishedAt),
                                     seconds: props.simulation.intervalSeconds ?? 30,
                                 })}
-                                {props.simulation.lastCommand && t("sim.lastCommand", {message: props.simulation.lastCommand.message})}
+                                {props.simulation.lastCommand && t("sim.lastCommand", {message: st(props.simulation.lastCommand.message)})}
                             </Show>
                         </p>
                     </div>

@@ -2,6 +2,7 @@ import {CheckCircle2, CircleSlash, XCircle} from "lucide-solid";
 import {For} from "solid-js";
 import type {BulkCommandResult} from "../../lib/api/types";
 import {t} from "../../lib/i18n";
+import {st} from "../../lib/i18n/serverText";
 
 /** Resultado de una orden en bloque, cultivo por cultivo. */
 export function BulkResultList(props: { result: BulkCommandResult }) {
@@ -26,7 +27,7 @@ export function BulkResultList(props: { result: BulkCommandResult }) {
                                 <span class="text-muted">
                                     {" · "}
                                     {item.status === "SENT" ? t("bulk.itemSent") : item.status === "SKIPPED" ? t("bulk.itemSkipped") : t("bulk.itemFailed")}
-                                    {item.message ? `: ${item.message}` : ""}
+                                    {item.message ? `: ${st(item.message)}` : ""}
                                 </span>
                             </span>
                         </li>

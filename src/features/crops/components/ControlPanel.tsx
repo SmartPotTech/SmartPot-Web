@@ -10,6 +10,7 @@ import {ACTUATORS, COMMAND_STATUS} from "../../../lib/catalog";
 import {describeAction, formatDateTime, formatDuration, timeAgo} from "../../../lib/format";
 import type {Actuator, ActuatorType, Command, CommandAction, Crop} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 import {pendingCommands, runningActuators} from "../live";
 
 interface ControlPanelProps {
@@ -210,7 +211,7 @@ export function ControlPanel(props: ControlPanelProps) {
                                     </p>
                                     <p class="text-xs text-muted">
                                         {command.source === "AGENT" ? t("control.sourceAgent") : t("control.sourceYou")} · {formatDateTime(command.createdAt)}
-                                        {command.message ? ` · ${command.message}` : ""}
+                                        {command.message ? ` · ${st(command.message)}` : ""}
                                     </p>
                                 </div>
                                 <Badge

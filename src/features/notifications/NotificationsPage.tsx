@@ -9,6 +9,7 @@ import {useResource} from "../../hooks/useResource";
 import {notificationApi} from "../../lib/api/services";
 import {formatDateTime} from "../../lib/format";
 import {t} from "../../lib/i18n";
+import {st} from "../../lib/i18n/serverText";
 import type {AppNotification} from "../../lib/api/types";
 
 const ICONS: Record<AppNotification["type"], typeof Bell> = {
@@ -60,8 +61,8 @@ export function NotificationsPage() {
                                             <Icon size={18}/>
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <p class="font-semibold">{item.title}</p>
-                                            <p class="text-sm text-muted">{item.message}</p>
+                                            <p class="font-semibold">{st(item.title)}</p>
+                                            <p class="text-sm text-muted">{st(item.message)}</p>
                                             <div class="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
                                                 <span>{formatDateTime(item.createdAt)}</span>
                                                 <Show when={item.cropId}>

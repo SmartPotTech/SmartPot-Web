@@ -6,6 +6,7 @@ import {useResource} from "../../../hooks/useResource";
 import {overviewApi} from "../../../lib/api/services";
 import type {Crop} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 import {FleetActionsList} from "./FleetActionsList";
 
 /** Lo que el asistente ve al mirar todos los cultivos juntos. */
@@ -21,7 +22,7 @@ export function FleetPanel(props: { crops: Crop[] }) {
                         <Sparkles size={18} class="text-accent"/> {t("fleet.title")}
                     </h2>
                     <p class="mt-1 text-sm leading-snug text-ink">
-                        {fleet.data?.summary ?? (fleet.loading ? t("fleet.analyzing") : "")}
+                        {st(fleet.data?.summary) || (fleet.loading ? t("fleet.analyzing") : "")}
                     </p>
                 </div>
                 <Button variant="ghost" size="sm" icon={<RefreshCw size={14}/>} loading={fleet.loading}
@@ -45,7 +46,7 @@ export function FleetPanel(props: { crops: Crop[] }) {
                                         <For each={data().sharedIssues}>
                                             {(issue) => (
                                                 <li class="rounded-xl bg-sun-100 p-3 text-sm text-ink">
-                                                    {issue.message}
+                                                    {st(issue.message)}
                                                     <span
                                                         class="mt-1 block text-xs text-muted">{names(issue.cropIds).join(", ")}</span>
                                                 </li>
@@ -64,8 +65,8 @@ export function FleetPanel(props: { crops: Crop[] }) {
                                         <For each={data().groups}>
                                             {(group) => (
                                                 <li class="rounded-xl border border-line p-3">
-                                                    <p class="text-sm font-semibold">{group.label}</p>
-                                                    <p class="text-xs text-muted">{group.description}</p>
+                                                    <p class="text-sm font-semibold">{st(group.label)}</p>
+                                                    <p class="text-xs text-muted">{st(group.description)}</p>
                                                     <div class="mt-2 flex flex-wrap gap-1">
                                                         <For each={names(group.cropIds)}>
                                                             {(name) => (

@@ -16,6 +16,7 @@ import {describePlacement, healthLabel, METRICS} from "../../../lib/catalog";
 import {describeAction, formatHoursAhead, formatMetric, timeAgo} from "../../../lib/format";
 import {ApiError} from "../../../lib/api/client";
 import {t, type TranslationKey} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 import type {Actuator, Insight, PlacementAdvice} from "../../../lib/api/types";
 import {HealthGauge} from "./HealthGauge";
 import {LearningCard} from "./LearningCard";
@@ -43,8 +44,8 @@ function PlacementCard(props: { advice: PlacementAdvice; onOpenTab?: (tab: strin
     return (
         <section class={`rounded-2xl border p-5 ${PLACEMENT_TONE[props.advice.level]}`} aria-label={t("insight.placementLabel")}>
             <p class="flex items-center gap-2 text-sm font-semibold text-accent-strong"><MapPinned
-                size={16}/> {props.advice.title}</p>
-            <p class="mt-1 text-sm">{props.advice.message}</p>
+                size={16}/> {st(props.advice.title)}</p>
+            <p class="mt-1 text-sm">{st(props.advice.message)}</p>
             <div class="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
                 <Show when={props.advice.level !== "OK" && ideal()}>
                     <span>{t("insight.idealPlace", {place: ideal() ?? ""})}</span>
@@ -92,7 +93,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                 <div>
                                     <p class="flex items-center gap-2 text-sm font-semibold text-accent"><Sparkles
                                         size={16}/> {t("insight.summary")}</p>
-                                    <p class="mt-2 text-lg leading-snug">{insight().summary}</p>
+                                    <p class="mt-2 text-lg leading-snug">{st(insight().summary)}</p>
                                     <div class="mt-3 flex items-center gap-3 text-xs text-muted">
                                         <span>{t("insight.evaluated", {time: timeAgo(insight().evaluatedAt)})}</span>
                                         <Button variant="ghost" size="sm" onClick={props.onRefresh}
@@ -125,7 +126,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                                             <p class="font-medium">
                                                                 {describeAction(action.actuator, action.action, action.durationSeconds)}
                                                             </p>
-                                                            <p class="text-sm text-muted">{action.reason}</p>
+                                                            <p class="text-sm text-muted">{st(action.reason)}</p>
                                                         </div>
                                                         <Show when={actuator()}>
                                                             {(act) => (
@@ -177,9 +178,9 @@ export function InsightPanel(props: InsightPanelProps) {
                                                             tone={item.status === "REST" ? "info" : SEVERITY[item.severity]}>{t(STATUS_TEXT[item.status])} · {formatMetric(item.parameter, item.value)}</Badge>
                                                     </div>
                                                     <Show when={item.status !== "OPTIMAL"}>
-                                                        <p class="mt-1 text-sm text-muted">{item.message}</p>
+                                                        <p class="mt-1 text-sm text-muted">{st(item.message)}</p>
                                                         <Show when={item.recommendation}>
-                                                            <p class="mt-1 text-sm text-accent-strong">{item.recommendation}</p>
+                                                            <p class="mt-1 text-sm text-accent-strong">{st(item.recommendation)}</p>
                                                         </Show>
                                                     </Show>
                                                 </li>
@@ -196,11 +197,11 @@ export function InsightPanel(props: InsightPanelProps) {
                                             <For each={insight().conclusions}>
                                                 {(conclusion) => (
                                                     <li>
-                                                        <p class="text-sm font-semibold">{conclusion.title}
+                                                        <p class="text-sm font-semibold">{st(conclusion.title)}
                                                             <span
                                                                 class="ml-2 text-xs font-normal text-muted">{t("insight.certainty", {value: Math.round(conclusion.certainty * 100)})}</span>
                                                         </p>
-                                                        <p class="text-sm text-muted">{conclusion.message}</p>
+                                                        <p class="text-sm text-muted">{st(conclusion.message)}</p>
                                                     </li>
                                                 )}
                                             </For>
@@ -291,7 +292,7 @@ function Outlook(props: { insight: Insight }) {
                                                         {t("insight.in3h", {value: formatMetric(forecast.parameter, forecast.expectedIn3h)})}
                                                     </span>
                                                 </p>
-                                                <p class="text-sm text-muted">{forecast.message}</p>
+                                                <p class="text-sm text-muted">{st(forecast.message)}</p>
                                                 <Show when={forecast.hoursToLimit != null}>
                                                     <p class="mt-0.5 text-xs font-semibold text-clay-fg">
                                                         {t("insight.leavesRange", {time: formatHoursAhead(forecast.hoursToLimit!)})}

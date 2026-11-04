@@ -10,6 +10,7 @@ import {commandApi, cropApi, overviewApi} from "../../lib/api/services";
 import {COMMAND_STATUS} from "../../lib/catalog";
 import {describeAction, formatDateTime, timeAgo} from "../../lib/format";
 import {t} from "../../lib/i18n";
+import {st} from "../../lib/i18n/serverText";
 import type {Command, CommandStatus} from "../../lib/api/types";
 import {FleetActionsList} from "../overview/components/FleetActionsList";
 
@@ -100,10 +101,10 @@ export function ActionsPage() {
                                                        class="font-medium text-accent-strong hover:underline">
                                                         {cropName(command.cropId)}
                                                     </A>
-                                                    {command.reason ? ` · ${command.reason}` : ""}
+                                                    {command.reason ? ` · ${st(command.reason)}` : ""}
                                                 </p>
                                                 <Show when={command.message}>
-                                                    <p class="text-xs text-muted">{command.message}</p>
+                                                    <p class="text-xs text-muted">{st(command.message)}</p>
                                                 </Show>
                                             </div>
                                             <div class="flex flex-col items-end gap-1">
@@ -143,7 +144,7 @@ export function ActionsPage() {
                                                 {(issue) => (
                                                     <li class="flex gap-2 rounded-xl bg-sun-100 p-3 text-sm">
                                                         <AlertTriangle size={16} class="mt-0.5 shrink-0 text-clay-fg"/>
-                                                        <span>{issue.message}
+                                                        <span>{st(issue.message)}
                                                             <span
                                                                 class="block text-xs text-muted">{issue.cropIds.map(cropName).join(", ")}</span>
                                                         </span>

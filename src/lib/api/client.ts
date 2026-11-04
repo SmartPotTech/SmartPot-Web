@@ -1,6 +1,7 @@
 import {API_URL} from "../../config/env";
 import {CSRF_HEADER_NAME} from "../../features/auth/session";
 import {t, type TranslationKey} from "../i18n";
+import {translateServerText} from "../i18n/serverText";
 
 const TIMEOUT_MS = 15_000;
 const MAX_ETAG_ENTRIES = 64;
@@ -119,8 +120,13 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         let fields: Record<string, string> = {};
         try {
             const data = await response.json();
-            if (typeof data?.message === "string") message = data.message;
-            if (data?.fields && typeof data.fields === "object") fields = data.fields;
+            if (typeof data?.message === "string") message = translateServerText(data.message);
+            if (data?.fields && typeof data.fields === "object") {
+                fields = {};
+                for (const [k, v] of Object.entries(data.fields)) {
+                    fields[k] = typeof v === "string" ? translateServerText(v) : String(v);
+                }
+            }
         } catch {
             // El cuerpo no es JSON: se usa el mensaje por defecto.
         }
