@@ -1,78 +1,86 @@
 import type {AuthResponse, User} from "../../lib/api/types";
 
-export const SESSION_STORAGE_KEY = "smartpot.session";
+export const CSRF_COOKIE_NAME = "smartpot_csrf";
+export const CSRF_HEADER_NAME = "X-CSRF-Token";
+const LEGACY_STORAGE_KEY = "smartpot.session";
 
-// Token vigente fuera de SolidJS: el cliente HTTP lo lee en cada petición.
-let currentToken: string | null = null;
-
-export function currentSessionToken(): string | null {
-    return currentToken;
-}
+// Estado en memoria fuera de Web Storage: el JWT viaja exclusivamente en una cookie HttpOnly.
+let activeSession: Session | null = null;
+let csrfToken: string | null = null;
 
 export interface Session {
-    token: string;
     expiresAt: string;
     user: User;
 }
 
-function storages(): Storage[] {
-    try {
-        return [window.localStorage, window.sessionStorage];
-    } catch {
-        return [];
-    }
-}
-
-export function loadSession(now: number = Date.now()): Session | null {
-    for (const storage of storages()) {
-        try {
-            const raw = storage.getItem(SESSION_STORAGE_KEY);
-            if (!raw) continue;
-            const session = JSON.parse(raw) as Session;
-            if (session.token && new Date(session.expiresAt).getTime() > now) {
-                currentToken = session.token;
-                return session;
-            }
-            storage.removeItem(SESSION_STORAGE_KEY);
-        } catch {
-            // Almacenamiento bloqueado o dato corrupto: se ignora.
+function readCsrfFromCookie(): string | null {
+    if (typeof document === "undefined" || !document.cookie) return null;
+    for (const part of document.cookie.split(";")) {
+        const trimmed = part.trim();
+        if (trimmed.startsWith(`${CSRF_COOKIE_NAME}=`)) {
+            const value = decodeURIComponent(trimmed.slice(CSRF_COOKIE_NAME.length + 1)).trim();
+            return value || null;
         }
     }
-    currentToken = null;
     return null;
 }
 
-/** Con «mantener sesión» se guarda en localStorage; si no, solo dura mientras la pestaña esté abierta. */
-export function saveSession(auth: AuthResponse, remember: boolean): Session {
-    const session: Session = {token: auth.token, expiresAt: auth.expiresAt, user: auth.user};
-    clearSession();
-    currentToken = session.token;
-    try {
-        (remember ? window.localStorage : window.sessionStorage).setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
-    } catch {
-        // Sin almacenamiento la sesión vive solo en memoria.
+export function currentCsrfToken(): string | null {
+    return csrfToken ?? readCsrfFromCookie();
+}
+
+export function setCsrfToken(next: string | null) {
+    csrfToken = next && next.trim() ? next.trim() : null;
+}
+
+export function hasSessionCookie(): boolean {
+    return currentCsrfToken() !== null;
+}
+
+export function loadSession(now: number = Date.now()): Session | null {
+    if (activeSession && new Date(activeSession.expiresAt).getTime() > now) {
+        return activeSession;
     }
+    activeSession = null;
+    return null;
+}
+
+/** Guarda en memoria los metadatos públicos de la sesión; el JWT permanece en la cookie HttpOnly del navegador. */
+export function saveSession(auth: AuthResponse): Session {
+    purgeLegacyStorage();
+    const session: Session = {expiresAt: auth.expiresAt, user: auth.user};
+    activeSession = session;
+    const cookieToken = readCsrfFromCookie();
+    if (cookieToken) csrfToken = cookieToken;
     return session;
 }
 
 export function updateStoredUser(user: User) {
-    for (const storage of storages()) {
-        try {
-            const raw = storage.getItem(SESSION_STORAGE_KEY);
-            if (raw) storage.setItem(SESSION_STORAGE_KEY, JSON.stringify({...JSON.parse(raw), user}));
-        } catch {
-            // Se ignora: el usuario en memoria ya está actualizado.
-        }
+    if (activeSession) {
+        activeSession = {...activeSession, user};
     }
 }
 
 export function clearSession() {
-    currentToken = null;
-    for (const storage of storages()) {
+    activeSession = null;
+    csrfToken = null;
+    purgeLegacyStorage();
+    if (typeof document !== "undefined") {
         try {
-            storage.removeItem(SESSION_STORAGE_KEY);
+            document.cookie = `${CSRF_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
         } catch {
-            // Nada que limpiar.
+            // Entorno sin acceso a cookies de documento.
+        }
+    }
+}
+
+function purgeLegacyStorage() {
+    if (typeof window === "undefined") return;
+    for (const storage of [window.localStorage, window.sessionStorage]) {
+        try {
+            storage?.removeItem(LEGACY_STORAGE_KEY);
+        } catch {
+            // Almacenamiento bloqueado: nada que limpiar.
         }
     }
 }

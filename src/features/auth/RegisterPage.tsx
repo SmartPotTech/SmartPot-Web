@@ -40,7 +40,7 @@ export function RegisterPage() {
         setLoading(true);
         setError(null);
         try {
-            auth.signIn(await authApi.register({...current, email: current.email.trim()}), true);
+            auth.signIn(await authApi.register({...current, email: current.email.trim()}));
             navigate("/app", {replace: true});
         } catch (caught) {
             if (caught instanceof ApiError) {

@@ -4,8 +4,9 @@ import type {TranslationKey} from "../../lib/i18n";
 
 export interface AuthState {
     readonly user: User | null;
-    readonly token: string | null;
-    signIn: (auth: AuthResponse, remember: boolean) => void;
+    readonly authenticated: boolean;
+    readonly loading: boolean;
+    signIn: (auth: AuthResponse) => void;
     signOut: (reason?: TranslationKey) => void;
     updateUser: (user: User) => void;
     readonly notice: TranslationKey | null;

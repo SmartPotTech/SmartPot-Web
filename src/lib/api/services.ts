@@ -42,10 +42,14 @@ import type {
 const V1 = "/api/v1";
 
 export const authApi = {
-    login: (email: string, password: string) =>
-        request<AuthResponse>(`${V1}/auth/login`, {method: "POST", body: {email, password}, auth: false}),
+    login: (email: string, password: string, remember = true) =>
+        request<AuthResponse>(`${V1}/auth/login`, {method: "POST", body: {email, password, remember}, auth: false}),
     register: (data: { name: string; lastName: string; email: string; password: string }) =>
         request<AuthResponse>(`${V1}/auth/register`, {method: "POST", body: data, auth: false}),
+    logout: () =>
+        request<void>(`${V1}/auth/logout`, {method: "POST", auth: false}),
+    session: () =>
+        request<AuthResponse>(`${V1}/auth/session`),
     forgotPassword: (email: string) =>
         request<void>(`${V1}/auth/password/forgot`, {method: "POST", body: {email}, auth: false}),
     resetPassword: (token: string, password: string) =>

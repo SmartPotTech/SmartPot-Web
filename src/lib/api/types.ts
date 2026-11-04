@@ -21,7 +21,6 @@ export interface User {
 }
 
 export interface AuthResponse {
-    token: string;
     expiresAt: string;
     user: User;
 }

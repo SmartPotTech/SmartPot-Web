@@ -35,7 +35,7 @@ export function LoginPage() {
         setLoading(true);
         setError(null);
         try {
-            auth.signIn(await authApi.login(email().trim(), password()), remember());
+            auth.signIn(await authApi.login(email().trim(), password(), remember()));
             const from = location.state?.from;
             navigate(from && from.startsWith("/app") ? from : "/app", {replace: true});
         } catch (caught) {

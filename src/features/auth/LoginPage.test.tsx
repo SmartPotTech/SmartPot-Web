@@ -42,8 +42,7 @@ describe("LoginPage", () => {
     });
 
     it("entra al panel con credenciales válidas", async () => {
-        vi.spyOn(authApi, "login").mockResolvedValue({
-            token: "jwt",
+        const login = vi.spyOn(authApi, "login").mockResolvedValue({
             expiresAt: new Date(Date.now() + 3600_000).toISOString(),
             user: {id: "u1", name: "Ana", lastName: "Demo", email: "ana@example.com", role: "USER", createdAt: ""},
         });
@@ -52,6 +51,7 @@ describe("LoginPage", () => {
         await userEvent.type(screen.getByLabelText("Contraseña"), "Tomate2026");
         await userEvent.click(screen.getByRole("button", {name: "Ingresar"}));
 
+        expect(login).toHaveBeenCalledWith("ana@example.com", "Tomate2026", true);
         expect(await screen.findByText("Panel de cultivos")).toBeInTheDocument();
     });
 });

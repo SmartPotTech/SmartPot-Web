@@ -1,5 +1,4 @@
 import {API_URL} from "../config/env";
-import {getApiToken} from "../lib/api/client";
 import type {Reading} from "../lib/api/types";
 
 export interface StreamSubscription {
@@ -10,9 +9,10 @@ const DEFAULT_RETRY_MS = 5000;
 const MAX_RETRY_MS = 60_000;
 
 /**
- * Recibe en vivo las lecturas de un cultivo (Server-Sent Events). Usa fetch para mandar el token Bearer, entiende el
- * flujo tanto con chunked (HTTP/1.1) como sin él (HTTP/1.0 hasta el cierre) y se reconecta solo con espera creciente.
- * Si el navegador o un proxy no dejan pasar el flujo, la página sigue con su consulta periódica (con ETag).
+ * Recibe en vivo las lecturas de un cultivo (Server-Sent Events). Usa fetch con credenciales para enviar la cookie
+ * HttpOnly de sesión, entiende el flujo tanto con chunked (HTTP/1.1) como sin él (HTTP/1.0 hasta el cierre) y se
+ * reconecta solo con espera creciente. Si el navegador o un proxy no dejan pasar el flujo, la página sigue con su
+ * consulta periódica (con ETag).
  */
 export function subscribeTelemetryStream(cropId: string, onReading: (reading: Reading) => void): StreamSubscription {
     if (typeof ReadableStream === "undefined" || typeof fetch !== "function") {
@@ -53,10 +53,10 @@ export function subscribeTelemetryStream(cropId: string, onReading: (reading: Re
 
     async function connect() {
         controller = new AbortController();
-        const token = getApiToken();
         try {
             const response = await fetch(`${API_URL}/api/v1/crops/${encodeURIComponent(cropId)}/stream`, {
-                headers: {Accept: "text/event-stream", ...(token ? {Authorization: `Bearer ${token}`} : {})},
+                headers: {Accept: "text/event-stream"},
+                credentials: "include",
                 signal: controller.signal,
                 cache: "no-store",
             });

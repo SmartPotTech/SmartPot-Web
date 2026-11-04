@@ -20,7 +20,7 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                         <a href="/#preguntas"
                            class="hidden rounded-lg px-3 py-2 text-muted hover:text-accent-strong md:block">{t("public.faq")}</a>
                         <PreferenceToggles/>
-                        <Show when={auth.token} fallback={
+                        <Show when={auth.authenticated} fallback={
                             <>
                                 <A href="/login"
                                    class="touch-target rounded-xl px-2 py-2 text-accent-strong hover:bg-leaf-50 max-[380px]:hidden sm:px-3">{t("public.signIn")}</A>

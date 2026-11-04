@@ -1,4 +1,5 @@
 import {API_URL} from "../../config/env";
+import {CSRF_HEADER_NAME} from "../../features/auth/session";
 import {t, type TranslationKey} from "../i18n";
 
 const TIMEOUT_MS = 15_000;
@@ -17,7 +18,9 @@ export class ApiError extends Error {
 }
 
 interface ApiHooks {
-    getToken: () => string | null;
+    getCsrfToken?: () => string | null;
+    setCsrfToken?: (token: string) => void;
+    getCacheScope?: () => string | null;
     onUnauthorized: () => void;
 }
 
@@ -26,16 +29,12 @@ interface CachedResource {
     value: unknown;
 }
 
-let hooks: ApiHooks = {getToken: () => null, onUnauthorized: () => undefined};
+let hooks: ApiHooks = {onUnauthorized: () => undefined};
 const etagCache = new Map<string, CachedResource>();
 
 export function configureApi(next: ApiHooks) {
     hooks = next;
     etagCache.clear();
-}
-
-export function getApiToken(): string | null {
-    return hooks.getToken();
 }
 
 export function clearApiCache() {
@@ -68,10 +67,13 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 
     const headers: Record<string, string> = {Accept: accept === "json" ? "application/json" : "text/csv"};
     if (body !== undefined) headers["Content-Type"] = "application/json";
-    const token = auth ? hooks.getToken() : null;
-    if (token) headers.Authorization = `Bearer ${token}`;
+    if (auth && method !== "GET") {
+        const csrf = hooks.getCsrfToken?.() ?? null;
+        if (csrf) headers[CSRF_HEADER_NAME] = csrf;
+    }
 
-    const cacheKey = method === "GET" && accept === "json" ? `${token ?? ""}:${path}` : null;
+    const scope = auth ? (hooks.getCacheScope?.() ?? "session") : "public";
+    const cacheKey = method === "GET" && accept === "json" ? `${scope}:${path}` : null;
     const cached = cacheKey ? etagCache.get(cacheKey) : undefined;
     if (cached) headers["If-None-Match"] = cached.etag;
 
@@ -84,6 +86,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         response = await fetch(`${API_URL}${path}`, {
             method,
             headers,
+            credentials: "include",
             body: body === undefined ? undefined : JSON.stringify(body),
             signal: controller.signal,
         });
@@ -97,7 +100,12 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         clearTimeout(timeout);
     }
 
-    if (response.status === 401 && token) {
+    const nextCsrf = response.headers?.get(CSRF_HEADER_NAME);
+    if (nextCsrf) {
+        hooks.setCsrfToken?.(nextCsrf);
+    }
+
+    if (response.status === 401 && auth) {
         etagCache.clear();
         hooks.onUnauthorized();
     }
