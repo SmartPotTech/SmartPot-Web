@@ -9,7 +9,7 @@
         root.classList.toggle("dark", dark);
         root.setAttribute("data-theme", dark ? "dark" : "light");
         var color = document.querySelector('meta[name="theme-color"]');
-        if (color) color.setAttribute("content", dark ? "#06281C" : "#0B3D2B");
+        if (color) color.setAttribute("content", dark ? "#0A0E0C" : "#0B3D2B");
         var scheme = document.querySelector('meta[name="color-scheme"]');
         if (scheme) scheme.setAttribute("content", dark ? "dark" : "light");
         if (window.localStorage.getItem("smartpot_locale") === "en") root.lang = "en";

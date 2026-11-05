@@ -9,18 +9,18 @@
 
 /* Modo oscuro: lo fija /theme-init.js; sin JavaScript sigue la preferencia del sistema. */
 :root[data-theme="dark"] {
-    --prerender-page: #06281C;
-    --prerender-text: #A9C4B8;
+    --prerender-page: #0A0E0C;
+    --prerender-text: #8EA399;
     --prerender-title: #F2F7F4;
-    --prerender-link: #7FDBB0;
+    --prerender-link: #00B074;
 }
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-        --prerender-page: #06281C;
-        --prerender-text: #A9C4B8;
+        --prerender-page: #0A0E0C;
+        --prerender-text: #8EA399;
         --prerender-title: #F2F7F4;
-        --prerender-link: #7FDBB0;
+        --prerender-link: #00B074;
     }
 }
 

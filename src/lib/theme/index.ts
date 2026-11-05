@@ -5,8 +5,8 @@ export type ResolvedTheme = "light" | "dark";
 
 export const THEME_STORAGE_KEY = "smartpot_theme";
 
-/** Color de la barra del navegador (meta theme-color) en cada tema: leaf-900 en claro y leaf-950 en oscuro. */
-export const THEME_COLORS: Record<ResolvedTheme, string> = {light: "#0B3D2B", dark: "#06281C"};
+/** Color de la barra del navegador (meta theme-color) en cada tema: leaf-900 en claro y fondo carbón en oscuro. */
+export const THEME_COLORS: Record<ResolvedTheme, string> = {light: "#0B3D2B", dark: "#0A0E0C"};
 
 const PREFERENCES: ThemePreference[] = ["light", "dark", "system"];
 

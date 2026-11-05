@@ -45,7 +45,7 @@ describe("tema", () => {
         setThemePreference("dark");
         expect(root.classList.contains("dark")).toBe(true);
         expect(root.dataset.theme).toBe("dark");
-        expect(metaColor()).toBe("#06281C");
+        expect(metaColor()).toBe(THEME_COLORS.dark);
         expect(document.head.querySelector<HTMLMetaElement>('meta[name="color-scheme"]')?.content).toBe("dark");
         expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe("dark");
 
