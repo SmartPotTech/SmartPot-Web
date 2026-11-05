@@ -3,7 +3,7 @@ import {AlertTriangle, Bell, Bot, CheckCheck, Info, Radio, Trash2, Zap} from "lu
 import {For, Show} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {SkeletonCard} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {notificationApi} from "../../lib/api/services";
@@ -44,7 +44,7 @@ export function NotificationsPage() {
             <Show when={notifications.error}>
                 {(err) => <Alert tone="danger">{err()}</Alert>}
             </Show>
-            <Show when={!(notifications.loading && !notifications.data)} fallback={<PageLoader/>}>
+            <Show when={!(notifications.loading && !notifications.data)} fallback={<SkeletonCard height="min-h-[300px]"/>}>
                 <Show when={list().length > 0} fallback={
                     <EmptyState icon={<Bell size={26}/>} title={t("notifications.emptyTitle")}>
                         {t("notifications.emptyBody")}

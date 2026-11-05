@@ -3,7 +3,7 @@ import {AlertTriangle, Bot, History, ListChecks, Sparkles, UserRound} from "luci
 import {createSignal, For, Show} from "solid-js";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Alert, Badge, EmptyState} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {SkeletonCard} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {commandApi, cropApi, overviewApi} from "../../lib/api/services";
@@ -84,7 +84,7 @@ export function ActionsPage() {
                     <Show when={commands.error}>
                         {(err) => <div class="mt-3"><Alert tone="danger">{err()}</Alert></div>}
                     </Show>
-                    <Show when={!(commands.loading && !commands.data)} fallback={<PageLoader/>}>
+                    <Show when={!(commands.loading && !commands.data)} fallback={<SkeletonCard height="min-h-[280px]"/>}>
                         <Show when={history().length > 0} fallback={
                             <div class="mt-4"><EmptyState icon={<History size={24}/>} title={t("actions.emptyTitle")}>
                                 {t("actions.emptyBody")}
@@ -133,7 +133,7 @@ export function ActionsPage() {
                     <Show when={fleet.error}>
                         {(err) => <Alert tone="info" title={t("actions.unavailable")}>{err()}</Alert>}
                     </Show>
-                    <Show when={!(fleet.loading && !fleet.data)} fallback={<PageLoader/>}>
+                    <Show when={!(fleet.loading && !fleet.data)} fallback={<SkeletonCard height="min-h-[280px]"/>}>
                         <Show when={fleet.data}>
                             {(data) => (
                                 <>

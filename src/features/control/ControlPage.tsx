@@ -4,7 +4,7 @@ import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Button} from "../../components/ui/Button";
 import {SelectField} from "../../components/ui/Field";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {SkeletonCard} from "../../components/ui/Skeleton";
 import {Switch} from "../../components/ui/Switch";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
@@ -87,7 +87,12 @@ export function ControlPage() {
             <Show when={crops.error}>
                 {(err) => <Alert tone="danger">{err()}</Alert>}
             </Show>
-            <Show when={!(crops.loading && !crops.data)} fallback={<PageLoader/>}>
+            <Show when={!(crops.loading && !crops.data)} fallback={
+                <div class="grid gap-6 lg:grid-cols-2">
+                    <SkeletonCard height="min-h-[340px]"/>
+                    <SkeletonCard height="min-h-[340px]"/>
+                </div>
+            }>
                 <Show when={list().length > 0} fallback={
                     <EmptyState icon={<SlidersHorizontal size={26}/>} title={t("control.emptyTitle")}>
                         {t("control.emptyBody")}
