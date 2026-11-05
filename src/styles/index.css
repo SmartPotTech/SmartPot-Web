@@ -50,31 +50,31 @@
     --shadow-card: 0 1px 2px rgb(11 61 43 / 0.06), 0 8px 24px rgb(11 61 43 / 0.06);
 }
 
-/* Modo oscuro: fondo leaf-950, tarjetas leaf-900, bordes de bosque y texto claro. */
+/* Modo oscuro: fondo oscuro profundo (#0a0e0c), tarjetas oscuras (#121815) y la paleta SmartPot en acentos y foco. */
 :root {
     color-scheme: light;
 }
 
 :root.dark {
     color-scheme: dark;
-    --color-page: #06281c;
-    --color-card: #0b3d2b;
-    --color-surface: #0e4a35;
-    --color-line: #18523d;
+    --color-page: #0a0e0c;
+    --color-card: #121815;
+    --color-surface: #18221d;
+    --color-line: #22332a;
     --color-ink: #f2f7f4;
-    --color-muted: #a9c4b8;
-    --color-leaf-50: #0e4a35;
-    --color-sun-100: #3b3415;
-    --color-water-100: #0f3f58;
-    --color-clay-100: #4a2b20;
-    --color-danger-100: #4a2024;
-    --color-accent: #7fdbb0;
-    --color-accent-strong: #ddf5ea;
-    --color-link: #7cc4ee;
-    --color-sun-fg: #f2b632;
-    --color-clay-fg: #f0a283;
-    --color-danger-fg: #f08a8a;
-    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.28);
+    --color-muted: #8ea399;
+    --color-leaf-50: #101915;
+    --color-sun-100: #2a2008;
+    --color-water-100: #082132;
+    --color-clay-100: #2c160e;
+    --color-danger-100: #2c1012;
+    --color-accent: #00b074;
+    --color-accent-strong: #7fdbb0;
+    --color-link: #38bdf8;
+    --color-sun-fg: #fbbf24;
+    --color-clay-fg: #fb923c;
+    --color-danger-fg: #f87171;
+    --shadow-card: 0 1px 3px rgb(0 0 0 / 0.5), 0 8px 24px rgb(0 0 0 / 0.45);
 }
 
 @layer base {

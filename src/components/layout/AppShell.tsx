@@ -49,9 +49,9 @@ export function AppShell(props: { children?: JSX.Element }) {
 
     return (
         <div class="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
-            <aside class="sticky top-0 hidden h-dvh flex-col bg-leaf-900 px-4 py-5 text-leaf-100 dark:bg-leaf-950 md:flex">
+            <aside class="sticky top-0 hidden h-dvh flex-col bg-leaf-900 px-4 py-5 text-leaf-100 dark:border-r dark:border-line dark:bg-[#0a0e0c] md:flex">
                 <div aria-hidden="true"
-                     class="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-leaf-950/80 to-transparent"/>
+                     class="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-leaf-950/80 to-transparent dark:from-[#0a0e0c]/80"/>
                 <A href="/app" aria-label={t("nav.dashboardLabel")} class="relative px-1"><Logo size={34} inverse/></A>
                 <nav class="relative mt-9 flex flex-1 flex-col gap-1" aria-label={t("nav.app")}>
                     <For each={NAV}>
@@ -99,7 +99,7 @@ export function AppShell(props: { children?: JSX.Element }) {
             </aside>
 
             <div class="flex min-h-dvh min-w-0 flex-col bg-linear-to-b from-leaf-50 to-page to-40% pb-20 md:pb-0">
-                <header class="sticky top-0 z-20 flex h-14 items-center justify-between bg-leaf-900 px-4 text-white md:hidden">
+                <header class="sticky top-0 z-20 flex h-14 items-center justify-between bg-leaf-900 px-4 text-white dark:border-b dark:border-line dark:bg-[#0a0e0c] md:hidden">
                     <A href="/app" aria-label={t("nav.dashboardLabel")}><Logo size={28} inverse/></A>
                     <div class="flex min-w-0 items-center">
                         <PreferenceToggles surface="dark"/>
@@ -124,7 +124,7 @@ export function AppShell(props: { children?: JSX.Element }) {
                 </main>
             </div>
 
-            <nav class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 bg-leaf-900 pb-[env(safe-area-inset-bottom)] md:hidden"
+            <nav class="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 bg-leaf-900 pb-[env(safe-area-inset-bottom)] dark:border-t dark:border-line dark:bg-[#0a0e0c] md:hidden"
                  aria-label={t("nav.app")}>
                 <For each={MOBILE_NAV}>
                     {({to, label, icon: Icon, end}) => (
