@@ -3,7 +3,7 @@ import {LayoutDashboard, Plus, Sprout} from "lucide-solid";
 import {Show} from "solid-js";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {OverviewSkeleton, SkeletonHeaderStats} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {overviewApi} from "../../lib/api/services";
@@ -30,7 +30,7 @@ export default function OverviewPage() {
                         description={t("overview.description")}
                         actions={<A href="/app/crops" class="inline-flex h-11 items-center gap-2 rounded-xl border border-white/25
           bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20"><Sprout size={18}/> {t("overview.viewCrops")}</A>}>
-                <Show when={totals() && totals()!.crops > 0}>
+                <Show when={totals() && totals()!.crops > 0} fallback={<Show when={overview.loading && !overview.data}><SkeletonHeaderStats/></Show>}>
                     <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
                         <HeaderStat label={t("overview.avgHealth")}
                                     value={totals()!.averageHealth == null ? "—" : Math.round(totals()!.averageHealth!)}
@@ -47,7 +47,7 @@ export default function OverviewPage() {
             <Show when={overview.error}>
                 {(err) => <Alert tone="danger">{err()}</Alert>}
             </Show>
-            <Show when={!(overview.loading && !overview.data)} fallback={<PageLoader/>}>
+            <Show when={!(overview.loading && !overview.data)} fallback={<OverviewSkeleton/>}>
                 <Show when={!(crops().length === 0 && !overview.error)} fallback={
                     <EmptyState icon={<Sprout size={26}/>} title={t("overview.emptyTitle")}
                                 action={<A href="/app/crops" class="inline-flex h-11 items-center gap-2 rounded-xl bg-leaf-700 px-4 text-sm
