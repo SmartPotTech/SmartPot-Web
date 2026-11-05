@@ -3,7 +3,7 @@ import {createSignal, For, Show} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {CropsGridSkeleton} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {cropApi} from "../../lib/api/services";
@@ -40,7 +40,7 @@ export function CropsPage() {
             <Show when={crops.error}>
                 {(err) => <Alert tone="danger">{err()}</Alert>}
             </Show>
-            <Show when={!(crops.loading && !crops.data)} fallback={<PageLoader/>}>
+            <Show when={!(crops.loading && !crops.data)} fallback={<CropsGridSkeleton/>}>
                 <Show when={!(list().length === 0 && !crops.error)} fallback={
                     <EmptyState icon={<Sprout size={26}/>} title={t("crops.emptyTitle")}
                                 action={<Button icon={<Plus size={18}/>} onClick={() => setCreating(true)}>{t("crops.new")}</Button>}>

@@ -3,7 +3,7 @@ import {ArrowLeft, FileDown} from "lucide-solid";
 import {createEffect, createSignal, For, onCleanup, Show, untrack} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Alert, Badge} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {CropDetailSkeleton, SkeletonCard} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {ApiError} from "../../lib/api/client";
@@ -134,7 +134,7 @@ export default function CropDetailPage() {
     }
 
     return (
-        <Show when={!(crop.loading && !crop.data)} fallback={<PageLoader/>}>
+        <Show when={!(crop.loading && !crop.data)} fallback={<CropDetailSkeleton/>}>
             <Show when={crop.data} fallback={
                 <div class="space-y-4">
                     <A href="/app/crops"
@@ -305,7 +305,7 @@ export default function CropDetailPage() {
                             </Show>
                             <Show when={tab() === "simulation"}>
                                 <Show when={simulation.data} fallback={
-                                    <Show when={simulation.error} fallback={<PageLoader/>}>
+                                    <Show when={simulation.error} fallback={<SkeletonCard height="min-h-[280px]"/>}>
                                         {(err) => <Alert tone="danger">{err()}</Alert>}
                                     </Show>
                                 }>
