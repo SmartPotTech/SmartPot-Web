@@ -32,14 +32,14 @@ export function HealthRanking(props: { crops: Crop[] }) {
                                         </span>
                                         <span class="shrink-0 text-muted">
                                             {health ? <><span
-                                                class="font-semibold text-ink">{Math.round(health.index)}</span> · {healthLabel(health)}</> : t("ranking.unrated")}
+                                                class="font-semibold text-ink tabular-nums">{Math.round(health.index)}</span> · {healthLabel(health)}</> : t("ranking.unrated")}
                                         </span>
                                     </div>
                                     <div class="mt-1.5 h-2 overflow-hidden rounded-full bg-surface" role="meter"
                                          aria-valuemin={0}
                                          aria-valuemax={100} aria-valuenow={health ? Math.round(health.index) : 0}
                                          aria-label={t("ranking.healthOf", {name: crop.name})}>
-                                        <div class="h-full rounded-full"
+                                        <div class="h-full rounded-full transition-all duration-300"
                                              style={{"width": `${health?.index ?? 0}%`, "background-color": color}}/>
                                     </div>
                                 </A>

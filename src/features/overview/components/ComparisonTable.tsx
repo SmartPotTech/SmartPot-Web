@@ -73,7 +73,7 @@ export function ComparisonTable(props: { crops: Crop[] }) {
                                             return (
                                                 <td class="px-3 py-2.5 text-right">
                                                     <span
-                                                        class={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 font-medium ${CELL[status()]}`}>
+                                                        class={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 font-medium tabular-nums ${CELL[status()]}`}>
                                                         <Show when={status() === "low"}>
                                                             <ArrowDown size={12} aria-label={t("table.belowRange")}/>
                                                         </Show>

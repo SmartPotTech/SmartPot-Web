@@ -214,7 +214,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                             <For each={visible()}>
                                                 {(crop) => (
                                                     <Show when={row().values[crop.id] !== undefined}>
-                                                        <p class="font-semibold text-ink">
+                                                        <p class="font-semibold text-ink tabular-nums">
                                                             {crop.name}: {formatMetric(metric(), row().values[crop.id])}
                                                         </p>
                                                     </Show>
