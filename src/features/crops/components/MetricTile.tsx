@@ -17,7 +17,7 @@ export function MetricTile(props: { metric: MetricKey; value?: number; range?: P
                 {info().label}
             </p>
             <div class="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-                <p class="font-display text-2xl font-bold">{formatMetric(props.metric, props.value)}</p>
+                <p class="font-display text-2xl font-bold tabular-nums">{formatMetric(props.metric, props.value)}</p>
                 <Show when={statusKey() !== "unknown"}>
                     <span
                         class={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${

@@ -2,7 +2,7 @@ import {CheckCircle2, Database, GraduationCap, Hourglass, Radar, ShieldCheck} fr
 import {For, Show} from "solid-js";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Alert, Badge, EmptyState} from "../../components/ui/Feedback";
-import {PageLoader} from "../../components/ui/Spinner";
+import {SkeletonCard} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {insightApi} from "../../lib/api/services";
@@ -68,7 +68,7 @@ export function LearningPage() {
             <Show when={status.error}>
                 {(err) => <Alert tone="info" title={t("actions.unavailable")}>{err()}</Alert>}
             </Show>
-            <Show when={!(status.loading && !data())} fallback={<PageLoader/>}>
+            <Show when={!(status.loading && !data())} fallback={<SkeletonCard height="min-h-[300px]"/>}>
                 <Show when={!(data() && data()!.cropTypes.length === 0)} fallback={
                     <EmptyState icon={<Database size={24}/>} title={t("learning.emptyTitle")}>
                         {t("learning.emptyBody")}

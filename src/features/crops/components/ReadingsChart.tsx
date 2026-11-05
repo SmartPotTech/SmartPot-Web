@@ -165,7 +165,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                         <div
                                             class="pointer-events-none absolute right-3 top-2 rounded-xl border border-line bg-card/95 px-3 py-1.5 text-xs shadow-sm">
                                             <p class="font-medium text-muted">{formatDateTime(pt().iso)}</p>
-                                            <p class="font-semibold text-ink">
+                                            <p class="font-semibold text-ink tabular-nums">
                                                 {info().label}: {formatMetric(props.metric, pt().value)}
                                             </p>
                                         </div>
