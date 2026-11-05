@@ -8,7 +8,7 @@ const VARIANTS: Record<Variant, string> = {
     primary: "bg-leaf-700 text-white hover:bg-leaf-800 disabled:bg-leaf-700/50",
     secondary: "border border-line bg-card text-ink hover:border-leaf-500 hover:text-accent-strong",
     ghost: "text-accent-strong hover:bg-leaf-50",
-    danger: "bg-danger-500 text-white hover:bg-danger-600 disabled:bg-danger-500/50",
+    danger: "bg-danger-600 text-white hover:bg-danger-700 disabled:bg-danger-600/50",
     /** Sobre fondos verdes oscuros (encabezados de página). */
     light: "border border-white/25 bg-white/10 text-white hover:bg-white/20 disabled:opacity-50",
 };
@@ -44,7 +44,7 @@ export function Button(props: ButtonProps) {
         <button
             type={local.type ?? "button"}
             disabled={Boolean(local.disabled || local.loading)}
-            class={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors
+            class={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-150 active:scale-[0.98]
         disabled:cursor-not-allowed ${VARIANTS[local.variant ?? "primary"]} ${SIZES[local.size ?? "md"]} ${local.class ?? local.className ?? ""}`}
             {...rest}
         >
