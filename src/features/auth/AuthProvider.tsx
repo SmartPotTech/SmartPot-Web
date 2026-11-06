@@ -44,12 +44,18 @@ export function AuthProvider(props: { children: JSX.Element }) {
         }
     };
 
+    const broadcastSignOut = () => channel?.postMessage({type: "signOut"} satisfies AuthBroadcast);
+
     const signOut = (reason?: TranslationKey) => {
         applySignOut(reason, true);
-        channel?.postMessage({type: "signOut"} satisfies AuthBroadcast);
+        broadcastSignOut();
     };
 
-    handleUnauthorized = () => applySignOut(EXPIRED, false);
+    // Un 401 también cierra la sesión en las demás pestañas; la cookie ya no sirve y deben volver al ingreso.
+    handleUnauthorized = () => {
+        applySignOut(EXPIRED, false);
+        broadcastSignOut();
+    };
     configureApi({
         getCsrfToken: currentCsrfToken,
         setCsrfToken,

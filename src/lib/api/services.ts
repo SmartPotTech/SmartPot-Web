@@ -47,7 +47,7 @@ export const authApi = {
     register: (data: { name: string; lastName: string; email: string; password: string }) =>
         request<AuthResponse>(`${V1}/auth/register`, {method: "POST", body: data, auth: false}),
     logout: () =>
-        request<void>(`${V1}/auth/logout`, {method: "POST", auth: false}),
+        request<void>(`${V1}/auth/logout`, {method: "POST", auth: true}),
     session: () =>
         request<AuthResponse>(`${V1}/auth/session`),
     forgotPassword: (email: string) =>
