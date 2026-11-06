@@ -1,3 +1,4 @@
+import {useLocation} from "@solidjs/router";
 import {createEffect} from "solid-js";
 import {t} from "../lib/i18n";
 
@@ -23,6 +24,25 @@ function setCanonical(href: string) {
     element.href = href;
 }
 
+function browserPath(): string {
+    return typeof window !== "undefined" && window.location.pathname
+        ? window.location.pathname
+        : "/";
+}
+
+/**
+ * Ruta actual como accessor. `useLocation()` lanza fuera de un Router (pruebas de componentes sueltos), así que se
+ * cae a `window.location` sin perder la reactividad cuando sí hay router.
+ */
+function usePathname(): () => string {
+    try {
+        const location = useLocation();
+        return () => location.pathname || browserPath();
+    } catch {
+        return browserPath;
+    }
+}
+
 /** Título, canonical y robots por página: la landing se indexa; la app privada no. */
 export function usePageMeta(
     title: string | (() => string),
@@ -32,6 +52,8 @@ export function usePageMeta(
         canonical,
     }: { index?: boolean; description?: string | (() => string); canonical?: string } = {},
 ) {
+    const pathname = usePathname();
+
     createEffect(() => {
         const resolved = typeof title === "function" ? title() : title;
         document.title = resolved
@@ -40,10 +62,10 @@ export function usePageMeta(
         setMeta("robots", index ? "index, follow" : "noindex, nofollow");
         if (description) setMeta("description", typeof description === "function" ? description() : description);
 
-        if (typeof window !== "undefined" && window.location) {
-            const pathname = window.location.pathname || "/";
-            const targetUrl = canonical ?? (pathname === "/" ? "https://smartpot.app/" : `https://smartpot.app${pathname}`);
-            setCanonical(targetUrl);
-        }
+        // Se lee dentro del efecto para que el canonical siga a la navegación SPA, no a la ruta con la que se montó.
+        const path = pathname();
+        const normalized = path !== "/" ? path.replace(/\/+$/, "") : "/";
+        const targetUrl = canonical ?? (normalized === "/" ? "https://smartpot.app/" : `https://smartpot.app${normalized}`);
+        setCanonical(targetUrl);
     });
 }

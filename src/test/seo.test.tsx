@@ -1,6 +1,11 @@
+import {createMemoryHistory, MemoryRouter, Route, useNavigate} from "@solidjs/router";
+import {render, screen, waitFor} from "@solidjs/testing-library";
+import userEvent from "@testing-library/user-event";
+import {existsSync} from "node:fs";
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {describe, expect, it} from "vitest";
+import {usePageMeta} from "../hooks/usePageMeta";
 
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf-8");
 
@@ -49,5 +54,53 @@ describe("SEO y PWA", () => {
     it("el service worker no guarda la API ni la configuración", () => {
         const worker = read("public/sw.js");
         expect(worker).toContain('url.origin !== self.location.origin || url.pathname === "/config.js"');
+    });
+
+    it("la configuración de runtime se ejecuta antes del módulo principal", () => {
+        const html = read("index.html");
+        expect(html.indexOf('src="/config.js"')).toBeGreaterThan(-1);
+        expect(html.indexOf('src="/config.js"')).toBeLessThan(html.indexOf('src="/src/main.tsx"'));
+        expect(html).not.toMatch(/<script[^>]+src="\/config\.js"[^>]+(?:async|defer)/);
+    });
+
+    it("el grafo inicial del build no precarga la simulación ni el alta de cultivos", () => {
+        const built = resolve(process.cwd(), "dist/index.html");
+        if (!existsSync(built)) return;
+        const html = readFileSync(built, "utf-8");
+        expect(html).not.toContain("SimulationPanel");
+        expect(html).not.toContain("CreateCropDialog");
+        expect(html).not.toContain("PlacementPicker");
+    });
+});
+
+function CanonicalPage(props: { title: string; next?: string }) {
+    usePageMeta(props.title);
+    const navigate = useNavigate();
+    return (
+        <button type="button" onClick={() => props.next && navigate(props.next)}>go</button>
+    );
+}
+
+describe("canonical SPA", () => {
+    it("apunta a la ruta actual al navegar, no a la anterior", async () => {
+        document.head.querySelector('link[rel="canonical"]')?.remove();
+        const history = createMemoryHistory();
+        history.set({value: "/app/crops"});
+        render(() => (
+            <MemoryRouter history={history}>
+                <Route path="/app/crops" component={() => <CanonicalPage title="Cultivos" next="/app/learning"/>}/>
+                <Route path="/app/learning" component={() => <CanonicalPage title="Aprendizaje"/>}/>
+            </MemoryRouter>
+        ));
+
+        await waitFor(() => expect(
+            document.head.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+        ).toBe("https://smartpot.app/app/crops"));
+
+        await userEvent.click(screen.getByRole("button", {name: "go"}));
+
+        await waitFor(() => expect(
+            document.head.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+        ).toBe("https://smartpot.app/app/learning"));
     });
 });
