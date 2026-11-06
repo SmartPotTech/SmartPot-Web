@@ -2,6 +2,7 @@ import {AlertTriangle, RefreshCw, Sparkles, Users} from "lucide-solid";
 import {For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {Alert} from "../../../components/ui/Feedback";
+import {Skeleton} from "../../../components/ui/Skeleton";
 import {useResource} from "../../../hooks/useResource";
 import {overviewApi} from "../../../lib/api/services";
 import type {Crop} from "../../../lib/api/types";
@@ -9,13 +10,37 @@ import {t} from "../../../lib/i18n";
 import {st} from "../../../lib/i18n/serverText";
 import {FleetActionsList} from "./FleetActionsList";
 
+/** Reserva la altura del panel real para que la fila del grid no salte cuando llega /overview/fleet. */
+function FleetPanelSkeleton() {
+    return (
+        <div class="space-y-5" aria-busy="true">
+            <div class="space-y-2">
+                <Skeleton class="h-4 w-3/4"/>
+                <Skeleton class="h-4 w-1/2"/>
+            </div>
+            <div class="space-y-2">
+                <Skeleton class="h-4 w-28"/>
+                <Skeleton class="h-16 w-full rounded-xl"/>
+                <Skeleton class="h-16 w-full rounded-xl"/>
+            </div>
+            <div class="grid gap-2 sm:grid-cols-2">
+                <Skeleton class="h-24 rounded-xl"/>
+                <Skeleton class="h-24 rounded-xl"/>
+                <Skeleton class="h-24 rounded-xl"/>
+                <Skeleton class="h-24 rounded-xl"/>
+            </div>
+            <Skeleton class="h-12 w-full"/>
+        </div>
+    );
+}
+
 /** Lo que el asistente ve al mirar todos los cultivos juntos. */
 export function FleetPanel(props: { crops: Crop[] }) {
     const fleet = useResource(() => overviewApi.fleet(), [], 5 * 60_000);
     const names = (ids: string[]) => ids.map((id) => props.crops.find((crop) => crop.id === id)?.name ?? t("fleet.cropFallback"));
 
     return (
-        <section class="card overflow-hidden">
+        <section class="card min-h-[603px] overflow-hidden">
             <div class="flex items-start justify-between gap-3 bg-linear-to-r from-leaf-50 to-card p-5">
                 <div>
                     <h2 class="flex items-center gap-2 text-lg font-semibold">
@@ -32,6 +57,10 @@ export function FleetPanel(props: { crops: Crop[] }) {
             <div class="space-y-5 p-5 pt-2">
                 <Show when={fleet.error}>
                     {(err) => <Alert tone="info" title={t("actions.unavailable")}>{err()}</Alert>}
+                </Show>
+
+                <Show when={fleet.loading && !fleet.data}>
+                    <FleetPanelSkeleton/>
                 </Show>
 
                 <Show when={fleet.data}>
