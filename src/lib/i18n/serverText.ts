@@ -422,7 +422,9 @@ function group(match: RegExpExecArray, index: number): string {
 }
 
 function capitalize(text: string): string {
-    return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+    // «pH» se escribe con p minúscula incluso al inicio de la frase.
+    if (!text || text.startsWith("pH")) return text;
+    return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function species(text: string): string {

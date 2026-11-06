@@ -102,6 +102,7 @@ describe("serverText", () => {
             .toBe("Temperatura alta en 3 de 4 cultivos: probablemente sea un problema del entorno y no de un cultivo en particular.");
         expect(translateServerText("On average: low temperature, dry air.")).toBe("En promedio: temperatura baja, aire seco.");
         expect(translateServerText("Low temperature and dry air")).toBe("Temperatura baja y aire seco");
+        expect(translateServerText("Low pH and excess nutrients")).toBe("pH bajo y nutrientes en exceso");
         expect(translateServerText("Within range")).toBe("Dentro del rango");
         expect(translateServerText("Similar conditions")).toBe("Condiciones similares");
 
