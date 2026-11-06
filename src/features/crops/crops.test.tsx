@@ -1,11 +1,28 @@
+import {createMemoryHistory, MemoryRouter, Route} from "@solidjs/router";
 import {render, screen} from "@solidjs/testing-library";
 import userEvent from "@testing-library/user-event";
 import {describe, expect, it, vi} from "vitest";
-import type {Insight} from "../../lib/api/types";
+import type {Crop, Insight} from "../../lib/api/types";
+import {setLocale} from "../../lib/i18n";
+import {actuatorApi, commandApi, cropApi, insightApi, readingApi} from "../../lib/api/services";
 import {HealthGauge} from "./components/HealthGauge";
 import {InsightPanel} from "./components/InsightPanel";
 import {MetricTile} from "./components/MetricTile";
+import CropDetailPage from "./CropDetailPage";
 import {firmwareConfig} from "./firmware";
+
+vi.mock("../../lib/api/services", () => ({
+    cropApi: {get: vi.fn(), profiles: vi.fn(), weather: vi.fn(), setAutomation: vi.fn()},
+    actuatorApi: {list: vi.fn()},
+    commandApi: {list: vi.fn(), send: vi.fn()},
+    insightApi: {get: vi.fn()},
+    readingApi: {list: vi.fn(), exportCsv: vi.fn()},
+    virtualDeviceApi: {get: vi.fn()},
+}));
+
+vi.mock("../../services/stream", () => ({
+    subscribeTelemetryStream: vi.fn(() => ({unsubscribe: vi.fn()})),
+}));
 
 const INSIGHT: Insight = {
     cropType: "LETTUCE",
@@ -138,5 +155,89 @@ describe("componentes del cultivo", () => {
             .toContain(`BROKER = {\n    "CA_CRT": """${ca}"""\n}`);
         expect(firmwareConfig({...credentials, port: 1883, tls: false}, "esp32", ca))
             .toContain('"CA_CRT": """"""');
+    });
+});
+
+const CROP: Crop = {
+    id: "c1",
+    name: "Lechuga del balcón",
+    type: "LETTUCE",
+    kind: "REAL",
+    form: "POT",
+    automationEnabled: false,
+    device: {online: true, lastSeenAt: null, keyRotatedAt: null},
+    health: {index: 82.4, level: "GOOD", label: "Healthy", evaluatedAt: new Date().toISOString()},
+    latestReading: {
+        id: "r1", cropId: "c1", measuredAt: new Date().toISOString(), source: "MQTT",
+        measures: {temperature: 21, soilMoisture: 64},
+    },
+    createdAt: new Date().toISOString(),
+};
+
+const PROFILE = {
+    type: "LETTUCE" as const,
+    name: "Lettuce",
+    description: "",
+    ranges: {
+        temperature: {min: 15, max: 22, unit: "°C", label: "temperature"},
+        soilMoisture: {min: 60, max: 80, unit: "%", label: "substrate moisture"},
+    },
+};
+
+const EN_INSIGHT: Insight = {
+    cropType: "LETTUCE",
+    health: {index: 82.4, level: "GOOD", label: "Healthy"},
+    diagnosis: [
+        {
+            parameter: "temperature", value: 21, status: "OPTIMAL", severity: "OK",
+            message: "Temperature is within the optimal range (15–22 °C).", recommendation: null,
+        },
+    ],
+    conclusions: [{
+        rule: "ideal_conditions",
+        title: "Ideal conditions",
+        message: "All measured variables are within their optimal range. Great job!",
+        certainty: 1,
+    }],
+    predictions: [{name: "ventilation", label: "Ventilation need", probability: 0.12, model: "Logistic regression"}],
+    actions: [],
+    forecasts: [{
+        parameter: "soilMoisture", current: 64, slopePerHour: -2, expectedIn3h: 58, trend: "FALLING",
+        hoursToLimit: 1.4, limit: "MIN", confidence: 1,
+        message: "Substrate moisture is falling 2 % per hour: it will reach the minimum (60 %) in about 1 h.",
+    }],
+    summary: "Your lettuce is in \"Healthy\" condition (82/100). All measured variables are within their optimal range.",
+    evaluatedAt: new Date().toISOString(),
+};
+
+describe("asistente IA en el detalle", () => {
+    it("sale de Analizando y pinta resumen, medidor, reglas y pronóstico en es y en", async () => {
+        vi.mocked(cropApi.get).mockResolvedValue(CROP);
+        vi.mocked(cropApi.profiles).mockResolvedValue([PROFILE]);
+        vi.mocked(actuatorApi.list).mockResolvedValue([]);
+        vi.mocked(commandApi.list).mockResolvedValue([]);
+        vi.mocked(readingApi.list).mockResolvedValue([]);
+        vi.mocked(insightApi.get).mockResolvedValue(EN_INSIGHT);
+        await setLocale("es", {persist: false});
+
+        const history = createMemoryHistory();
+        history.set({value: "/app/crops/c1?tab=assistant"});
+        render(() => (
+            <MemoryRouter history={history}>
+                <Route path="/app/crops/:cropId" component={CropDetailPage}/>
+            </MemoryRouter>
+        ));
+
+        expect(await screen.findByText(/Tu lechuga está en condición "Saludable" \(82\/100\)/)).toBeInTheDocument();
+        expect(screen.queryByText(/Analizando tu cultivo/)).toBeNull();
+        expect(screen.getByText("Condiciones ideales")).toBeInTheDocument();
+        expect(screen.getByText("Pronóstico de las próximas horas")).toBeInTheDocument();
+        expect(screen.getByLabelText(/Salud 82 de 100/)).toBeInTheDocument();
+
+        await setLocale("en", {persist: false});
+        expect(await screen.findByText(/Your lettuce is in "Healthy" condition \(82\/100\)/)).toBeInTheDocument();
+        expect(screen.getByText("Ideal conditions")).toBeInTheDocument();
+        expect(screen.getByText("Forecast for the next hours")).toBeInTheDocument();
+        expect(screen.getByLabelText(/Health 82 of 100/)).toBeInTheDocument();
     });
 });

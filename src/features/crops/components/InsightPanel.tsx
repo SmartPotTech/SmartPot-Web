@@ -9,7 +9,7 @@ import {
     TrendingDown,
     TrendingUp,
 } from "lucide-solid";
-import {createSignal, For, Show} from "solid-js";
+import {createMemo, createSignal, For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {Alert, Badge} from "../../../components/ui/Feedback";
 import {describePlacement, healthLabel, METRICS} from "../../../lib/catalog";
@@ -72,6 +72,8 @@ const STATUS_TEXT = {
 export function InsightPanel(props: InsightPanelProps) {
     const [running, setRunning] = createSignal<string | null>(null);
     const [actionError, setActionError] = createSignal<string | null>(null);
+    // El texto del fallback se recalcula con el idioma activo, no se congela al montar el panel.
+    const pendingText = createMemo(() => props.loading ? t("insight.analyzing") : t("insight.noEvaluation"));
 
     return (
         <Show when={!(props.error && !props.insight)} fallback={
@@ -79,7 +81,7 @@ export function InsightPanel(props: InsightPanelProps) {
         }>
             <Show when={props.insight} fallback={
                 <p class="py-10 text-center text-sm text-muted">
-                    {props.loading ? t("insight.analyzing") : t("insight.noEvaluation")}
+                    {pendingText()}
                 </p>
             }>
                 {(insight) => {
@@ -218,7 +220,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                                 {(prediction) => (
                                                     <li>
                                                         <div class="flex justify-between text-sm">
-                                                            <span>{prediction.label}</span>
+                                                            <span>{st(prediction.label)}</span>
                                                             <span
                                                                 class="font-semibold">{Math.round(prediction.probability * 100)} %</span>
                                                         </div>
@@ -226,7 +228,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                                             <div class="h-2 rounded-full bg-leaf-500"
                                                                  style={{"width": `${Math.round(prediction.probability * 100)}%`}}/>
                                                         </div>
-                                                        <p class="mt-0.5 text-xs text-muted">{prediction.model}</p>
+                                                        <p class="mt-0.5 text-xs text-muted">{st(prediction.model)}</p>
                                                     </li>
                                                 )}
                                             </For>

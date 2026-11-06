@@ -26,7 +26,8 @@ export function subscribeTelemetryStream(cropId: string, onReading: (reading: Re
 
     const schedule = () => {
         if (!active) return;
-        const wait = Math.min(retryMs * 2 ** Math.min(failures, 4), MAX_RETRY_MS);
+        // El primer reintento debe respetar los 5000 ms anunciados: failures ya se incrementó antes de programar.
+        const wait = Math.min(retryMs * 2 ** Math.min(Math.max(failures - 1, 0), 4), MAX_RETRY_MS);
         timer = setTimeout(() => void connect(), wait);
     };
 
@@ -41,7 +42,7 @@ export function subscribeTelemetryStream(cropId: string, onReading: (reading: Re
             const value = colon === -1 ? "" : line.slice(colon + 1).replace(/^ /, "");
             if (field === "event") event = value;
             else if (field === "data") data.push(value);
-            else if (field === "retry" && /^\d+$/.test(value)) retryMs = Number(value);
+            else if (field === "retry" && /^\d+$/.test(value)) retryMs = Math.max(1_000, Number(value));
         }
         if (event !== "reading" || data.length === 0) return;
         try {

@@ -1,6 +1,6 @@
 import {A, useParams, useSearchParams} from "@solidjs/router";
 import {ArrowLeft, FileDown} from "lucide-solid";
-import {createEffect, createSignal, For, onCleanup, Show, untrack} from "solid-js";
+import {createEffect, createSignal, For, lazy, onCleanup, Show, Suspense, untrack} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Alert, Badge} from "../../components/ui/Feedback";
 import {CropDetailSkeleton, SkeletonCard} from "../../components/ui/Skeleton";
@@ -11,7 +11,8 @@ import {actuatorApi, commandApi, cropApi, insightApi, readingApi, virtualDeviceA
 import {CROP_FORMS, CROP_KINDS, CROP_TYPES, HEALTH, healthLabel, METRICS, PRIMARY_METRICS} from "../../lib/catalog";
 import {formatMetric, timeAgo} from "../../lib/format";
 import {t, type TranslationKey} from "../../lib/i18n";
-import type {CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
+import {st} from "../../lib/i18n/serverText";
+import type {Actuator, CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
 import {subscribeTelemetryStream} from "../../services/stream";
 import {ControlPanel} from "./components/ControlPanel";
 import {DevicePanel} from "./components/DevicePanel";
@@ -20,8 +21,13 @@ import {InsightPanel} from "./components/InsightPanel";
 import {MetricTile} from "./components/MetricTile";
 import {ReadingsChart} from "./components/ReadingsChart";
 import {SettingsPanel} from "./components/SettingsPanel";
-import {SimulationPanel} from "./components/SimulationPanel";
 import {useCropProfiles} from "./useCropProfiles";
+
+// La simulación solo se descarga al abrir su pestaña: no pesa en el resto del detalle.
+const SimulationPanel = lazy(async () => {
+    const module = await import("./components/SimulationPanel");
+    return {default: module.SimulationPanel};
+});
 
 /** Los reales se configuran en Dispositivo; los virtuales, en Simulación. */
 const TABS: { id: string; label: TranslationKey; only?: CropKind }[] = [
@@ -45,30 +51,77 @@ const RANGES = [
 
 /** Tras una orden, el estado se vuelve a pedir en estos momentos para ver pronto la confirmación del dispositivo. */
 const FOLLOW_UP_MS = [700, 2_000, 4_500];
+/** Bucket de un minuto para que la URL de /readings sea estable y el ETag pueda responder 304. */
+const READINGS_BUCKET_MS = 60_000;
 
-export default function CropDetailPage() {
+interface AssistantTabProps {
+    cropId: string;
+    actuators: Actuator[];
+    onChanged: () => void;
+    onOpenTab: (tab: string) => void;
+}
+
+/**
+ * El asistente se monta solo con su pestaña. Así el recurso nace con una clave estable (el cultivo), no depende de
+ * `searchParams` y no queda un estado de carga falso cuando se abre la pestaña después de cargar la página.
+ */
+export function AssistantTab(props: AssistantTabProps) {
+    const insight = useResource(() => insightApi.get(props.cropId), () => [props.cropId]);
+    return (
+        <InsightPanel insight={insight.data} error={insight.error} loading={insight.loading}
+                      actuators={props.actuators}
+                      onRefresh={() => void insight.reload()}
+                      onRunAction={async (action, actuator) => {
+                          await commandApi.send(props.cropId, actuator.id, action.action, action.durationSeconds);
+                          props.onChanged();
+                      }} onOpenTab={props.onOpenTab}/>
+    );
+}
+
+export default function CropDetailPage(props: { cropId?: string } = {}) {
     const params = useParams<{ cropId: string }>();
-    const cropId = () => params.cropId ?? "";
+    const cropId = () => props.cropId ?? params.cropId ?? "";
     const [searchParams, setSearchParams] = useSearchParams<{ tab?: string }>();
     const requested = () => (typeof searchParams.tab === "string" ? searchParams.tab : "summary");
     const wanted = () => ALIASES[requested()] ?? requested();
     const [metric, setMetric] = createSignal<MetricKey>("temperature");
     const [hours, setHours] = createSignal(24);
     const [exportError, setExportError] = createSignal<string | null>(null);
+    const [liveReading, setLiveReading] = createSignal<Reading | null>(null);
 
     const crop = useResource(() => cropApi.get(cropId()), () => [cropId()], 20_000);
+    // El `from` se ancla a un bucket de un minuto: dentro de la misma ventana la URL no cambia, el cliente reutiliza
+    // el ETag y el sondeo de 30 s recibe 304 en vez de descargar la serie completa.
+    const readingsFrom = () => new Date(
+        Math.floor((Date.now() - hours() * 3600_000) / READINGS_BUCKET_MS) * READINGS_BUCKET_MS,
+    );
     const readings = useResource(
-        () => readingApi.list(cropId(), new Date(Date.now() - hours() * 3600_000), 2000),
+        () => readingApi.list(cropId(), readingsFrom(), 2000),
         () => [cropId(), hours()],
         30_000,
     );
     // Las lecturas nuevas llegan en vivo por SSE y se suman a la serie; la consulta cada 30 s (con ETag) queda de
-    // respaldo si el flujo no pasa por algún proxy.
+    // respaldo si el flujo no pasa por algún proxy. El mismo evento actualiza la última lectura del cultivo para que
+    // los medidores y la escena no esperen al sondeo de 20 s.
     createEffect(() => {
         const id = cropId();
         const subscription = subscribeTelemetryStream(id, (reading: Reading) => {
-            const current = untrack(() => readings.data);
-            if (!current || current.some((item) => item.id === reading.id)) return;
+            setLiveReading((previous) => !previous || Date.parse(reading.measuredAt) >= Date.parse(previous.measuredAt)
+                ? reading
+                : previous);
+            const currentCrop = untrack(() => crop.data);
+            if (currentCrop) {
+                const previous = currentCrop.latestReading;
+                if (!previous || Date.parse(previous.measuredAt) < Date.parse(reading.measuredAt)) {
+                    crop.setData({
+                        ...currentCrop,
+                        latestReading: reading,
+                        device: {...currentCrop.device, online: true, lastSeenAt: reading.measuredAt},
+                    });
+                }
+            }
+            const current = untrack(() => readings.data) ?? [];
+            if (current.some((item) => item.id === reading.id)) return;
             const since = Date.now() - untrack(hours) * 3600_000;
             readings.setData([...current.filter((item) => Date.parse(item.measuredAt) >= since), reading]);
         });
@@ -108,10 +161,6 @@ export default function CropDetailPage() {
     };
     onCleanup(() => followUps.forEach((timer) => window.clearTimeout(timer)));
 
-    const insight = useResource(
-        () => (tab() === "assistant" ? insightApi.get(cropId()) : Promise.resolve(undefined)),
-        () => [cropId(), tab() === "assistant"],
-    );
     const profiles = useCropProfiles();
 
     usePageMeta(() => crop.data?.name ?? t("detail.defaultTitle"));
@@ -121,7 +170,7 @@ export default function CropDetailPage() {
     async function exportCsv(currentName: string) {
         setExportError(null);
         try {
-            const csv = await readingApi.exportCsv(cropId(), new Date(Date.now() - hours() * 3600_000));
+            const csv = await readingApi.exportCsv(cropId(), readingsFrom());
             const url = URL.createObjectURL(new Blob([csv], {type: "text/csv;charset=utf-8"}));
             const link = document.createElement("a");
             link.href = url;
@@ -145,7 +194,22 @@ export default function CropDetailPage() {
             }>
                 {(current) => {
                     const profile = () => profiles[current().type];
-                    const latest = () => current().latestReading;
+                    // La lectura en vivo manda sobre la del sondeo si es más reciente: un sondeo que salió antes del
+                    // evento SSE no puede hacer retroceder los medidores.
+                    const latest = () => {
+                        const polled = current().latestReading;
+                        const live = liveReading();
+                        if (!live) return polled;
+                        if (!polled) return live;
+                        return Date.parse(live.measuredAt) >= Date.parse(polled.measuredAt) ? live : polled;
+                    };
+                    const heroCrop = () => {
+                        const polled = current();
+                        const reading = latest();
+                        return reading && reading !== polled.latestReading
+                            ? {...polled, latestReading: reading}
+                            : polled;
+                    };
                     const virtual = () => current().kind === "VIRTUAL";
 
                     return (
@@ -157,7 +221,7 @@ export default function CropDetailPage() {
                                 <div class="mt-2 flex flex-wrap items-center justify-between gap-3">
                                     <div>
                                         <h1 class="text-3xl font-bold">{current().name}</h1>
-                                        <p class="text-sm text-muted">
+                                        <p class="text-sm text-muted tabular-nums">
                                             {t("detail.headline", {
                                                 species: CROP_TYPES[current().type].label,
                                                 form: CROP_FORMS[current().form].phrase,
@@ -172,7 +236,7 @@ export default function CropDetailPage() {
                                         </Show>
                                         <Show when={current().health}>
                                             {(h) => (
-                                                <Badge tone={HEALTH[h().level]?.tone ?? "neutral"}>
+                                                <Badge tone={HEALTH[h().level]?.tone ?? "neutral"} class="tabular-nums">
                                                     {t("detail.healthBadge", {index: Math.round(h().index), label: healthLabel(h())})}
                                                 </Badge>
                                             )}
@@ -181,7 +245,7 @@ export default function CropDetailPage() {
                                 </div>
                             </div>
 
-                            <CropHero crop={current()} actuators={actuators.data ?? []} commands={commands.data ?? []}
+                            <CropHero crop={heroCrop()} actuators={actuators.data ?? []} commands={commands.data ?? []}
                                       simulation={simulation.data} weather={weather.data} onOpenTab={openTab}/>
 
                             <nav class="-mx-4 flex gap-1 overflow-x-auto border-b border-line px-4"
@@ -234,7 +298,7 @@ export default function CropDetailPage() {
                                         <Show when={profile()}>
                                             {(prof) => (
                                                 <p class="mt-2 text-xs text-muted">
-                                                    {t("detail.greenBand", {species: prof().name.toLowerCase()})}
+                                                    {t("detail.greenBand", {species: st(prof().name).toLowerCase()})}
                                                 </p>
                                             )}
                                         </Show>
@@ -243,13 +307,8 @@ export default function CropDetailPage() {
                             </Show>
 
                             <Show when={tab() === "assistant"}>
-                                <InsightPanel insight={insight.data} error={insight.error} loading={insight.loading}
-                                              actuators={actuators.data ?? []}
-                                              onRefresh={() => void insight.reload()}
-                                              onRunAction={async (action, actuator) => {
-                                                  await commandApi.send(cropId(), actuator.id, action.action, action.durationSeconds);
-                                                  refreshSoon();
-                                              }} onOpenTab={openTab}/>
+                                <AssistantTab cropId={cropId()} actuators={actuators.data ?? []}
+                                              onChanged={refreshSoon} onOpenTab={openTab}/>
                             </Show>
 
                             <Show when={tab() === "control"}>
@@ -278,14 +337,14 @@ export default function CropDetailPage() {
                                     <Show when={exportError()}>
                                         {(err) => <Alert tone="danger">{err()}</Alert>}
                                     </Show>
-                                    <p class="text-sm text-muted">{t("detail.readingsInPeriod", {count: readings.data?.length ?? 0})}</p>
+                                    <p class="text-sm text-muted tabular-nums">{t("detail.readingsInPeriod", {count: readings.data?.length ?? 0})}</p>
                                     <div class="grid gap-5 lg:grid-cols-2">
                                         <For each={PRIMARY_METRICS}>
                                             {(key) => (
                                                 <section class="card p-5">
                                                     <div class="flex items-baseline justify-between">
                                                         <h3 class="font-semibold">{METRICS[key].label}</h3>
-                                                        <span class="text-sm text-muted">
+                                                        <span class="text-sm text-muted tabular-nums">
                                                             {formatMetric(key, latest()?.measures[key])}
                                                         </span>
                                                     </div>
@@ -316,14 +375,16 @@ export default function CropDetailPage() {
                                             </Alert>
                                         }>
                                             <Show when={`${sim().active}-${sim().updatedAt ?? ""}`} keyed>
-                                                <SimulationPanel crop={current()} simulation={sim()}
-                                                                 profile={profile()}
-                                                                 onSaved={(saved) => {
-                                                                     simulation.setData(saved);
-                                                                     void crop.reload();
-                                                                 }}
-                                                                 onPaused={() => void simulation.reload()}
-                                                                 onOpenTab={openTab}/>
+                                                <Suspense fallback={<SkeletonCard height="min-h-[280px]"/>}>
+                                                    <SimulationPanel crop={current()} simulation={sim()}
+                                                                     profile={profile()}
+                                                                     onSaved={(saved) => {
+                                                                         simulation.setData(saved);
+                                                                         void crop.reload();
+                                                                     }}
+                                                                     onPaused={() => void simulation.reload()}
+                                                                     onOpenTab={openTab}/>
+                                                </Suspense>
                                             </Show>
                                         </Show>
                                     )}
