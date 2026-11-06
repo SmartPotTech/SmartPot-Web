@@ -5,6 +5,7 @@ import {Badge} from "../../../components/ui/Feedback";
 import {formatMetric, timeAgo} from "../../../lib/format";
 import type {Learning} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 
 /** Lo que el asistente aprendió de las lecturas reales de la especie, aplicado a la lectura actual. */
 export function LearningCard(props: { learning: Learning }) {
@@ -18,7 +19,7 @@ export function LearningCard(props: { learning: Learning }) {
                     <h3 id="learning-title" class="flex items-center gap-2 font-semibold">
                         <GraduationCap size={18} class="text-accent"/> {t("learnCard.title")}
                     </h3>
-                    <p class="text-sm text-muted">{props.learning.message}</p>
+                    <p class="text-sm text-muted">{st(props.learning.message)}</p>
                 </div>
                 <Badge tone={learned() ? "success" : "neutral"}>
                     {learned() ? t("learnCard.trained", {time: props.learning.trainedAt ? timeAgo(props.learning.trainedAt) : ""}).trim() : t("learnCard.learning")}
@@ -33,10 +34,10 @@ export function LearningCard(props: { learning: Learning }) {
                                 <p class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
                                     <Radar size={14}/> {t("learnCard.state")}
                                 </p>
-                                <p class="mt-1 font-semibold">{state().label}</p>
+                                <p class="mt-1 font-semibold">{st(state().label)}</p>
                                 <p class="text-xs text-muted">
                                     {t("learnCard.stateShare", {
-                                        description: state().description,
+                                        description: st(state().description),
                                         share: Math.round(state().share * 100),
                                     })}
                                 </p>
@@ -51,7 +52,7 @@ export function LearningCard(props: { learning: Learning }) {
                                 </p>
                                 <p class="mt-1 font-semibold">{formatMetric("soilMoisture", moisture().expectedIn1h)}</p>
                                 <p class="text-xs text-muted">
-                                    {moisture().model}
+                                    {st(moisture().model)}
                                     {moisture().mae != null && t("learnCard.mae", {value: moisture().mae!.toFixed(1)})}
                                 </p>
                             </div>
@@ -75,7 +76,7 @@ export function LearningCard(props: { learning: Learning }) {
                         {(prediction) => (
                             <li>
                                 <div class="flex justify-between gap-3 text-sm">
-                                    <span>{prediction.label}</span>
+                                    <span>{st(prediction.label)}</span>
                                     <span class="font-semibold">{Math.round(prediction.probability * 100)} %</span>
                                 </div>
                                 <div class="mt-1 h-2 rounded-full bg-surface">
@@ -83,8 +84,8 @@ export function LearningCard(props: { learning: Learning }) {
                                          style={{"width": `${Math.round(prediction.probability * 100)}%`}}/>
                                 </div>
                                 <p class="mt-0.5 text-xs text-muted">
-                                    {prediction.model}
-                                    {prediction.score != null && t("learnCard.score", {metric: prediction.metric, score: prediction.score.toFixed(2)})}
+                                    {st(prediction.model)}
+                                    {prediction.score != null && t("learnCard.score", {metric: st(prediction.metric), score: prediction.score.toFixed(2)})}
                                 </p>
                             </li>
                         )}

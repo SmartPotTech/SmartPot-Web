@@ -8,6 +8,7 @@ import {useResource} from "../../hooks/useResource";
 import {insightApi} from "../../lib/api/services";
 import {timeAgo} from "../../lib/format";
 import {intlLocale, t, type TranslationKey} from "../../lib/i18n";
+import {st} from "../../lib/i18n/serverText";
 import type {CropTypeLearning, ModelCard} from "../../lib/api/types";
 
 const STEPS: [TranslationKey, TranslationKey][] = [
@@ -88,7 +89,7 @@ function SpeciesLearning(props: { item: CropTypeLearning }) {
         <section class="card p-5" aria-labelledby={`species-${props.item.cropType}`}>
             <div class="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <h2 id={`species-${props.item.cropType}`} class="text-lg font-semibold">{props.item.name}</h2>
+                    <h2 id={`species-${props.item.cropType}`} class="text-lg font-semibold">{st(props.item.name)}</h2>
                     <p class="text-sm text-muted">
                         {t("learning.summary", {
                             readings: t("learning.readings", {count: props.item.readings}),
@@ -143,14 +144,14 @@ function SpeciesLearning(props: { item: CropTypeLearning }) {
                                         {(cluster) => (
                                             <li>
                                                 <div class="flex justify-between gap-3 text-sm">
-                                                    <span class="font-medium">{cluster.label}</span>
+                                                    <span class="font-medium">{st(cluster.label)}</span>
                                                     <span class="text-muted">{Math.round(cluster.share * 100)} %</span>
                                                 </div>
                                                 <div class="mt-1 h-2 rounded-full bg-surface">
                                                     <div class="h-2 rounded-full bg-leaf-600"
                                                          style={{"width": `${Math.round(cluster.share * 100)}%`}}/>
                                                 </div>
-                                                <p class="mt-0.5 text-xs text-muted">{cluster.description}</p>
+                                                <p class="mt-0.5 text-xs text-muted">{st(cluster.description)}</p>
                                             </li>
                                         )}
                                     </For>
@@ -187,17 +188,17 @@ export function ModelSummary(props: { model: ModelCard }) {
     return (
         <article class="rounded-xl border border-line p-4">
             <div class="flex items-start justify-between gap-2">
-                <h3 class="text-sm font-semibold">{props.model.label}</h3>
+                <h3 class="text-sm font-semibold">{st(props.model.label)}</h3>
                 <Badge tone={props.model.status === "TRAINED" ? "success" : "neutral"}>
                     {props.model.status === "TRAINED" ? `v${props.model.version}` : t("learning.pending")}
                 </Badge>
             </div>
             <Show when={props.model.status === "TRAINED"}>
                 <p class="mt-1 text-sm">
-                    <strong>{props.model.model}</strong>
+                    <strong>{st(props.model.model)}</strong>
                     <span class="block text-xs text-muted">
                         {t("learning.holdout", {
-                            metric: props.model.metric,
+                            metric: st(props.model.metric),
                             value: format(props.model.holdout),
                             baseline: format(props.model.baseline),
                         })}
@@ -205,7 +206,7 @@ export function ModelSummary(props: { model: ModelCard }) {
                 </p>
             </Show>
             <Show when={props.model.reason}>
-                <p class="mt-1 text-xs text-muted">{props.model.reason}</p>
+                <p class="mt-1 text-xs text-muted">{st(props.model.reason)}</p>
             </Show>
             <Show when={ranked().length > 0}>
                 <table class="mt-3 w-full text-xs">
@@ -222,7 +223,7 @@ export function ModelSummary(props: { model: ModelCard }) {
                     <For each={ranked()}>
                         {(candidate) => (
                             <tr class={candidate.model === props.model.model ? "font-semibold text-accent-strong" : ""}>
-                                <td class="py-0.5">{candidate.model}</td>
+                                <td class="py-0.5">{st(candidate.model)}</td>
                                 <td class="py-0.5 text-right tabular-nums">
                                     {format(candidate.score)}{candidate.std != null &&
                                     <span class="text-muted"> ± {candidate.std.toFixed(2)}</span>}

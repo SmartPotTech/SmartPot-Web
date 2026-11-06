@@ -8,6 +8,7 @@ import {ApiError} from "../../lib/api/client";
 import {channelApi} from "../../lib/api/services";
 import {timeAgo} from "../../lib/format";
 import {t, type TranslationKey} from "../../lib/i18n";
+import {st} from "../../lib/i18n/serverText";
 import type {ChannelLink, ChannelOption, LinkCode, NotificationType} from "../../lib/api/types";
 
 const EVENT_LABELS: Record<NotificationType, TranslationKey> = {
@@ -108,7 +109,7 @@ export function ChannelRow(props: ChannelRowProps) {
                     <Badge tone="neutral">{t("channels.unavailable")}</Badge>
                 </div>
                 <Show when={props.option.description}>
-                    <p class="mt-1 text-muted">{props.option.description}</p>
+                    <p class="mt-1 text-muted">{st(props.option.description)}</p>
                 </Show>
                 <Button size="sm" class="mt-3" disabled>{t("channels.linkButton", {name: props.option.name})}</Button>
                 <details class="mt-3 text-xs text-muted">
@@ -133,7 +134,7 @@ export function ChannelRow(props: ChannelRowProps) {
                     <p class="font-semibold">{props.option.name} <span
                         class="font-normal text-muted">{props.option.handle}</span></p>
                     <Show when={props.option.description}>
-                        <p class="mt-1 text-sm text-muted">{props.option.description}</p>
+                        <p class="mt-1 text-sm text-muted">{st(props.option.description)}</p>
                     </Show>
                     <p class="mt-1 text-sm text-muted">
                         {t("channels.linkHelp", {name: props.option.name})}<strong>{t("channels.linkHelpStart")}</strong>{t("channels.linkHelpEnd")}

@@ -15,6 +15,7 @@ import {ACTUATORS, CROP_FORMS, CROP_TYPES, describePlacement} from "../../../lib
 import {formatMetric, timeAgo} from "../../../lib/format";
 import type {Actuator, ActuatorType, Command, Crop, VirtualDevice, Weather} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
+import {st} from "../../../lib/i18n/serverText";
 import {isDaylight, liveStatus, runningActuators, vigorOf} from "../live";
 import {CropScene} from "./scene/CropScene";
 
@@ -94,7 +95,7 @@ export function CropHero(props: CropHeroProps) {
     const described = () => describePlacement(placement());
     const where = () => described() ?? (outdoor() ? t("hero.outdoors") : t("hero.undefined"));
     const scenery = () => described() ?? (outdoor() ? t("hero.outdoors") : t("hero.indoors"));
-    const place = () => outdoor() && weather() ? `${scenery()}, ${weather()!.label.toLowerCase()}` : scenery();
+    const place = () => outdoor() && weather() ? `${scenery()}, ${st(weather()!.label).toLowerCase()}` : scenery();
     const label = () => t("hero.label", {
         species: species(),
         place: place(),
@@ -165,12 +166,12 @@ export function CropHero(props: CropHeroProps) {
                             </Show>
                         </p>
                         <Show when={connected()}>
-                            <p class="mt-1 text-sm text-muted">
+                            <p class="mt-1 text-sm text-muted tabular-nums">
                                 <Show when={weather()}>
                                     {(w) => (
                                         <>
                                             {t("hero.outside", {
-                                                label: w().label.toLowerCase(),
+                                                label: st(w().label).toLowerCase(),
                                                 temperature: w().temperature.toFixed(1),
                                                 humidity: Math.round(w().humidity),
                                             })}
@@ -185,7 +186,7 @@ export function CropHero(props: CropHeroProps) {
                             </p>
                         </Show>
                         <Show when={props.simulation?.weatherError}>
-                            {(err) => <p class="mt-1 text-xs text-clay-fg">{err()}</p>}
+                            {(err) => <p class="mt-1 text-xs text-clay-fg">{st(err())}</p>}
                         </Show>
                     </div>
 

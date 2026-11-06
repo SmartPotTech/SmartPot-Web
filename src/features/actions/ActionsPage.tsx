@@ -137,7 +137,7 @@ export function ActionsPage() {
                         <Show when={fleet.data}>
                             {(data) => (
                                 <>
-                                    <p class="mb-2 text-sm text-muted">{data().summary}</p>
+                                    <p class="mb-2 text-sm text-muted">{st(data().summary)}</p>
                                     <Show when={data().sharedIssues.length > 0}>
                                         <ul class="mb-4 space-y-2">
                                             <For each={data().sharedIssues}>
