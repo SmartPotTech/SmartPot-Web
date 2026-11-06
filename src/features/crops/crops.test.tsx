@@ -211,24 +211,31 @@ const EN_INSIGHT: Insight = {
 };
 
 describe("asistente IA en el detalle", () => {
-    it("sale de Analizando y pinta resumen, medidor, reglas y pronóstico en es y en", async () => {
+    it("sale de Analizando al abrir la pestaña y pinta resumen, medidor, reglas y pronóstico en es y en", async () => {
         vi.mocked(cropApi.get).mockResolvedValue(CROP);
         vi.mocked(cropApi.profiles).mockResolvedValue([PROFILE]);
         vi.mocked(actuatorApi.list).mockResolvedValue([]);
         vi.mocked(commandApi.list).mockResolvedValue([]);
         vi.mocked(readingApi.list).mockResolvedValue([]);
+        vi.mocked(insightApi.get).mockClear();
         vi.mocked(insightApi.get).mockResolvedValue(EN_INSIGHT);
         await setLocale("es", {persist: false});
 
         const history = createMemoryHistory();
-        history.set({value: "/app/crops/c1?tab=assistant"});
+        history.set({value: "/app/crops/c1"});
         render(() => (
             <MemoryRouter history={history}>
                 <Route path="/app/crops/:cropId" component={CropDetailPage}/>
             </MemoryRouter>
         ));
 
+        expect(await screen.findByRole("heading", {name: "Lechuga del balcón"})).toBeInTheDocument();
+        expect(insightApi.get).not.toHaveBeenCalled();
+
+        await userEvent.click(screen.getByRole("button", {name: "Asistente IA"}));
+
         expect(await screen.findByText(/Tu lechuga está en condición "Saludable" \(82\/100\)/)).toBeInTheDocument();
+        expect(insightApi.get).toHaveBeenCalledWith("c1");
         expect(screen.queryByText(/Analizando tu cultivo/)).toBeNull();
         expect(screen.getByText("Condiciones ideales")).toBeInTheDocument();
         expect(screen.getByText("Pronóstico de las próximas horas")).toBeInTheDocument();
