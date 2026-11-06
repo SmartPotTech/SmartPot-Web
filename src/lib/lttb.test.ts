@@ -29,4 +29,16 @@ describe("downsampleLTTB", () => {
         const data = series(10);
         expect(downsampleLTTB(data, 400, (p) => p.t, (p) => p.v)).toEqual(data);
     });
+
+    it("con threshold 2 conserva solo primero y último", () => {
+        const data = series(10);
+        const out = downsampleLTTB(data, 2, (p) => p.t, (p) => p.v);
+        expect(out).toEqual([data[0], data[data.length - 1]]);
+    });
+
+    it("con threshold 1 conserva el primer punto y con 0 no devuelve nada", () => {
+        const data = series(10);
+        expect(downsampleLTTB(data, 1, (p) => p.t, (p) => p.v)).toEqual([data[0]]);
+        expect(downsampleLTTB(data, 0, (p) => p.t, (p) => p.v)).toEqual([]);
+    });
 });

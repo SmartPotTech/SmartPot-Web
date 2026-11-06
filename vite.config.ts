@@ -33,5 +33,7 @@ export default defineConfig({
         globals: true,
         setupFiles: ["./src/test/setup.ts"],
         css: false,
+        // Bajo carga de CPU, jsdom tarda en arrancar; 15 s evita timeouts espurios sin ocultar pruebas lentas reales.
+        testTimeout: 15000,
     },
 });

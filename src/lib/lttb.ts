@@ -3,8 +3,16 @@
  * gráficos SVG no dibujen miles de nodos. Devuelve un subconjunto de los puntos originales (primero y último incluidos).
  */
 export function downsampleLTTB<T>(data: readonly T[], threshold: number, x: (p: T) => number, y: (p: T) => number): T[] {
-    if (threshold >= data.length || threshold <= 2) {
+    if (threshold <= 0) return [];
+    if (data.length <= threshold) {
         return [...data];
+    }
+    // Para uno o dos puntos no hay triángulo que calcular; se conservan los extremos y se respeta el contrato.
+    if (threshold === 1) {
+        return [data[0]!];
+    }
+    if (threshold === 2) {
+        return [data[0]!, data[data.length - 1]!];
     }
     const sampled: T[] = [data[0]!];
     const every = (data.length - 2) / (threshold - 2);
