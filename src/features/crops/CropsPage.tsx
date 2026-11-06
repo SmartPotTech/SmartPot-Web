@@ -1,17 +1,23 @@
 import {Plus, Sprout} from "lucide-solid";
-import {createSignal, For, Show} from "solid-js";
+import {createSignal, For, lazy, Show, Suspense} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
 import {CropsGridSkeleton} from "../../components/ui/Skeleton";
+import {Spinner} from "../../components/ui/Spinner";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {cropApi} from "../../lib/api/services";
 import {greeting} from "../../lib/format";
 import {t} from "../../lib/i18n";
 import {useAuth} from "../auth/AuthContext";
-import {CreateCropDialog} from "./components/CreateCropDialog";
 import {CropCard} from "./components/CropCard";
+
+// El diálogo de alta (y con él la simulación y la escena) se descarga solo al pulsar «Nuevo cultivo».
+const CreateCropDialog = lazy(async () => {
+    const module = await import("./components/CreateCropDialog");
+    return {default: module.CreateCropDialog};
+});
 
 export function CropsPage() {
     usePageMeta(() => t("crops.title"));
@@ -55,8 +61,16 @@ export function CropsPage() {
                 </Show>
             </Show>
 
-            <CreateCropDialog open={creating()} onClose={() => setCreating(false)}
-                              onCreated={() => void crops.reload()}/>
+            <Show when={creating()}>
+                <Suspense fallback={
+                    <div class="fixed inset-0 z-50 grid place-items-center bg-leaf-950/40">
+                        <Spinner size={28}/>
+                    </div>
+                }>
+                    <CreateCropDialog open onClose={() => setCreating(false)}
+                                      onCreated={() => void crops.reload()}/>
+                </Suspense>
+            </Show>
         </div>
     );
 }

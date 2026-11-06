@@ -22,7 +22,7 @@ import type {
 import {ConnectionGuide} from "./ConnectionGuide";
 import {PlacementPicker} from "./PlacementPicker";
 import {CropScene} from "./scene/CropScene";
-import {ModePicker} from "./SimulationPanel";
+import {ModePicker} from "./ModePicker";
 
 type Step = "kind" | "details" | "connect";
 

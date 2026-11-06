@@ -1,4 +1,4 @@
-import {CloudSun, Hand, Pause, PauseCircle, Play, PlayCircle, Save, SunMoon} from "lucide-solid";
+import {Pause, PauseCircle, Play, PlayCircle, Save} from "lucide-solid";
 import {createSignal, For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {Alert} from "../../../components/ui/Feedback";
@@ -15,15 +15,10 @@ import type {
     VirtualDeviceRequest,
     VirtualMode,
 } from "../../../lib/api/types";
-import {t, type TranslationKey} from "../../../lib/i18n";
+import {t} from "../../../lib/i18n";
 import {st} from "../../../lib/i18n/serverText";
 import {LocationPicker, type PickedLocation} from "./LocationPicker";
-
-const MODES: { id: VirtualMode; label: TranslationKey; hint: TranslationKey; icon: typeof CloudSun }[] = [
-    {id: "AUTO", label: "sim.mode.AUTO", hint: "sim.mode.AUTO.hint", icon: SunMoon},
-    {id: "WEATHER", label: "sim.mode.WEATHER", hint: "sim.mode.WEATHER.hint", icon: CloudSun},
-    {id: "MANUAL", label: "sim.mode.MANUAL", hint: "sim.mode.MANUAL.hint", icon: Hand},
-];
+import {ModePicker} from "./ModePicker";
 
 /** Escala de cada medidor, la misma de los sensores del firmware. */
 const GAUGES: Record<MetricKey, { min: number; max: number; step: number }> = {
@@ -45,29 +40,6 @@ function startingGauges(device: VirtualDevice, profile: CropProfile | undefined)
             ?? (range ? Math.round(((range.min + range.max) / 2) * 10) / 10 : key === "atmosphere" ? 1012 : GAUGES[key].min);
     }
     return values;
-}
-
-export function ModePicker(props: { value: VirtualMode; onChange: (mode: VirtualMode) => void }) {
-    return (
-        <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t("sim.modeLabel")}>
-            <For each={MODES}>
-                {(item) => {
-                    const Icon = item.icon;
-                    return (
-                        <button type="button" role="radio" aria-checked={props.value === item.id}
-                                onClick={() => props.onChange(item.id)}
-                                class={`rounded-xl border p-3 text-left transition-colors ${props.value === item.id
-                                    ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
-                            <span class="flex items-center gap-2 font-semibold">
-                                <Icon size={16} class="text-accent"/>{t(item.label)}
-                            </span>
-                            <span class="mt-1 block text-xs text-muted">{t(item.hint)}</span>
-                        </button>
-                    );
-                }}
-            </For>
-        </div>
-    );
 }
 
 interface SimulationPanelProps {
