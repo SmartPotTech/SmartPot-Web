@@ -125,7 +125,6 @@
     </script>
     <script src="/theme-init.js"></script>
     <link href="/prerender.css" rel="stylesheet"/>
-    <script src="/config.js"></script>
 </head>
 <body>
 <div id="root">
@@ -146,6 +145,8 @@
         <noscript><p>Activa JavaScript para usar la aplicación.</p></noscript>
     </main>
 </div>
+<!-- Se ejecuta antes del módulo principal y deja de bloquear el parser en el <head>. -->
+<script src="/config.js"></script>
 <script src="/src/main.tsx" type="module"></script>
 </body>
 </html>

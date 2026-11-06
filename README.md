@@ -36,11 +36,11 @@ The landing page is public and indexable; the application lives under `/app` and
 ### Architecture, Performance, and Security Highlights
 
 - **Fine-grained reactivity without a Virtual DOM (`solid-js`).** Signals (`createSignal`, `createMemo`, `createEffect`) update only the exact DOM nodes or SVG attributes that change on each telemetry tick or actuator countdown.
-- **Native SVG charts without Recharts.** `ReadingsChart` and `MetricComparison` render areas, ideal range bands, axes, legends, and interactive tooltips directly in reactive SVG, keeping the initial compressed bundle under 50 kB gzip.
+- **Native SVG charts without Recharts.** `ReadingsChart` and `MetricComparison` render areas, ideal range bands, axes, legends, and interactive tooltips directly in reactive SVG. Route-level chunks stay small (the lazy detail view is under 50 kB gzip), and crop creation/simulation code is loaded only when needed.
 - **Conditional `ETag` revalidation (`If-None-Match` / `304 Not Modified`).** The HTTP client caches `GET` responses in memory keyed by session scope and weak `ETag` from `SmartPot-API`; when unchanged, the API returns `304` with no body. Any mutation (`POST`, `PUT`, `PATCH`, `DELETE`) or session change clears the cache immediately.
 - **`HttpOnly` Cookie Session + Signed Double-Submit CSRF.** Session authentication uses an `HttpOnly` cookie (`smartpot_session`) paired with a signed CSRF token (`smartpot_csrf` / `X-CSRF-Token`), synchronized across open browser tabs via `BroadcastChannel` and `storage` events.
-- **Full Bilingual UI (`es` / `en`).** Both static interface catalogs and dynamic API/AI messages adapt reactively to the active language.
-- **Hardened Unprivileged Nginx Container.** Serves pre-compressed Gzip (level 9) and Brotli (quality 11) static assets with strict CSP, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and `Permissions-Policy`.
+- **Full Bilingual UI (`es` / `en`).** Both static interface catalogs and dynamic API/AI messages adapt reactively to the active language. `serverText.ts` maps the expert-system rules, diagnoses, forecasts, placement advice, fleet analysis, learning status, notifications, and HTTP errors emitted by `SmartPot-AI` and `SmartPot-API`, including values interpolated into templates.
+- **Hardened Unprivileged Nginx Container.** Serves pre-compressed Gzip (level 9) and Brotli (quality 11) static assets through `gzip_static` and a pinned `ngx_brotli` module, with strict CSP, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, and `Permissions-Policy`.
 
 ### Tech Stack
 
@@ -158,11 +158,11 @@ La página de inicio es pública e indexable; la aplicación vive bajo `/app` y 
 ### Mejoras de Arquitectura, Rendimiento y Seguridad
 
 - **Reactividad de grano fino sin Virtual DOM (`solid-js`).** Las señales (`createSignal`, `createMemo`, `createEffect`) actualizan únicamente los nodos del DOM o atributos SVG que cambian en cada sondeo de telemetría o cuenta regresiva de actuadores, sin reconciliar árboles de componentes.
-- **Gráficos SVG nativos sin Recharts.** `ReadingsChart` y `MetricComparison` renderizan áreas, bandas de rango ideal, ejes, leyendas y *tooltips* interactivos directamente en SVG reactivo, reduciendo el paquete comprimido inicial por debajo de 50 kB gzip.
+- **Gráficos SVG nativos sin Recharts.** `ReadingsChart` y `MetricComparison` renderizan áreas, bandas de rango ideal, ejes, leyendas y *tooltips* interactivos directamente en SVG reactivo. Los trozos por ruta se mantienen pequeños (la vista de detalle diferida queda por debajo de 50 kB gzip) y el alta de cultivos y la simulación solo se descargan cuando se abren.
 - **Revalidación condicional `ETag` (`If-None-Match` / `304 Not Modified`).** El cliente HTTP guarda en memoria las respuestas `GET` junto con el `ETag` débil emitido por `SmartPot-API` y envía `If-None-Match` en los sondeos periódicos; cuando el recurso no cambió, la API responde `304` sin transferir cuerpo y la PWA reutiliza la copia en memoria. Cualquier mutación (`POST`, `PUT`, `PATCH`, `DELETE`) o cambio de sesión limpia la caché al instante.
 - **Sesión en cookie `HttpOnly` + protección CSRF firmada.** La autenticación viaja en la cookie `smartpot_session` (`HttpOnly`, `SameSite=Lax`) acompañada del token CSRF de doble envío (`smartpot_csrf` / `X-CSRF-Token`) y sincronización entre pestañas con `BroadcastChannel`.
-- **Interfaz Bilingüe (`es` / `en`).** Tanto los catálogos estáticos de la interfaz como los textos dinámicos provenientes de la API y del asistente de IA se muestran en el idioma elegido por la persona.
-- **Contenedor Nginx endurecido.** Añade `Cross-Origin-Resource-Policy: same-origin` y `gzip_vary on` junto a la CSP estricta, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` y `Permissions-Policy`.
+- **Interfaz Bilingüe (`es` / `en`).** Tanto los catálogos estáticos de la interfaz como los textos dinámicos provenientes de la API y del asistente de IA se muestran en el idioma elegido por la persona. `serverText.ts` cubre las reglas del sistema experto, diagnósticos, pronósticos, consejos de ubicación, análisis de flota, estado de aprendizaje, notificaciones y errores HTTP de `SmartPot-AI` y `SmartPot-API`, incluidos los valores interpolados en las plantillas.
+- **Contenedor Nginx endurecido.** Sirve los activos precomprimidos con Gzip (nivel 9) y Brotli (calidad 11) mediante `gzip_static` y un módulo `ngx_brotli` fijado a la versión de la imagen, junto a la CSP estricta, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` y `Permissions-Policy`.
 
 ### Tecnologías
 

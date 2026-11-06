@@ -13,6 +13,7 @@ server {
 
     # Compresión pre-calculada estática (sin coste de CPU) y dinámica
     gzip_static on;
+    brotli_static on;
     gzip on;
     gzip_comp_level 6;
     gzip_min_length 256;
