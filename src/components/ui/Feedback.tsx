@@ -10,10 +10,10 @@ const BADGE: Record<Tone, string> = {
     danger: "bg-danger-100 text-danger-fg",
 };
 
-export function Badge(props: { tone?: Tone; children: JSX.Element }) {
+export function Badge(props: { tone?: Tone; class?: string; children: JSX.Element }) {
     return (
         <span
-            class={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BADGE[props.tone ?? "neutral"]}`}>
+            class={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BADGE[props.tone ?? "neutral"]} ${props.class ?? ""}`}>
             {props.children}
         </span>
     );

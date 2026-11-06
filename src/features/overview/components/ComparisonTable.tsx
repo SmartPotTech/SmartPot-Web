@@ -60,7 +60,7 @@ export function ComparisonTable(props: { crops: Crop[] }) {
                                     <th scope="row" class="px-4 py-2.5 text-left font-normal">
                                         <A href={`/app/crops/${crop.id}`}
                                            class="font-semibold text-accent-strong hover:underline">{crop.name}</A>
-                                        <span class="block text-xs text-muted">
+                                        <span class="block text-xs text-muted tabular-nums">
                                             {CROP_TYPES[crop.type].label} · {timeAgo(crop.latestReading?.measuredAt)}
                                         </span>
                                     </th>

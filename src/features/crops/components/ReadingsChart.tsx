@@ -127,7 +127,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                                 <line x1={g().padLeft} x2={g().width - g().padRight}
                                                       y1={tick.y} y2={tick.y} class="stroke-line"/>
                                                 <text x={g().padLeft - 8} y={tick.y + 4} text-anchor="end"
-                                                      class="fill-muted" font-size="11">
+                                                      class="fill-muted tabular-nums" font-size="11">
                                                     {Math.round(tick.value * 10) / 10}
                                                 </text>
                                             </g>
@@ -144,7 +144,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                     <For each={g().xTicks}>
                                         {(tick) => (
                                             <text x={tick.x} y={g().height - 6} text-anchor={tick.anchor}
-                                                  class="fill-muted" font-size="11">
+                                                  class="fill-muted tabular-nums" font-size="11">
                                                 {formatTime(tick.time)}
                                             </text>
                                         )}

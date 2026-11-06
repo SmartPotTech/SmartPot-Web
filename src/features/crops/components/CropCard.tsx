@@ -35,7 +35,7 @@ export function CropCard(props: { crop: Crop }) {
                     <For each={["temperature", "soilMoisture", "ph"] as const}>
                         {(metric) => (
                             <div class="rounded-xl bg-surface px-2 py-2">
-                                <p class="text-sm font-semibold">{formatMetric(metric, measures()[metric])}</p>
+                                <p class="text-sm font-semibold tabular-nums">{formatMetric(metric, measures()[metric])}</p>
                                 <p class="text-xs text-muted">{metric === "temperature" ? t("card.tempShort") : metric === "ph" ? "pH" : t("card.substrateShort")}</p>
                             </div>
                         )}
@@ -55,7 +55,7 @@ export function CropCard(props: { crop: Crop }) {
                             tone={props.crop.kind === "VIRTUAL" ? "info" : "success"}>{CROP_KINDS[props.crop.kind]?.label}</Badge>
                         <Show when={health()} fallback={<Badge>{t("card.unrated")}</Badge>}>
                             {(h) => (
-                                <Badge tone={HEALTH[h().level]?.tone ?? "neutral"}>
+                                <Badge tone={HEALTH[h().level]?.tone ?? "neutral"} class="tabular-nums">
                                     {t("card.health", {index: Math.round(h().index), label: healthLabel(h())})}
                                 </Badge>
                             )}
@@ -66,7 +66,7 @@ export function CropCard(props: { crop: Crop }) {
                     </div>
                     <ChevronRight size={18} class="text-accent transition-transform group-hover:translate-x-0.5"/>
                 </div>
-                <p class="mt-3 text-xs text-muted">{t("card.lastReading", {time: timeAgo(props.crop.latestReading?.measuredAt)})}</p>
+                <p class="mt-3 text-xs text-muted tabular-nums">{t("card.lastReading", {time: timeAgo(props.crop.latestReading?.measuredAt)})}</p>
             </div>
         </A>
     );

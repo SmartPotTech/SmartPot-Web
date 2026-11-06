@@ -25,7 +25,7 @@ export function HealthGauge(props: HealthGaugeProps) {
                 <path d="M20 100a70 70 0 0 1 140 0" fill="none" stroke={color()} stroke-width="16"
                       stroke-linecap="round"
                       stroke-dasharray={`${(value() / 100) * circumference} ${circumference}`}/>
-                <text x="90" y="92" text-anchor="middle" class="font-display fill-ink" font-size="34" font-weight="700">
+                <text x="90" y="92" text-anchor="middle" class="font-display fill-ink tabular-nums" font-size="34" font-weight="700">
                     {props.index === null ? "—" : Math.round(value())}
                 </text>
             </svg>

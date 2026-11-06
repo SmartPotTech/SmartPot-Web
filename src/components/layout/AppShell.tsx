@@ -63,7 +63,7 @@ export function AppShell(props: { children?: JSX.Element }) {
                                 <Icon size={18}/>
                                 {t(label)}
                                 <Show when={to === "/app/notifications" && count() > 0}>
-                                    <span class="ml-auto rounded-full bg-sun-500 px-2 text-xs font-bold text-leaf-950">
+                                    <span class="ml-auto rounded-full bg-sun-500 px-2 text-xs font-bold text-leaf-950 tabular-nums">
                                         {count()}
                                     </span>
                                 </Show>
