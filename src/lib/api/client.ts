@@ -64,7 +64,8 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     const {method = "GET", body, auth = true, signal, accept = "json"} = options;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    signal?.addEventListener("abort", () => controller.abort(), {once: true});
+    const abort = () => controller.abort();
+    signal?.addEventListener("abort", abort, {once: true});
 
     const headers: Record<string, string> = {Accept: accept === "json" ? "application/json" : "text/csv"};
     if (body !== undefined) headers["Content-Type"] = "application/json";
@@ -82,69 +83,71 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         etagCache.clear();
     }
 
-    let response: Response;
+    // El timeout cubre toda la operación, no solo la llegada de las cabeceras: un cuerpo que se queda colgado
+    // también debe liberar al recurso que espera la promesa.
     try {
-        response = await fetch(`${API_URL}${path}`, {
+        const response = await fetch(`${API_URL}${path}`, {
             method,
             headers,
             credentials: "include",
             body: body === undefined ? undefined : JSON.stringify(body),
             signal: controller.signal,
+        }).catch((error) => {
+            if (signal?.aborted) throw error;
+            const offline = typeof navigator !== "undefined" && !navigator.onLine;
+            throw new ApiError(0, offline
+                ? t("api.offline")
+                : t("api.unreachable"));
         });
-    } catch (error) {
-        if (signal?.aborted) throw error;
-        const offline = typeof navigator !== "undefined" && !navigator.onLine;
-        throw new ApiError(0, offline
-            ? t("api.offline")
-            : t("api.unreachable"));
+
+        const nextCsrf = response.headers?.get(CSRF_HEADER_NAME);
+        if (nextCsrf) {
+            hooks.setCsrfToken?.(nextCsrf);
+        }
+
+        if (response.status === 401 && auth) {
+            etagCache.clear();
+            hooks.onUnauthorized();
+        }
+
+        if (response.status === 304 && cached) {
+            return structuredClone(cached.value) as T;
+        }
+
+        if (!response.ok) {
+            let message = t(FALLBACK_MESSAGES[response.status] ?? "api.errorUnexpected");
+            let fields: Record<string, string> = {};
+            try {
+                const data = await response.json();
+                if (typeof data?.message === "string") message = translateServerText(data.message);
+                if (data?.fields && typeof data.fields === "object") {
+                    fields = {};
+                    for (const [k, v] of Object.entries(data.fields)) {
+                        fields[k] = typeof v === "string" ? translateServerText(v) : String(v);
+                    }
+                }
+            } catch {
+                // El cuerpo no es JSON: se usa el mensaje por defecto.
+            }
+            throw new ApiError(response.status, message, fields);
+        }
+
+        const text = response.status === 204 ? "" : await response.text();
+        if (accept === "text") return text as T;
+        const parsed = (text ? JSON.parse(text) : undefined) as T;
+
+        const etag = response.headers?.get("ETag");
+        if (cacheKey && etag && parsed !== undefined) {
+            if (etagCache.size >= MAX_ETAG_ENTRIES) {
+                const oldestKey = etagCache.keys().next().value;
+                if (oldestKey !== undefined) etagCache.delete(oldestKey);
+            }
+            etagCache.set(cacheKey, {etag, value: parsed});
+        }
+
+        return parsed;
     } finally {
         clearTimeout(timeout);
+        signal?.removeEventListener("abort", abort);
     }
-
-    const nextCsrf = response.headers?.get(CSRF_HEADER_NAME);
-    if (nextCsrf) {
-        hooks.setCsrfToken?.(nextCsrf);
-    }
-
-    if (response.status === 401 && auth) {
-        etagCache.clear();
-        hooks.onUnauthorized();
-    }
-
-    if (response.status === 304 && cached) {
-        return structuredClone(cached.value) as T;
-    }
-
-    if (!response.ok) {
-        let message = t(FALLBACK_MESSAGES[response.status] ?? "api.errorUnexpected");
-        let fields: Record<string, string> = {};
-        try {
-            const data = await response.json();
-            if (typeof data?.message === "string") message = translateServerText(data.message);
-            if (data?.fields && typeof data.fields === "object") {
-                fields = {};
-                for (const [k, v] of Object.entries(data.fields)) {
-                    fields[k] = typeof v === "string" ? translateServerText(v) : String(v);
-                }
-            }
-        } catch {
-            // El cuerpo no es JSON: se usa el mensaje por defecto.
-        }
-        throw new ApiError(response.status, message, fields);
-    }
-
-    const text = response.status === 204 ? "" : await response.text();
-    if (accept === "text") return text as T;
-    const parsed = (text ? JSON.parse(text) : undefined) as T;
-
-    const etag = response.headers?.get("ETag");
-    if (cacheKey && etag && parsed !== undefined) {
-        if (etagCache.size >= MAX_ETAG_ENTRIES) {
-            const oldestKey = etagCache.keys().next().value;
-            if (oldestKey !== undefined) etagCache.delete(oldestKey);
-        }
-        etagCache.set(cacheKey, {etag, value: parsed});
-    }
-
-    return parsed;
 }

@@ -13,6 +13,10 @@ export interface Resource<T> {
 /**
  * Carga un recurso de la API y, con intervalo, lo refresca mientras la pestaña está visible.
  * Al cambiar las dependencias conserva los datos anteriores hasta que llegan los nuevos.
+ *
+ * Cada carga lleva un número de generación: si mientras viaja la respuesta cambian las dependencias, se desmonta la
+ * vista o se lanza otra recarga, la respuesta vieja se descarta en vez de pisar el estado actual. Así una petición
+ * lenta no deja `loading` bloqueado ni muestra datos de un cultivo anterior.
  */
 export function useResource<T>(
     loader: () => Promise<T>,
@@ -22,6 +26,7 @@ export function useResource<T>(
     const [data, setDataSignal] = createSignal<T | undefined>(undefined);
     const [error, setError] = createSignal<string | null>(null);
     const [loadedKey, setLoadedKey] = createSignal<string | null>(null);
+    let generation = 0;
 
     const key = createMemo(() => {
         const raw = typeof deps === "function"
@@ -31,14 +36,17 @@ export function useResource<T>(
     });
 
     const load = async (forKey: string) => {
+        const run = ++generation;
         try {
             const value = await untrack(loader);
+            if (run !== generation) return;
             setDataSignal(() => value);
             setError(null);
         } catch (caught) {
+            if (run !== generation) return;
             setError(caught instanceof ApiError ? caught.message : t("api.errorUnexpected"));
         } finally {
-            setLoadedKey(forKey);
+            if (run === generation) setLoadedKey(forKey);
         }
     };
 
@@ -55,6 +63,11 @@ export function useResource<T>(
             window.clearInterval(timer);
             document.removeEventListener("visibilitychange", refresh);
         });
+    });
+
+    // Al desmontar, cualquier respuesta que siga en vuelo deja de escribir en los signals de esta vista.
+    onCleanup(() => {
+        generation += 1;
     });
 
     return {
