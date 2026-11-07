@@ -290,3 +290,50 @@
         animation: none;
     }
 }
+
+/*
+ * Entrada de cada pieza al hacer scroll: solo transform y opacidad, sin JavaScript y sin bloquear la lectura. Donde el
+ * navegador no admite animaciones ligadas al scroll, o si se prefiere menos movimiento, el contenido está quieto y
+ * visible desde el principio.
+ */
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        .reveal {
+            animation: reveal-rise linear both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 45%;
+        }
+    }
+}
+
+@keyframes reveal-rise {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Controles del asistente de ejemplo: el riel y el pulgar toman el acento de la marca. */
+.demo-range {
+    accent-color: var(--color-leaf-700);
+    height: 1.5rem;
+    cursor: pointer;
+}
+
+:root.dark .demo-range {
+    accent-color: var(--color-leaf-500);
+}
+
+/* Tabla de rangos en el teléfono: cada especie es un bloque y cada valor lleva su variable a la izquierda. */
+@media (width < 48rem) {
+    .species-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        color: var(--color-muted);
+        font-size: 0.8125rem;
+    }
+}

@@ -1,35 +1,52 @@
-import {A} from "@solidjs/router";
-import {GitFork} from "lucide-solid";
+import {A, useLocation} from "@solidjs/router";
 import {type JSX, Show, Suspense} from "solid-js";
 import {useAuth} from "../../features/auth/AuthContext";
 import {t} from "../../lib/i18n";
 import {Logo} from "../brand/Logo";
 import {PreferenceToggles} from "../ui/PreferenceControls";
 
+const SECTIONS = [
+    {href: "/#como-funciona", label: "public.howItWorks"},
+    {href: "/#especies", label: "public.species"},
+    {href: "/#preguntas", label: "public.faq"},
+] as const;
+
 export function PublicLayout(props: { children?: JSX.Element }) {
     const auth = useAuth();
+    const location = useLocation();
+    // En la landing la barra toma el verde profundo del hero para que la primera pantalla sea un solo campo de color;
+    // en el ingreso y el registro va sobre la superficie clara. Nunca vidrio esmerilado.
+    const dark = () => location.pathname === "/";
+
     return (
         <div class="flex min-h-dvh flex-col">
             <a href="#main" class="skip-link">{t("nav.skipToContent")}</a>
-            <header class="sticky top-0 z-30 border-b border-line/70 bg-card/85 backdrop-blur">
-                <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-3 sm:px-4" aria-label={t("nav.main")}>
-                    <A href="/" aria-label={t("nav.homeLabel")}><Logo size={34}/></A>
-                    <div class="flex min-w-0 items-center gap-0 text-sm font-semibold sm:gap-2">
-                        <a href="/#funciones"
-                           class="hidden rounded-lg px-3 py-2 text-muted hover:text-accent-strong md:block">{t("public.features")}</a>
-                        <a href="/#ia" class="hidden rounded-lg px-3 py-2 text-muted hover:text-accent-strong md:block">{t("public.ai")}</a>
-                        <a href="/#preguntas"
-                           class="hidden rounded-lg px-3 py-2 text-muted hover:text-accent-strong md:block">{t("public.faq")}</a>
-                        <PreferenceToggles/>
+            <header class={`sticky top-0 z-30 ${dark() ? "bg-leaf-950 text-white" : "bg-card"}`}>
+                <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4 md:px-6" aria-label={t("nav.main")}>
+                    <A href="/" aria-label={t("nav.homeLabel")}><Logo size={32} inverse={dark()}/></A>
+                    <div class="flex min-w-0 items-center gap-0 text-sm font-semibold sm:gap-1">
+                        {SECTIONS.map((item) => (
+                            <a href={item.href}
+                               class={`hidden rounded-lg px-3 py-2 transition-colors lg:block ${dark() ? "text-leaf-100 hover:text-white" : "text-muted hover:text-ink"}`}>
+                                {t(item.label)}
+                            </a>
+                        ))}
+                        <PreferenceToggles surface={dark() ? "dark" : undefined}/>
                         <Show when={auth.authenticated} fallback={
                             <>
                                 <A href="/login"
-                                   class="touch-target rounded-xl px-2 py-2 text-accent-strong hover:bg-leaf-50 max-[380px]:hidden sm:px-3">{t("public.signIn")}</A>
+                                   class={`touch-target rounded-xl px-2 py-2 transition-colors max-[380px]:hidden sm:px-3 ${dark() ? "text-white hover:bg-leaf-900" : "text-accent-strong hover:bg-leaf-50"}`}>
+                                    {t("public.signIn")}
+                                </A>
                                 <A href="/register"
-                                   class="touch-target rounded-xl bg-leaf-700 px-3 py-2 text-white hover:bg-leaf-800 sm:px-4">{t("public.signUp")}</A>
+                                   class={`touch-target rounded-xl px-3 py-2 transition-colors sm:px-4 ${dark() ? "bg-white text-leaf-950 hover:bg-leaf-100" : "bg-leaf-700 text-white hover:bg-leaf-800"}`}>
+                                    {t("public.signUp")}
+                                </A>
                             </>
                         }>
-                            <A href="/app" class="touch-target rounded-xl bg-leaf-700 px-4 py-2 text-white hover:bg-leaf-800">{t("public.goToDashboard")}</A>
+                            <A href="/app" class="touch-target rounded-xl bg-leaf-700 px-4 py-2 text-white transition-colors hover:bg-leaf-800">
+                                {t("public.goToDashboard")}
+                            </A>
                         </Show>
                     </div>
                 </nav>
@@ -38,34 +55,18 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                 {/* El ingreso y el registro llegan en trozos aparte: el cromo público se queda mientras bajan. */}
                 <Suspense fallback={<div class="min-h-[60dvh]"/>}>{props.children}</Suspense>
             </main>
-            <footer class="border-t border-line bg-leaf-950 text-leaf-100">
-                <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
-                    <div>
-                        <Logo size={30} inverse/>
-                        <p class="mt-3 text-sm text-leaf-300/80">
-                            {t("public.footerTagline")}
-                        </p>
-                    </div>
-                    <div class="text-sm">
-                        <p class="font-semibold text-white">{t("public.product")}</p>
-                        <ul class="mt-1 space-y-0.5 text-leaf-300/80">
-                            <li><a href="/#funciones" class="inline-block py-1 hover:text-white">{t("public.features")}</a></li>
-                            <li><a href="/#como-funciona" class="inline-block py-1 hover:text-white">{t("public.howItWorks")}</a></li>
-                            <li><A href="/register" class="inline-block py-1 hover:text-white">{t("public.signUp")}</A></li>
-                        </ul>
-                    </div>
-                    <div class="text-sm">
-                        <p class="font-semibold text-white">{t("public.openProject")}</p>
+            {/* Un cierre de una sola línea: qué es, a dónde ir y la licencia. */}
+            <footer class="bg-surface">
+                <div class="mx-auto grid max-w-6xl gap-2 px-4 py-8 text-sm md:grid-cols-[1fr_auto_1fr] md:items-center md:px-6">
+                    <p class="text-muted"><span translate="no" class="font-semibold text-ink">SmartPot</span> · {t("public.footerTagline")}</p>
+                    <p class="flex flex-wrap gap-x-6 gap-y-1">
                         <a href="https://github.com/SmartPotTech" target="_blank" rel="noopener noreferrer"
-                           class="mt-2 inline-flex items-center gap-2 text-leaf-300/80 hover:text-white">
-                            <GitFork size={16}/> {t("public.github")}
-                        </a>
-                        <p class="mt-2 text-leaf-300/80">{t("public.licence")}</p>
-                    </div>
+                           class="inline-block py-1 font-medium hover:text-accent-strong">{t("public.github")}</a>
+                        <A href="/login" class="inline-block py-1 font-medium hover:text-accent-strong">{t("public.signIn")}</A>
+                        <A href="/register" class="inline-block py-1 font-medium hover:text-accent-strong">{t("public.signUp")}</A>
+                    </p>
+                    <p class="text-muted md:text-right">© {new Date().getFullYear()} SmartPot Tech · {t("public.licence")}</p>
                 </div>
-                <p class="border-t border-white/10 py-4 text-center text-xs text-leaf-300/80">
-                    © {new Date().getFullYear()} SmartPot Tech
-                </p>
             </footer>
         </div>
     );
