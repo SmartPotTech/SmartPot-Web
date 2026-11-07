@@ -1,8 +1,8 @@
 import {createMemoryHistory, MemoryRouter, Route, useNavigate} from "@solidjs/router";
 import {render, screen, waitFor} from "@solidjs/testing-library";
 import userEvent from "@testing-library/user-event";
-import {existsSync} from "node:fs";
-import {readFileSync} from "node:fs";
+import {createHash} from "node:crypto";
+import {existsSync, readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {describe, expect, it} from "vitest";
 import {usePageMeta} from "../hooks/usePageMeta";
@@ -25,15 +25,27 @@ describe("SEO y PWA", () => {
         expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite", "SoftwareApplication", "FAQPage"]));
     });
 
-    it("el contenido para rastreadores tiene estilo propio y la app lo quita al montar", () => {
+    it("el contenido para rastreadores tiene estilo en línea y la app lo quita al montar", () => {
         const fallback = page.querySelector("#root > main.prerender");
         expect(fallback?.querySelector("h1")?.textContent).toContain("SmartPot");
-        // Hoja aparte: la CSP (style-src 'self') bloquearía un <style> en línea.
-        expect(page.querySelector('link[href="/prerender.css"]')).not.toBeNull();
-        expect(read("public/prerender.css")).toContain(".prerender");
-        expect(read("public/sw.js")).toContain('"/prerender.css"');
+        // Sin hojas aparte que bloqueen el primer pintado: la CSP admite estilos en línea.
+        expect(page.querySelector('link[rel="stylesheet"]')).toBeNull();
+        expect(page.querySelector("head > style")?.textContent).toContain(".prerender");
+        expect(read("nginx/security-headers.inc.template")).toContain("style-src 'self' 'unsafe-inline'");
+        expect(read("public/sw.js")).not.toMatch(/prerender\.css|theme-init\.js/);
         // render() de Solid no vacía el contenedor: sin esto el bloque queda encima de la interfaz.
         expect(read("src/main.tsx")).toContain("root.replaceChildren()");
+    });
+
+    it("el script en línea del <head> está autorizado por su hash en la CSP", () => {
+        const inline = [...read("index.html").matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1] ?? "");
+        expect(inline).toHaveLength(1);
+        const script = inline[0] ?? "";
+        const hash = `'sha256-${createHash("sha256").update(script, "utf8").digest("base64")}'`;
+        expect(read("nginx/security-headers.inc.template")).toContain(`script-src 'self' ${hash};`);
+        // Si existe el build, Vite no debe haber tocado el script: el hash sigue siendo el mismo.
+        const built = resolve(process.cwd(), "dist/index.html");
+        if (existsSync(built)) expect(readFileSync(built, "utf-8")).toContain(`<script>${script}</script>`);
     });
 
     it("el manifiesto es instalable", () => {
@@ -56,11 +68,27 @@ describe("SEO y PWA", () => {
         expect(worker).toContain('url.origin !== self.location.origin || url.pathname === "/config.js"');
     });
 
-    it("la configuración de runtime se ejecuta antes del módulo principal", () => {
+    it("la configuración de runtime es diferida y se ejecuta antes del módulo principal", () => {
         const html = read("index.html");
-        expect(html.indexOf('src="/config.js"')).toBeGreaterThan(-1);
+        // `defer` y los módulos se ejecutan en orden de documento: config.js debe ir antes que el módulo, también en
+        // el build, donde Vite mueve el módulo al <head>.
+        expect(html).toMatch(/<script defer src="\/config\.js"><\/script>\s*<\/head>/);
         expect(html.indexOf('src="/config.js"')).toBeLessThan(html.indexOf('src="/src/main.tsx"'));
-        expect(html).not.toMatch(/<script[^>]+src="\/config\.js"[^>]+(?:async|defer)/);
+        expect(html).not.toMatch(/<script[^>]+src="\/config\.js"[^>]*\basync\b/);
+        const built = resolve(process.cwd(), "dist/index.html");
+        if (!existsSync(built)) return;
+        const output = readFileSync(built, "utf-8");
+        expect(output.indexOf('src="/config.js"')).toBeLessThan(output.search(/<script type="module"[^>]+src="\/assets\//));
+    });
+
+    it("el build incrusta la hoja de estilos y precarga solo las dos fuentes latinas", () => {
+        const built = resolve(process.cwd(), "dist/index.html");
+        if (!existsSync(built)) return;
+        const output = readFileSync(built, "utf-8");
+        expect(output).not.toMatch(/<link rel="stylesheet"[^>]+\/assets\//);
+        const fonts = [...output.matchAll(/<link rel="preload" href="\/assets\/([\w-]+)\.woff2"/g)].map((m) => m[1] ?? "");
+        expect(fonts).toHaveLength(2);
+        expect(fonts.every((name) => /^(geist|outfit)-latin-wght-normal-/.test(name))).toBe(true);
     });
 
     it("el grafo inicial del build no precarga la simulación ni el alta de cultivos", () => {
@@ -70,6 +98,10 @@ describe("SEO y PWA", () => {
         expect(html).not.toContain("SimulationPanel");
         expect(html).not.toContain("CreateCropDialog");
         expect(html).not.toContain("PlacementPicker");
+        // Las vistas privadas y el traductor de mensajes del servidor tampoco viajan con la landing.
+        for (const chunk of ["PrivateLayout", "OverviewPage", "CropsPage", "ControlPage", "ProfilePage", "serverText"]) {
+            expect(html).not.toContain(chunk);
+        }
     });
 });
 

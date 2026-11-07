@@ -123,8 +123,24 @@
             ]
         }
     </script>
-    <script src="/theme-init.js"></script>
-    <link href="/prerender.css" rel="stylesheet"/>
+    <!-- Tema, idioma y contenido para rastreadores antes del primer pintado. Va en línea para no bloquear con otra
+         petición; la CSP lo permite por su hash (nginx/security-headers.inc.template, verificado en seo.test.tsx). -->
+    <script>(function(){var d=document.documentElement;try{var s=localStorage.getItem("smartpot_theme"),k=s==="dark"||(s!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);d.classList.toggle("dark",k);d.setAttribute("data-theme",k?"dark":"light");var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",k?"#0A0E0C":"#0B3D2B");var c=document.querySelector('meta[name="color-scheme"]');if(c)c.setAttribute("content",k?"dark":"light");if(localStorage.getItem("smartpot_locale")==="en")d.lang="en"}catch(e){}if(location.pathname!=="/")d.setAttribute("data-prerender","off")})()</script>
+    <style>
+        :root{--pr-page:#F7FAF8;--pr-text:#5B6B63;--pr-title:#0B3D2B;--pr-link:#067A52}
+        :root[data-theme="dark"]{--pr-page:#0A0E0C;--pr-text:#8EA399;--pr-title:#F2F7F4;--pr-link:#00B074}
+        @media (prefers-color-scheme:dark){:root:not([data-theme]){--pr-page:#0A0E0C;--pr-text:#8EA399;--pr-title:#F2F7F4;--pr-link:#00B074}}
+        body{margin:0;background:var(--pr-page)}
+        [data-prerender="off"] .prerender{display:none}
+        .prerender{box-sizing:border-box;min-height:100dvh;padding:3rem 1.25rem;display:grid;align-content:center;gap:1rem;color:var(--pr-text);font:400 1rem/1.6 "Geist Variable","Geist Fallback",system-ui,sans-serif}
+        .prerender>*{width:100%;max-width:38rem;margin:0 auto}
+        .prerender h1{color:var(--pr-title);font:700 clamp(1.75rem,6vw,2.5rem)/1.15 "Outfit Variable","Outfit Fallback",system-ui,sans-serif;letter-spacing:-0.02em}
+        .prerender ul{box-sizing:border-box;padding-left:1.25rem}
+        .prerender a{color:var(--pr-link);font-weight:600}
+    </style>
+    <!-- Diferido: no bloquea el pintado y, como los módulos, se ejecuta en orden de documento. Va en el <head> porque
+         Vite inserta allí el módulo principal, después de esta línea. -->
+    <script defer src="/config.js"></script>
 </head>
 <body>
 <div id="root">
@@ -145,8 +161,6 @@
         <noscript><p>Activa JavaScript para usar la aplicación.</p></noscript>
     </main>
 </div>
-<!-- Se ejecuta antes del módulo principal y deja de bloquear el parser en el <head>. -->
-<script src="/config.js"></script>
 <script src="/src/main.tsx" type="module"></script>
 </body>
 </html>

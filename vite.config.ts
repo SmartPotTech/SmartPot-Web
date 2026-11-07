@@ -6,26 +6,43 @@ import {defineConfig} from "vitest/config";
 // Solo los archivos latinos: cubren el español y el inglés; los demás subconjuntos se piden por unicode-range.
 const CRITICAL_FONTS = /^assets\/(?:geist|outfit)-latin-wght-normal-[\w-]+\.woff2$/;
 
-/** Precarga en el <head> las dos fuentes de la primera pintura para que lleguen antes de que se necesiten. */
-function criticalFonts(): Plugin {
+const STYLESHEET = /\s*<link rel="stylesheet"[^>]*href="\/(assets\/[^"]+\.css)"[^>]*>/g;
+
+/**
+ * Deja el primer pintado sin recursos bloqueantes: precarga en el <head> las dos fuentes de la primera pintura y
+ * cambia la hoja de estilos (una sola, ~10 KB en Brotli) por un <style> en el <head>. La CSP admite estilos en línea
+ * (style-src 'unsafe-inline') y el HTML viaja comprimido, así que el CSS llega en la misma respuesta que el documento.
+ */
+function criticalAssets(): Plugin {
     return {
-        name: "smartpot-critical-fonts",
+        name: "smartpot-critical-assets",
         apply: "build",
         transformIndexHtml: {
             order: "post",
             handler(html, context) {
-                const files = Object.keys(context.bundle ?? {}).filter((file) => CRITICAL_FONTS.test(file)).sort();
-                const links = files
+                const bundle = context.bundle ?? {};
+                const links = Object.keys(bundle).filter((file) => CRITICAL_FONTS.test(file)).sort()
                     .map((file) => `<link rel="preload" href="/${file}" as="font" type="font/woff2" crossorigin>`)
                     .join("\n    ");
-                return links ? html.replace(/(<meta charset="UTF-8"\/?>)/i, `$1\n    ${links}`) : html;
+                let styles = "";
+                const withoutLinks = html.replace(STYLESHEET, (tag: string, file: string) => {
+                    const asset = bundle[file];
+                    if (!asset || asset.type !== "asset") return tag;
+                    styles += String(asset.source);
+                    delete bundle[file];
+                    return "";
+                });
+                // Reemplazos con función: el CSS podría traer secuencias «$&» que String.replace interpretaría.
+                return withoutLinks
+                    .replace(/<meta charset="UTF-8"\/?>/i, (meta) => (links ? `${meta}\n    ${links}` : meta))
+                    .replace("</head>", () => (styles ? `<style>${styles}</style>\n</head>` : "</head>"));
             },
         },
     };
 }
 
 export default defineConfig({
-    plugins: [solidPlugin({hot: !process.env.VITEST}), tailwindcss(), criticalFonts()],
+    plugins: [solidPlugin({hot: !process.env.VITEST}), tailwindcss(), criticalAssets()],
     build: {
         target: "es2022",
         sourcemap: false,

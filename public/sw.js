@@ -1,12 +1,10 @@
 // Service worker de SmartPot: app shell en caché; la API y /config.js siempre desde la red.
-const CACHE = "smartpot-shell-v3";
+const CACHE = "smartpot-shell-v4";
 const SHELL = [
     "/",
     "/app",
     "/manifest.webmanifest",
     "/favicon.svg",
-    "/prerender.css",
-    "/theme-init.js",
     "/icons/icon-192.png",
     "/icons/icon-512.png",
     "/icons/icon-maskable-192.png",
