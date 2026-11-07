@@ -97,7 +97,7 @@ Each domain feature lives in `src/features/<feature>` with its pages, components
 | Form       | Pot, NFT tubes, vertical tower, or floating raft; can be changed in Settings and updates the live illustration                                                     |
 | Placement  | Indoor or outdoor, sun exposure, and city/coordinates; editable in Settings                                                                                        |
 | Preview    | Live SVG crop scene with the selected species, form, and initial actuators                                                                                         |
-| Real       | Displays the device key once along with the wiring guide, firmware repository, and ready-to-copy `config.py` with WiFi and embedded Broker CA (`/ca.crt`)          |
+| Real       | Displays the device key once along with the wiring guide, firmware repository, and ready-to-copy `config.json` with WiFi and embedded Broker CA (`/ca.crt`)        |
 | Virtual    | Day/night cycle, real local weather, or manual sliders; opens the crop with full simulation controls in the Simulation tab                                         |
 
 ## 4. Reactive Crop Illustration and Native SVG Charts
@@ -189,7 +189,7 @@ flowchart TB
   mode -->|"Clima real"| place["Buscar el lugar o usar la ubicación<br/>(formulario aparte)"] --> postv
   mode -->|"Manual"| postv["POST /crops · kind VIRTUAL · virtual"]
   details --> post["POST /crops · kind REAL"]
-  post --> guide["Paso 3 · Conecta tu dispositivo<br/>clave mostrada una sola vez<br/>ESP32 físico o Wokwi con su config.py"]
+  post --> guide["Paso 3 · Conecta tu dispositivo<br/>clave mostrada una sola vez<br/>ESP32 físico o Wokwi con su config.json"]
   guide --> live(["Detalle del cultivo<br/>con su ilustración"])
   postv --> live
   classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
@@ -212,7 +212,7 @@ flowchart TB
 | Forma        | Maceta, tubos NFT, torre vertical o balsa flotante; se puede cambiar en Ajustes y solo afecta la ilustración                                                                                  |
 | Lugar        | Bajo techo o al aire libre, cuánto sol recibe y la ubicación; se puede cambiar en Ajustes                                                                                                     |
 | Vista previa | La escena del cultivo con la especie y la forma elegidas y los actuadores con los que nace                                                                                                    |
-| Real         | Muestra la clave una sola vez y la guía: circuito y pines, firmware y `config.py` con la red WiFi y la CA del broker (que toma de `/ca.crt`), o el proyecto de Wokwi con la red `Wokwi-GUEST` |
+| Real         | Muestra la clave una sola vez y la guía: circuito y pines, firmware y `config.json` con la red WiFi y la CA del broker (que toma de `/ca.crt`), o el proyecto de Wokwi con la red `Wokwi-GUEST` |
 | Virtual      | Día y noche, clima real (buscador de lugares o ubicación del dispositivo) o manual; abre el cultivo y su configuración queda en la pestaña Simulación                                         |
 
 ## 11. Ilustración reactiva del cultivo y gráficos SVG nativos

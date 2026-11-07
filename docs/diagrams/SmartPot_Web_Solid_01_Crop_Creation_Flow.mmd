@@ -8,7 +8,7 @@ flowchart TB
   mode -->|"Clima real"| place["Buscar el lugar o usar la ubicación<br/>(formulario aparte)"] --> postv
   mode -->|"Manual"| postv["POST /crops · kind VIRTUAL · virtual"]
   details --> post["POST /crops · kind REAL"]
-  post --> guide["Paso 3 · Conecta tu dispositivo<br/>clave mostrada una sola vez<br/>ESP32 físico o Wokwi con su config.py"]
+  post --> guide["Paso 3 · Conecta tu dispositivo<br/>clave mostrada una sola vez<br/>ESP32 físico o Wokwi con su config.json"]
   guide --> live(["Detalle del cultivo<br/>con su ilustración"])
   postv --> live
   classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
