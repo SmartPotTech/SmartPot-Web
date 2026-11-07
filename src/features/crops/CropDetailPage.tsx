@@ -12,7 +12,7 @@ import {CROP_FORMS, CROP_KINDS, CROP_TYPES, HEALTH, healthLabel, METRICS, PRIMAR
 import {formatMetric, timeAgo} from "../../lib/format";
 import {t, type TranslationKey} from "../../lib/i18n";
 import {st} from "../../lib/i18n/serverText";
-import type {Actuator, CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
+import type {Actuator, Command, CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
 import {subscribeTelemetryStream} from "../../services/stream";
 import {ControlPanel} from "./components/ControlPanel";
 import {DevicePanel} from "./components/DevicePanel";
@@ -135,10 +135,11 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
     // La ilustración está sobre todas las secciones: actuadores y órdenes se refrescan siempre, también lo que decide
     // el agente de IA por su cuenta. Con una orden en viaje se consulta cada 4 s para ver su confirmación; en reposo
     // basta cada 15 s (el agente evalúa cada minuto y las lecturas llegan por SSE).
-    const commandInFlight = () => (commands.data ?? []).some((item) => item.status === "PENDING" || item.status === "SENT");
-    const pollMs = () => (commandInFlight() ? ACTIVE_POLL_MS : IDLE_POLL_MS);
+    const commandInFlight = (): boolean =>
+        (commands.data ?? []).some((item) => item.status === "PENDING" || item.status === "SENT");
+    const pollMs = (): number => (commandInFlight() ? ACTIVE_POLL_MS : IDLE_POLL_MS);
     const actuators = useResource(() => actuatorApi.list(cropId()), () => [cropId()], pollMs);
-    const commands = useResource(() => commandApi.list(cropId()), () => [cropId()], pollMs);
+    const commands = useResource<Command[]>(() => commandApi.list(cropId()), () => [cropId()], pollMs);
     const simulation = useResource<VirtualDevice | null>(
         () => (isVirtual() ? virtualDeviceApi.get(cropId()) : Promise.resolve(null)),
         () => [cropId(), isVirtual()],
