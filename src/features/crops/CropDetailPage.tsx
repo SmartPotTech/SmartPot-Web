@@ -15,18 +15,25 @@ import {st} from "../../lib/i18n/serverText";
 import type {Actuator, Command, CropKind, MetricKey, Reading, VirtualDevice, Weather} from "../../lib/api/types";
 import {subscribeTelemetryStream} from "../../services/stream";
 import {ControlPanel} from "./components/ControlPanel";
-import {DevicePanel} from "./components/DevicePanel";
 import {CropHero} from "./components/CropHero";
 import {InsightPanel} from "./components/InsightPanel";
 import {MetricTile} from "./components/MetricTile";
 import {ReadingsChart} from "./components/ReadingsChart";
-import {SettingsPanel} from "./components/SettingsPanel";
 import {useCropProfiles} from "./useCropProfiles";
 
-// La simulación solo se descarga al abrir su pestaña: no pesa en el resto del detalle.
+// La simulación, el dispositivo y los ajustes solo se descargan al abrir su pestaña: no pesan en el resto del detalle
+// (los ajustes traen el selector de lugar y el mapa; el dispositivo, la guía y las plantillas del firmware).
 const SimulationPanel = lazy(async () => {
     const module = await import("./components/SimulationPanel");
     return {default: module.SimulationPanel};
+});
+const DevicePanel = lazy(async () => {
+    const module = await import("./components/DevicePanel");
+    return {default: module.DevicePanel};
+});
+const SettingsPanel = lazy(async () => {
+    const module = await import("./components/SettingsPanel");
+    return {default: module.SettingsPanel};
 });
 
 /** Los reales se configuran en Dispositivo; los virtuales, en Simulación. */
@@ -366,7 +373,9 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
                             </Show>
 
                             <Show when={tab() === "device"}>
-                                <DevicePanel crop={current()}/>
+                                <Suspense fallback={<SkeletonCard height="min-h-[280px]"/>}>
+                                    <DevicePanel crop={current()}/>
+                                </Suspense>
                             </Show>
                             <Show when={tab() === "simulation"}>
                                 <Show when={simulation.data} fallback={
@@ -397,7 +406,9 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
                                 </Show>
                             </Show>
                             <Show when={tab() === "settings"}>
-                                <SettingsPanel crop={current()} onSaved={(updated) => crop.setData(updated)}/>
+                                <Suspense fallback={<SkeletonCard height="min-h-[280px]"/>}>
+                                    <SettingsPanel crop={current()} onSaved={(updated) => crop.setData(updated)}/>
+                                </Suspense>
                             </Show>
                         </div>
                     );
