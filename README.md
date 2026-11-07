@@ -37,6 +37,7 @@ The landing page is public and indexable; the application lives under `/app` and
 
 - **Fine-grained reactivity without a Virtual DOM (`solid-js`).** Signals (`createSignal`, `createMemo`, `createEffect`) update only the exact DOM nodes or SVG attributes that change on each telemetry tick or actuator countdown.
 - **Native SVG charts without Recharts.** `ReadingsChart` and `MetricComparison` render areas, ideal range bands, axes, legends, and interactive tooltips directly in reactive SVG. Route-level chunks stay small (the lazy detail view is under 50 kB gzip), and crop creation/simulation code is loaded only when needed.
+- **First paint without blocking requests.** The build inlines the single stylesheet and a CSP-hashed theme bootstrap into `index.html`, preloads only the two latin font files (Geist and Outfit, each with a metric-matched local fallback so the swap does not shift the layout) and defers `/config.js`. Every route except the landing is a lazy chunk requested in parallel with the session check; private routes paint an app-shell skeleton and public routes ship their own static `<head>` (`login.html`, `register.html`…) with title, canonical and robots.
 - **Conditional `ETag` revalidation (`If-None-Match` / `304 Not Modified`).** The HTTP client caches `GET` responses in memory keyed by session scope and weak `ETag` from `SmartPot-API`; when unchanged, the API returns `304` with no body. Any mutation (`POST`, `PUT`, `PATCH`, `DELETE`) or session change clears the cache immediately.
 - **`HttpOnly` Cookie Session + Signed Double-Submit CSRF.** Session authentication uses an `HttpOnly` cookie (`smartpot_session`) paired with a signed CSRF token (`smartpot_csrf` / `X-CSRF-Token`), synchronized across open browser tabs via `BroadcastChannel` and `storage` events.
 - **Full Bilingual UI (`es` / `en`).** Both static interface catalogs and dynamic API/AI messages adapt reactively to the active language. `serverText.ts` maps the expert-system rules, diagnoses, forecasts, placement advice, fleet analysis, learning status, notifications, and HTTP errors emitted by `SmartPot-AI` and `SmartPot-API`, including values interpolated into templates.
@@ -58,7 +59,7 @@ SmartPot-Web/
 │   ├── og-image.svg / .png     # Open Graph social image
 │   └── config.js               # Runtime API URL (rewritten by container entrypoint)
 ├── src/
-│   ├── app/                    # Router (@solidjs/router), lazy routes, and shell pages
+│   ├── app/                    # Router, lazy routes with preloading, private layout and shell pages
 │   ├── components/             # Brand, layouts, and SolidJS UI design system
 │   ├── config/env.ts           # Runtime API and MCP URL resolution
 │   ├── features/
@@ -85,6 +86,8 @@ SmartPot-Web/
 ```
 
 ### Visual Identity
+
+The full design system (type, components, motion, copy rules and performance budget) is in [`DESIGN.md`](DESIGN.md).
 
 | Token                                | Color                                         | Usage                                                   |
 |--------------------------------------|-----------------------------------------------|---------------------------------------------------------|
@@ -159,6 +162,7 @@ La página de inicio es pública e indexable; la aplicación vive bajo `/app` y 
 
 - **Reactividad de grano fino sin Virtual DOM (`solid-js`).** Las señales (`createSignal`, `createMemo`, `createEffect`) actualizan únicamente los nodos del DOM o atributos SVG que cambian en cada sondeo de telemetría o cuenta regresiva de actuadores, sin reconciliar árboles de componentes.
 - **Gráficos SVG nativos sin Recharts.** `ReadingsChart` y `MetricComparison` renderizan áreas, bandas de rango ideal, ejes, leyendas y *tooltips* interactivos directamente en SVG reactivo. Los trozos por ruta se mantienen pequeños (la vista de detalle diferida queda por debajo de 50 kB gzip) y el alta de cultivos y la simulación solo se descargan cuando se abren.
+- **Primer pintado sin peticiones bloqueantes.** El build incrusta en `index.html` la única hoja de estilos y un arranque de tema autorizado por hash en la CSP, precarga solo los dos archivos latinos de las fuentes (Geist y Outfit, cada una con un respaldo local de métricas equivalentes para que el cambio no mueva el diseño) y difiere `/config.js`. Toda ruta salvo la landing es un trozo diferido que se pide en paralelo con la verificación de la sesión; las rutas privadas pintan un esqueleto del cromo de la app y las públicas tienen su propio `<head>` estático (`login.html`, `register.html`…) con título, canonical y robots.
 - **Revalidación condicional `ETag` (`If-None-Match` / `304 Not Modified`).** El cliente HTTP guarda en memoria las respuestas `GET` junto con el `ETag` débil emitido por `SmartPot-API` y envía `If-None-Match` en los sondeos periódicos; cuando el recurso no cambió, la API responde `304` sin transferir cuerpo y la PWA reutiliza la copia en memoria. Cualquier mutación (`POST`, `PUT`, `PATCH`, `DELETE`) o cambio de sesión limpia la caché al instante.
 - **Sesión en cookie `HttpOnly` + protección CSRF firmada.** La autenticación viaja en la cookie `smartpot_session` (`HttpOnly`, `SameSite=Lax`) acompañada del token CSRF de doble envío (`smartpot_csrf` / `X-CSRF-Token`) y sincronización entre pestañas con `BroadcastChannel`.
 - **Interfaz Bilingüe (`es` / `en`).** Tanto los catálogos estáticos de la interfaz como los textos dinámicos provenientes de la API y del asistente de IA se muestran en el idioma elegido por la persona. `serverText.ts` cubre las reglas del sistema experto, diagnósticos, pronósticos, consejos de ubicación, análisis de flota, estado de aprendizaje, notificaciones y errores HTTP de `SmartPot-AI` y `SmartPot-API`, incluidos los valores interpolados en las plantillas.
@@ -207,6 +211,8 @@ SmartPot-Web/
 ```
 
 ### Identidad Visual
+
+El sistema de diseño completo (tipografía, componentes, movimiento, reglas de redacción y presupuesto de rendimiento) está en [`DESIGN.md`](DESIGN.md).
 
 | Token                                | Color                                         | Uso                                                               |
 |--------------------------------------|-----------------------------------------------|-------------------------------------------------------------------|

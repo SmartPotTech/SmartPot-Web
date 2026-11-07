@@ -52,11 +52,12 @@ lightened there to keep WCAG AA. Never pure black, no neon glows, no purple or b
 | Display (h1–h3, wordmark, large values) | Outfit Variable | 600–700 | `tracking-tight`, `text-balance` |
 | Text and UI | Geist Variable | 400–600 | `text-pretty` on paragraphs |
 
-- Scale: 12 · 14 · 16 (body) · 18 · 20 · 24 · `clamp(1.75rem, 1.2rem + 2vw, 2.5rem)` (h2) ·
-  `clamp(2.25rem, 1.3rem + 4vw, 4rem)` (h1).
+- Scale: 12 · 14 · 16 (body) · 18 · 20 · 30 → 36 (h2, `text-3xl md:text-4xl`) · 36 → 48 (h1, `text-4xl md:text-5xl`).
+  The h1 stays modest on purpose: on the home page the live assistant is the large element of the first screen.
 - Body copy stays at or under 65 characters per line (`max-w-prose` or `max-w-xl`).
 - Every metric, table column, chart tick and timer uses `tabular-nums` and `Intl.NumberFormat` with the active locale
-  (`es-CO` → `6,5`, `en-US` → `6.5`). `toFixed()` never reaches the screen.
+  (`es-CO` → `6,5`, `en-US` → `6.5`). `toFixed()` never reaches the screen, except geographic coordinates, which keep
+  the decimal point as in any map.
 - Only the two latin files are preloaded. Each family has a metric-matched local fallback (`Outfit Fallback`,
   `Geist Fallback`) so the swap does not move the layout.
 - Brand names and code tokens (`SmartPot`, `MQTT`, `ESP32`, `pH`, `TDS`) carry `translate="no"` where they stand alone.
@@ -90,9 +91,12 @@ lightened there to keep WCAG AA. Never pure black, no neon glows, no purple or b
 ### 6. Motion
 
 - Only `transform` and `opacity`, 150–250 ms, `cubic-bezier(0.2, 0.8, 0.2, 1)`.
+- Public sections: each block carries `.reveal` and rises 24 px with opacity as it enters the viewport, driven by a CSS
+  scroll timeline (`animation-timeline: view()`). No JavaScript and no delay chains; browsers without scroll timelines
+  and `prefers-reduced-motion: reduce` show everything still and visible. Never on the first screen.
 - Loops are reserved for the crop scene (water, fan, light) and the online dot; all of them stop with
   `prefers-reduced-motion: reduce`.
-- No staggered list reveals, no scroll-jacking, no parallax.
+- No scroll-jacking, no parallax.
 
 ### 7. Imagery
 
@@ -180,11 +184,13 @@ morados o azules «de IA», sin texto con degradado.
 | Títulos (h1–h3, logotipo, valores grandes) | Outfit Variable | 600–700 | `tracking-tight`, `text-balance` |
 | Texto e interfaz | Geist Variable | 400–600 | `text-pretty` en párrafos |
 
-- Escala: 12 · 14 · 16 (cuerpo) · 18 · 20 · 24 · `clamp(1.75rem, 1.2rem + 2vw, 2.5rem)` (h2) ·
-  `clamp(2.25rem, 1.3rem + 4vw, 4rem)` (h1).
+- Escala: 12 · 14 · 16 (cuerpo) · 18 · 20 · 30 → 36 (h2, `text-3xl md:text-4xl`) · 36 → 48 (h1,
+  `text-4xl md:text-5xl`). El h1 es moderado a propósito: en la landing el elemento grande de la primera pantalla es el
+  asistente en vivo.
 - El texto corrido no pasa de 65 caracteres por línea (`max-w-prose` o `max-w-xl`).
 - Toda métrica, columna de tabla, marca de eje y contador usa `tabular-nums` e `Intl.NumberFormat` con el idioma activo
-  (`es-CO` → `6,5`, `en-US` → `6.5`). `toFixed()` nunca llega a la pantalla.
+  (`es-CO` → `6,5`, `en-US` → `6.5`). `toFixed()` nunca llega a la pantalla, salvo en coordenadas geográficas, que
+  conservan el punto decimal como en cualquier mapa.
 - Solo se precargan los dos archivos latinos. Cada familia tiene un respaldo local con métricas equivalentes
   (`Outfit Fallback`, `Geist Fallback`) para que el cambio de fuente no mueva el diseño.
 - Los nombres de marca y de protocolo (`SmartPot`, `MQTT`, `ESP32`, `pH`, `TDS`) llevan `translate="no"` cuando van
@@ -224,9 +230,12 @@ morados o azules «de IA», sin texto con degradado.
 ### 6. Movimiento
 
 - Solo `transform` y `opacity`, de 150 a 250 ms, `cubic-bezier(0.2, 0.8, 0.2, 1)`.
+- Secciones públicas: cada bloque lleva `.reveal` y sube 24 px con opacidad al entrar en pantalla, con una línea de
+  tiempo de scroll en CSS (`animation-timeline: view()`). Sin JavaScript ni cadenas de retrasos; los navegadores sin
+  esa función y `prefers-reduced-motion: reduce` lo muestran quieto y visible. Nunca en la primera pantalla.
 - Los bucles se reservan para la escena del cultivo (agua, ventilador, luz) y el punto de «en línea»; todos se detienen
   con `prefers-reduced-motion: reduce`.
-- Sin listas que aparecen en cascada, sin secuestrar el desplazamiento, sin parallax.
+- Sin secuestrar el desplazamiento, sin parallax.
 
 ### 7. Imágenes
 
