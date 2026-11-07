@@ -342,6 +342,7 @@ export const es = {
     "profile.deleteTitle": "¿Eliminar tu cuenta?",
     "profile.deleteConfirm": "Sí, eliminar todo",
     "profile.deleteBody": "Tus cultivos quedarán desconectados y perderás todo el historial.",
+    "profile.deleteFailed": "No pudimos eliminar tu cuenta",
     "profile.preferences": "Preferencias",
     "profile.preferencesHint": "Idioma y apariencia de la aplicación. Se guardan en este dispositivo.",
     "mcp.expiry.never": "Sin vencimiento",

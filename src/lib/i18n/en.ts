@@ -344,6 +344,7 @@ export const en: TranslationDictionary = {
     "profile.deleteTitle": "Delete your account?",
     "profile.deleteConfirm": "Yes, delete everything",
     "profile.deleteBody": "Your crops will be disconnected and you'll lose all history.",
+    "profile.deleteFailed": "We couldn't delete your account",
     "profile.preferences": "Preferences",
     "profile.preferencesHint": "Language and appearance of the app. Saved on this device.",
     "mcp.expiry.never": "No expiry",

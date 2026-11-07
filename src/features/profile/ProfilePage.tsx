@@ -28,6 +28,7 @@ export function ProfilePage() {
     const [passwordMessage, setPasswordMessage] = createSignal<Message>(null);
     const [busy, setBusy] = createSignal<string | null>(null);
     const [confirmDelete, setConfirmDelete] = createSignal(false);
+    const [deleteError, setDeleteError] = createSignal<string | null>(null);
 
     async function saveProfile(event: SubmitEvent) {
         event.preventDefault();
@@ -75,12 +76,14 @@ export function ProfilePage() {
 
     async function deleteAccount() {
         setBusy("delete");
+        setDeleteError(null);
         try {
             await userApi.remove();
             auth.signOut("auth.accountDeleted");
-        } catch {
+        } catch (caught) {
             setBusy(null);
             setConfirmDelete(false);
+            setDeleteError(caught instanceof ApiError ? caught.message : t("profile.deleteFailed"));
         }
     }
 
@@ -141,8 +144,14 @@ export function ProfilePage() {
             <section class="card border-danger-500/30 p-5">
                 <h2 class="text-lg font-semibold text-danger-fg">{t("profile.deleteAccount")}</h2>
                 <p class="mt-1 text-sm text-muted">{t("profile.deleteHint")}</p>
+                <Show when={deleteError()}>
+                    <div class="mt-3"><Alert tone="danger">{deleteError()}</Alert></div>
+                </Show>
                 <Button variant="danger" class="mt-4" icon={<Trash2 size={16}/>}
-                        onClick={() => setConfirmDelete(true)}>
+                        onClick={() => {
+                            setDeleteError(null);
+                            setConfirmDelete(true);
+                        }}>
                     {t("profile.deleteMine")}
                 </Button>
             </section>
