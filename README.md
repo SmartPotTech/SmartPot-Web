@@ -127,6 +127,8 @@ bun run build
 
 Component documentation is available in [`docs/`](docs/SmartPot_Web_Solid_Documentation.md) (and in [DOCX](docs/SmartPot_Web_Solid_Documentation.docx) and [PDF](docs/SmartPot_Web_Solid_Documentation.pdf)). Licensed under the [MIT License](LICENSE).
 
+The [interactive diagrams](docs/diagrams/interactive/README.md#english) map every public and private route of the PWA, in English and Spanish, with links to the exact source lines.
+
 ---
 
 ## Español
@@ -251,3 +253,5 @@ bun run build
 ### Documentación y Licencia
 
 Su documentación propia está en [`docs/`](docs/SmartPot_Web_Solid_Documentation.md) (también en [DOCX](docs/SmartPot_Web_Solid_Documentation.docx) y [PDF](docs/SmartPot_Web_Solid_Documentation.pdf)), con sus diagramas en [`docs/diagrams`](docs/diagrams). Este proyecto está bajo la licencia [MIT](LICENSE).
+
+Los [diagramas interactivos](docs/diagrams/interactive/README.md#español) recorren todas las rutas públicas y privadas de la PWA, en español e inglés, con enlaces a las líneas exactas del código.
