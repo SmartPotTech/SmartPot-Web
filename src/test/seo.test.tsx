@@ -50,6 +50,17 @@ describe("SEO y PWA", () => {
         expect(read("src/main.tsx")).toContain("root.replaceChildren()");
     });
 
+    it("las rutas /app pintan el esqueleto del cromo y no la copia de la landing", () => {
+        const style = page.querySelector("head > style")?.textContent ?? "";
+        expect(style).toContain('[data-prerender] .prerender,.prerender-app{display:none}');
+        expect(style).toContain('[data-prerender="app"] .prerender-app{display:block}');
+        const skeleton = page.querySelector("#root > .prerender-app");
+        expect(skeleton?.getAttribute("aria-hidden")).toBe("true");
+        // Sin datos inventados: solo el logotipo y bloques de color.
+        expect(skeleton?.textContent?.replace(/\s+/g, "")).toBe("SmartPotSmartPot");
+        expect(read("index.html")).toContain('p==="/app"||p.indexOf("/app/")===0?"app":"off"');
+    });
+
     it("el script en línea del <head> está autorizado por su hash en la CSP", () => {
         const inline = [...read("index.html").matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1] ?? "");
         expect(inline).toHaveLength(1);
