@@ -1,28 +1,33 @@
-import {Route, type RouteSectionProps, Router} from "@solidjs/router";
-import {AppShell} from "../components/layout/AppShell";
+import {Route, Router} from "@solidjs/router";
+import {Suspense} from "solid-js";
 import {PublicLayout} from "../components/layout/PublicLayout";
-import {LoginPage} from "../features/auth/LoginPage";
-import {ForgotPasswordPage, ResetPasswordPage} from "../features/auth/PasswordRecoveryPages";
-import {RegisterPage} from "../features/auth/RegisterPage";
-import {RedirectIfAuthenticated, RequireAuth} from "../features/auth/RequireAuth";
-import {ActionsPage} from "../features/actions/ActionsPage";
-import {ControlPage} from "../features/control/ControlPage";
-import {CropsPage} from "../features/crops/CropsPage";
+import {RedirectIfAuthenticated} from "../features/auth/RequireAuth";
 import {LandingPage} from "../features/landing/LandingPage";
-import {LearningPage} from "../features/learning/LearningPage";
-import {NotificationsPage} from "../features/notifications/NotificationsPage";
-import {ProfilePage} from "../features/profile/ProfilePage";
-import {LazyCropDetailPage} from "./LazyCropDetailPage";
-import {LazyOverviewPage} from "./LazyOverviewPage";
 import {NotFoundPage} from "./NotFoundPage";
+import {
+    ActionsPage,
+    ControlPage,
+    CropDetailRoute,
+    CropsPage,
+    ForgotPasswordPage,
+    LearningPage,
+    LoginPage,
+    NotificationsPage,
+    OverviewPage,
+    PrivateLayout,
+    ProfilePage,
+    RegisterPage,
+    ResetPasswordPage,
+} from "./routes";
 
 export function AppRouter() {
     return (
-        <Router>
-            <Route path="/app" component={(props: RouteSectionProps) => <RequireAuth><AppShell>{props.children}</AppShell></RequireAuth>}>
-                <Route path="/" component={LazyOverviewPage}/>
+        // La landing va en el trozo principal; el resto llega bajo demanda y este Suspense cubre la primera carga.
+        <Router root={(props) => <Suspense>{props.children}</Suspense>}>
+            <Route path="/app" component={PrivateLayout}>
+                <Route path="/" component={OverviewPage}/>
                 <Route path="/crops" component={CropsPage}/>
-                <Route path="/crops/:cropId" component={LazyCropDetailPage}/>
+                <Route path="/crops/:cropId" component={CropDetailRoute}/>
                 <Route path="/control" component={ControlPage}/>
                 <Route path="/actions" component={ActionsPage}/>
                 <Route path="/learning" component={LearningPage}/>

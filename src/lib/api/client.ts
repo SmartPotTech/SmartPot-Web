@@ -1,9 +1,27 @@
 import {API_URL} from "../../config/env";
 import {CSRF_HEADER_NAME} from "../../features/auth/session";
 import {t, type TranslationKey} from "../i18n";
-import {translateServerText} from "../i18n/serverText";
 
 const TIMEOUT_MS = 15_000;
+
+type Translator = (text: string) => string;
+let serverText: Promise<Translator> | undefined;
+
+/**
+ * El traductor de mensajes del servidor pesa más que el resto del cliente y solo hace falta ante un error: se descarga
+ * la primera vez que llega uno, no al arrancar. Si la descarga falla, el mensaje se muestra tal cual y se reintenta
+ * en el próximo error.
+ */
+function loadServerText(): Promise<Translator> {
+    serverText ??= import("../i18n/serverText").then(
+        (module) => module.translateServerText,
+        () => {
+            serverText = undefined;
+            return (text: string) => text;
+        },
+    );
+    return serverText;
+}
 const MAX_ETAG_ENTRIES = 64;
 
 export class ApiError extends Error {
@@ -119,6 +137,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
             let fields: Record<string, string> = {};
             try {
                 const data = await response.json();
+                const translateServerText = await loadServerText();
                 if (typeof data?.message === "string") message = translateServerText(data.message);
                 if (data?.fields && typeof data.fields === "object") {
                     fields = {};

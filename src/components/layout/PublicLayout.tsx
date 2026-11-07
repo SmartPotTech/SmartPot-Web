@@ -1,6 +1,6 @@
 import {A} from "@solidjs/router";
 import {GitFork} from "lucide-solid";
-import {type JSX, Show} from "solid-js";
+import {type JSX, Show, Suspense} from "solid-js";
 import {useAuth} from "../../features/auth/AuthContext";
 import {t} from "../../lib/i18n";
 import {Logo} from "../brand/Logo";
@@ -34,7 +34,8 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                 </nav>
             </header>
             <main class="flex-1">
-                {props.children}
+                {/* El ingreso y el registro llegan en trozos aparte: el cromo público se queda mientras bajan. */}
+                <Suspense fallback={<div class="min-h-[60dvh]"/>}>{props.children}</Suspense>
             </main>
             <footer class="border-t border-line bg-leaf-950 text-leaf-100">
                 <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-3">
