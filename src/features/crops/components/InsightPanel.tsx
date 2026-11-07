@@ -85,7 +85,12 @@ export function InsightPanel(props: InsightPanelProps) {
                 </p>
             }>
                 {(insight) => {
-                    const issues = () => insight().diagnosis.filter((item) => item.status !== "OPTIMAL" && item.status !== "REST");
+                    // La API omite los arreglos vacíos (omitempty); la vista debe tolerarlo sin romper el panel.
+                    const actions = () => insight().actions ?? [];
+                    const diagnosis = () => insight().diagnosis ?? [];
+                    const conclusions = () => insight().conclusions ?? [];
+                    const predictions = () => insight().predictions ?? [];
+                    const issues = () => diagnosis().filter((item) => item.status !== "OPTIMAL" && item.status !== "REST");
 
                     return (
                         <div class="space-y-5">
@@ -111,14 +116,14 @@ export function InsightPanel(props: InsightPanelProps) {
                                 {(placement) => <PlacementCard advice={placement()} onOpenTab={props.onOpenTab}/>}
                             </Show>
 
-                            <Show when={insight().actions.length > 0}>
+                            <Show when={actions().length > 0}>
                                 <section class="card p-5">
                                     <h3 class="font-semibold">{t("insight.suggested")}</h3>
                                     <Show when={actionError()}>
                                         {(err) => <div class="mt-3"><Alert tone="danger">{err()}</Alert></div>}
                                     </Show>
                                     <ul class="mt-3 divide-y divide-line">
-                                        <For each={insight().actions}>
+                                        <For each={actions()}>
                                             {(action) => {
                                                 const actuator = () => props.actuators.find((item) => item.type === action.actuator);
                                                 const key = `${action.actuator}-${action.action}`;
@@ -171,7 +176,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                         <p class="mt-2 text-sm text-muted">{t("insight.allIdeal")}</p>
                                     </Show>
                                     <ul class="mt-3 space-y-3">
-                                        <For each={insight().diagnosis}>
+                                        <For each={diagnosis()}>
                                             {(item) => (
                                                 <li class="rounded-xl bg-surface p-3">
                                                     <div class="flex items-center justify-between gap-2">
@@ -196,7 +201,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                         <h3 class="flex items-center gap-2 font-semibold"><BrainCircuit size={18}
                                                                                                         class="text-accent"/> {t("insight.expertTitle")}</h3>
                                         <ul class="mt-3 space-y-3">
-                                            <For each={insight().conclusions}>
+                                            <For each={conclusions()}>
                                                 {(conclusion) => (
                                                     <li>
                                                         <p class="text-sm font-semibold">{st(conclusion.title)}
@@ -207,7 +212,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                                     </li>
                                                 )}
                                             </For>
-                                            <Show when={insight().conclusions.length === 0}>
+                                            <Show when={conclusions().length === 0}>
                                                 <p class="text-sm text-muted">{t("insight.noConclusions")}</p>
                                             </Show>
                                         </ul>
@@ -216,7 +221,7 @@ export function InsightPanel(props: InsightPanelProps) {
                                     <section class="card p-5">
                                         <h3 class="font-semibold">{t("insight.predictions")}</h3>
                                         <ul class="mt-3 space-y-3">
-                                            <For each={insight().predictions}>
+                                            <For each={predictions()}>
                                                 {(prediction) => (
                                                     <li>
                                                         <div class="flex justify-between text-sm">
@@ -336,3 +341,4 @@ function Outlook(props: { insight: Insight }) {
         </Show>
     );
 }
+

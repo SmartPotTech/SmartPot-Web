@@ -1,4 +1,4 @@
-import {A} from "@solidjs/router";
+import {A, useSearchParams} from "@solidjs/router";
 import {AlertTriangle, Bot, History, ListChecks, Sparkles, UserRound} from "lucide-solid";
 import {createSignal, For, Show} from "solid-js";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
@@ -20,7 +20,13 @@ type SourceFilter = "ALL" | Command["source"];
 /** Acciones: lo que sugiere el asistente para todos los cultivos y todo lo que se ha ejecutado. */
 export function ActionsPage() {
     usePageMeta(() => t("actions.title"));
-    const [tab, setTab] = createSignal<Tab>("suggested");
+    const [searchParams, setSearchParams] = useSearchParams<{ tab?: string }>();
+    // La pestaña se puede enlazar por URL (`?tab=history`), como en el detalle del cultivo.
+    const [tab, setTab] = createSignal<Tab>(searchParams.tab === "history" ? "history" : "suggested");
+    const openTab = (next: Tab) => {
+        setTab(next);
+        setSearchParams({tab: next === "suggested" ? undefined : next}, {replace: true});
+    };
     const [status, setStatus] = createSignal<CommandStatus | "ALL">("ALL");
     const [source, setSource] = createSignal<SourceFilter>("ALL");
     const crops = useResource(() => cropApi.list(), [], 60_000);
@@ -47,7 +53,7 @@ export function ActionsPage() {
             <div class="flex gap-2 rounded-xl bg-card p-1 shadow-[var(--shadow-card)] sm:w-fit" role="tablist">
                 <For each={[["suggested", "actions.tabSuggested", Sparkles], ["history", "actions.tabHistory", History]] as const}>
                     {([key, label, Icon]) => (
-                        <button type="button" role="tab" aria-selected={tab() === key} onClick={() => setTab(key)}
+                        <button type="button" role="tab" aria-selected={tab() === key} onClick={() => openTab(key)}
                                 class={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold sm:flex-none
                   ${tab() === key ? "bg-leaf-700 text-white" : "text-muted hover:text-ink"}`}>
                             <Icon size={16}/> {t(label)}

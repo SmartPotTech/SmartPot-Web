@@ -389,7 +389,8 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
                                                 {t("detail.simUnavailable")}
                                             </Alert>
                                         }>
-                                            <Show when={`${sim().active}-${sim().updatedAt ?? ""}`} keyed>
+                                            {/* Solo se remonta al pausar o reanudar: guardar cambios no debe borrar el aviso de éxito. */}
+                                            <Show when={sim().active} keyed>
                                                 <Suspense fallback={<SkeletonCard height="min-h-[280px]"/>}>
                                                     <SimulationPanel crop={current()} simulation={sim()}
                                                                      profile={profile()}
