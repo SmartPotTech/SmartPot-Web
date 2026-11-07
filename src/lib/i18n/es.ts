@@ -550,7 +550,7 @@ export const es = {
     "fleet.cropFallback": "Cultivo",
     "fleet.none": "El agente no propone acciones en este momento.",
     "fleet.apply": "Aplicar",
-    "fleet.applyTo": "Aplicar a {count}",
+    "fleet.applyTo": "Aplicar en {count, plural, one {# cultivo} other {# cultivos}}",
     "fleet.title": "Asistente de IA · todos tus cultivos",
     "fleet.analyzing": "Analizando tus cultivos…",
     "fleet.reanalyze": "Volver a analizar",

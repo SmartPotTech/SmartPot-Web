@@ -68,7 +68,7 @@ describe("panel general", () => {
         }]}/>);
 
         expect(screen.getByText("Lechugas, Tomates")).toBeInTheDocument();
-        await userEvent.click(screen.getByRole("button", {name: "Aplicar a 2"}));
+        await userEvent.click(screen.getByRole("button", {name: "Aplicar en 2 cultivos"}));
 
         expect(bulk).toHaveBeenCalledWith({
             actuatorType: "WATER_PUMP",

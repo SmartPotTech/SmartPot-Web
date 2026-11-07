@@ -552,7 +552,7 @@ export const en: TranslationDictionary = {
     "fleet.cropFallback": "Crop",
     "fleet.none": "The agent isn't proposing any actions right now.",
     "fleet.apply": "Apply",
-    "fleet.applyTo": "Apply to {count}",
+    "fleet.applyTo": "Apply to {count, plural, one {# crop} other {# crops}}",
     "fleet.title": "AI assistant · all your crops",
     "fleet.analyzing": "Analyzing your crops…",
     "fleet.reanalyze": "Analyze again",
