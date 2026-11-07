@@ -12,7 +12,7 @@ import {
 } from "lucide-solid";
 import {createSignal, For, type JSX, onCleanup, onMount, Show} from "solid-js";
 import {ACTUATORS, CROP_FORMS, CROP_TYPES, describePlacement} from "../../../lib/catalog";
-import {formatMetric, timeAgo} from "../../../lib/format";
+import {formatMetric, formatNumber, timeAgo} from "../../../lib/format";
 import type {Actuator, ActuatorType, Command, Crop, VirtualDevice, Weather} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
 import {st} from "../../../lib/i18n/serverText";
@@ -172,10 +172,10 @@ export function CropHero(props: CropHeroProps) {
                                         <>
                                             {t("hero.outside", {
                                                 label: st(w().label).toLowerCase(),
-                                                temperature: w().temperature.toFixed(1),
+                                                temperature: formatNumber(w().temperature, 1),
                                                 humidity: Math.round(w().humidity),
                                             })}
-                                            {w().precipitation > 0 && t("hero.rain", {value: w().precipitation.toFixed(1)})}
+                                            {w().precipitation > 0 && t("hero.rain", {value: formatNumber(w().precipitation, 1)})}
                                             {" · "}
                                         </>
                                     )}

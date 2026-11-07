@@ -2,7 +2,7 @@ import {A} from "@solidjs/router";
 import {GraduationCap, Radar, Waves} from "lucide-solid";
 import {For, Show} from "solid-js";
 import {Badge} from "../../../components/ui/Feedback";
-import {formatMetric, timeAgo} from "../../../lib/format";
+import {formatMetric, formatNumber, timeAgo} from "../../../lib/format";
 import type {Learning} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
 import {st} from "../../../lib/i18n/serverText";
@@ -53,7 +53,7 @@ export function LearningCard(props: { learning: Learning }) {
                                 <p class="mt-1 font-semibold">{formatMetric("soilMoisture", moisture().expectedIn1h)}</p>
                                 <p class="text-xs text-muted">
                                     {st(moisture().model)}
-                                    {moisture().mae != null && t("learnCard.mae", {value: moisture().mae!.toFixed(1)})}
+                                    {moisture().mae != null && t("learnCard.mae", {value: formatNumber(moisture().mae, 1)})}
                                 </p>
                             </div>
                         )}
@@ -85,7 +85,7 @@ export function LearningCard(props: { learning: Learning }) {
                                 </div>
                                 <p class="mt-0.5 text-xs text-muted">
                                     {st(prediction.model)}
-                                    {prediction.score != null && t("learnCard.score", {metric: st(prediction.metric), score: prediction.score.toFixed(2)})}
+                                    {prediction.score != null && t("learnCard.score", {metric: st(prediction.metric), score: formatNumber(prediction.score, 2)})}
                                 </p>
                             </li>
                         )}

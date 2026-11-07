@@ -1,9 +1,9 @@
 import {createMemo, createSignal, For, Show} from "solid-js";
 import {useElementSize} from "../../../hooks/useElementSize";
 import {METRICS} from "../../../lib/catalog";
-import {nearestIndex, pointerX, timeTicks, xTickCount} from "../../../lib/chart";
+import {nearestIndex, niceScale, pointerX, stepDecimals, timeTicks, xTickCount} from "../../../lib/chart";
 import {downsampleLTTB} from "../../../lib/lttb";
-import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
+import {formatDateTime, formatMetric, formatNumber, formatTime} from "../../../lib/format";
 import type {MetricKey, ProfileRange, Reading} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
 
@@ -53,20 +53,16 @@ export function ReadingsChart(props: ReadingsChartProps) {
         const plotW = width - padLeft - padRight;
         const plotH = height - padTop - padBottom;
 
-        let minVal = Math.min(...points.map((p) => p.value));
-        let maxVal = Math.max(...points.map((p) => p.value));
+        let low = Math.min(...points.map((p) => p.value));
+        let high = Math.max(...points.map((p) => p.value));
         if (props.range) {
-            minVal = Math.min(minVal, props.range.min);
-            maxVal = Math.max(maxVal, props.range.max);
+            low = Math.min(low, props.range.min);
+            high = Math.max(high, props.range.max);
         }
-        if (minVal === maxVal) {
-            minVal -= 1;
-            maxVal += 1;
-        } else {
-            const pad = (maxVal - minVal) * 0.08;
-            minVal -= pad;
-            maxVal += pad;
-        }
+        // Marcas redondas (10, 15, 20…) en vez de cuartos exactos del rango; el redondeo deja el margen.
+        const scale = niceScale(low, high);
+        const minVal = scale.min;
+        const maxVal = scale.max;
 
         const minTime = points[0]!.time;
         const maxTime = points[points.length - 1]!.time;
@@ -79,10 +75,11 @@ export function ReadingsChart(props: ReadingsChartProps) {
         const coords = points.map((p) => ({...p, x: toX(p.time), y: toY(p.value)}));
         const path = coords.map((c, idx) => `${idx === 0 ? "M" : "L"}${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(" ");
 
-        const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => {
-            const val = minVal + t * (maxVal - minVal);
-            return {value: val, y: toY(val)};
-        });
+        const yTicks = scale.ticks.map((value) => ({
+            value,
+            label: formatNumber(value, stepDecimals(scale.step)),
+            y: toY(value),
+        }));
 
         const xTicks = timeTicks(minTime, maxTime, xTickCount(width, points.length))
             .map((tick) => ({...tick, x: toX(tick.time)}));
@@ -128,7 +125,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
                                                       y1={tick.y} y2={tick.y} class="stroke-line"/>
                                                 <text x={g().padLeft - 8} y={tick.y + 4} text-anchor="end"
                                                       class="fill-muted tabular-nums" font-size="11">
-                                                    {Math.round(tick.value * 10) / 10}
+                                                    {tick.label}
                                                 </text>
                                             </g>
                                         )}

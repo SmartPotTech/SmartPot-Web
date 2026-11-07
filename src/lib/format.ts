@@ -42,9 +42,24 @@ export function formatTime(value: string | number): string {
     return time().format(new Date(value));
 }
 
+/**
+ * Número con el separador decimal del idioma activo (6,5 en es-CO; 6.5 en en-US) y exactamente `decimals` decimales.
+ * Reemplaza a `toFixed()` en todo lo que llega a la pantalla.
+ */
+export function formatNumber(value: number | null | undefined, decimals = 1): string {
+    if (value === null || value === undefined || Number.isNaN(value)) return "—";
+    return value.toLocaleString(intlLocale(), {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+}
+
+/** Tolerancia ante relojes desfasados: una lectura fechada hasta 5 min «en el futuro» cuenta como de ahora mismo. */
+const CLOCK_SKEW_MS = 5 * 60_000;
+
 export function timeAgo(value: string | null | undefined, now: number = Date.now()): string {
     if (!value) return t("common.never");
-    const seconds = Math.round((new Date(value).getTime() - now) / 1000);
+    const delta = new Date(value).getTime() - now;
+    // El reloj del servidor o del dispositivo puede ir unos segundos adelantado: nunca se dice «dentro de 2 segundos»
+    // de algo que ya pasó.
+    const seconds = Math.round((delta > 0 && delta <= CLOCK_SKEW_MS ? 0 : delta) / 1000);
     const abs = Math.abs(seconds);
     const format = relative();
     if (abs < 60) return format.format(seconds, "second");

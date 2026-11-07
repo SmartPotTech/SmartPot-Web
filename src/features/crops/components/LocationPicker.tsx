@@ -67,7 +67,8 @@ export function LocationPicker(props: {
                 {(val) => (
                     <p class="flex items-center gap-1.5 text-sm"><MapPin size={16} class="text-clay-500"/>
                         <strong>{val().name}</strong>
-                        <span class="text-muted">({val().latitude.toFixed(2)}, {val().longitude.toFixed(2)})</span>
+                        {/* Coordenadas con punto decimal, como en cualquier mapa: con coma serían ambiguas («6,25, -75,56»). */}
+                        <span class="text-muted" translate="no">({val().latitude.toFixed(2)}, {val().longitude.toFixed(2)})</span>
                     </p>
                 )}
             </Show>

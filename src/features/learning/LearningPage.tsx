@@ -6,7 +6,7 @@ import {SkeletonCard} from "../../components/ui/Skeleton";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {useResource} from "../../hooks/useResource";
 import {insightApi} from "../../lib/api/services";
-import {timeAgo} from "../../lib/format";
+import {formatNumber, timeAgo} from "../../lib/format";
 import {intlLocale, t, type TranslationKey} from "../../lib/i18n";
 import {st} from "../../lib/i18n/serverText";
 import type {CropTypeLearning, ModelCard} from "../../lib/api/types";
@@ -137,7 +137,7 @@ function SpeciesLearning(props: { item: CropTypeLearning }) {
                                     {t("learning.states")}</h3>
                                 <p class="text-xs text-muted">{t("learning.statesBody", {
                                     k: states().k,
-                                    silhouette: states().silhouette.toFixed(2),
+                                    silhouette: formatNumber(states().silhouette, 2),
                                 })}</p>
                                 <ul class="mt-3 space-y-2">
                                     <For each={states().clusters}>
@@ -181,7 +181,7 @@ function SpeciesLearning(props: { item: CropTypeLearning }) {
 /** Tarjeta de una tarea: modelo elegido, su puntaje frente a la línea base y la comparación de candidatos. */
 export function ModelSummary(props: { model: ModelCard }) {
     const lowerIsBetter = () => props.model.task === "moisture_1h";
-    const format = (value: number | null | undefined) => value == null ? "—" : value.toFixed(2);
+    const format = (value: number | null | undefined) => formatNumber(value, 2);
     const ranked = () => [...props.model.candidates].sort((a, b) =>
         lowerIsBetter() ? (a.score ?? Infinity) - (b.score ?? Infinity) : (b.score ?? -Infinity) - (a.score ?? -Infinity));
 
@@ -226,7 +226,7 @@ export function ModelSummary(props: { model: ModelCard }) {
                                 <td class="py-0.5">{st(candidate.model)}</td>
                                 <td class="py-0.5 text-right tabular-nums">
                                     {format(candidate.score)}{candidate.std != null &&
-                                    <span class="text-muted"> ± {candidate.std.toFixed(2)}</span>}
+                                    <span class="text-muted"> ± {formatNumber(candidate.std, 2)}</span>}
                                 </td>
                             </tr>
                         )}

@@ -5,8 +5,8 @@ import {useElementSize} from "../../../hooks/useElementSize";
 import {useResource} from "../../../hooks/useResource";
 import {overviewApi} from "../../../lib/api/services";
 import {MAX_COMPARED, METRICS, PRIMARY_METRICS} from "../../../lib/catalog";
-import {nearestIndex, pointerX, timeTicks, xTickCount} from "../../../lib/chart";
-import {formatDateTime, formatMetric, formatTime} from "../../../lib/format";
+import {nearestIndex, niceScale, pointerX, stepDecimals, timeTicks, xTickCount} from "../../../lib/chart";
+import {formatDateTime, formatMetric, formatNumber, formatTime} from "../../../lib/format";
 import {intlLocale, t} from "../../../lib/i18n";
 import type {Crop, MetricKey} from "../../../lib/api/types";
 import {useComparedCrops} from "../useComparedCrops";
@@ -67,16 +67,10 @@ export function MetricComparison(props: { crops: Crop[] }) {
         }
         if (allValues.length === 0) return null;
 
-        let minVal = Math.min(...allValues);
-        let maxVal = Math.max(...allValues);
-        if (minVal === maxVal) {
-            minVal -= 1;
-            maxVal += 1;
-        } else {
-            const pad = (maxVal - minVal) * 0.08;
-            minVal -= pad;
-            maxVal += pad;
-        }
+        // Marcas redondas (10, 15, 20…) en vez de cuartos exactos del rango; el redondeo deja el margen.
+        const scale = niceScale(Math.min(...allValues), Math.max(...allValues));
+        const minVal = scale.min;
+        const maxVal = scale.max;
 
         const minTime = currentRows[0]!.time;
         const maxTime = currentRows[currentRows.length - 1]!.time;
@@ -94,10 +88,11 @@ export function MetricComparison(props: { crops: Crop[] }) {
             return {crop, color: compared.colorOf(crop.id) ?? "#067A52", path};
         });
 
-        const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => {
-            const val = minVal + t * (maxVal - minVal);
-            return {value: val, y: toY(val)};
-        });
+        const yTicks = scale.ticks.map((value) => ({
+            value,
+            label: formatNumber(value, stepDecimals(scale.step)),
+            y: toY(value),
+        }));
 
         const xTicks = timeTicks(minTime, maxTime, xTickCount(width, currentRows.length))
             .map((tick) => ({...tick, x: toX(tick.time)}));
@@ -176,7 +171,7 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                                       y1={tick.y} y2={tick.y} class="stroke-line"/>
                                                 <text x={g().padLeft - 8} y={tick.y + 4} text-anchor="end"
                                                       class="fill-muted tabular-nums" font-size="11">
-                                                    {Math.round(tick.value * 10) / 10}
+                                                    {tick.label}
                                                 </text>
                                             </g>
                                         )}

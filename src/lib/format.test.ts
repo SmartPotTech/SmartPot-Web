@@ -1,5 +1,14 @@
 import {describe, expect, it} from "vitest";
-import {describeAction, formatDuration, formatHoursAhead, formatMetric, greeting, rangeStatus, timeAgo} from "./format";
+import {
+    describeAction,
+    formatDuration,
+    formatHoursAhead,
+    formatMetric,
+    formatNumber,
+    greeting,
+    rangeStatus,
+    timeAgo,
+} from "./format";
 
 describe("formatMetric", () => {
     it("usa la unidad y los decimales de cada variable", () => {
@@ -31,6 +40,23 @@ describe("timeAgo y greeting", () => {
         const now = Date.parse("2026-09-26T12:00:00Z");
         expect(timeAgo("2026-09-26T11:58:00Z", now)).toBe("hace 2 minutos");
         expect(timeAgo(null, now)).toBe("nunca");
+    });
+
+    it("no dice «dentro de» cuando el reloj del servidor va unos segundos adelantado", () => {
+        const now = Date.parse("2026-09-26T12:00:00Z");
+        expect(timeAgo("2026-09-26T12:00:02Z", now)).toBe("ahora");
+        expect(timeAgo("2026-09-26T12:04:59Z", now)).toBe("ahora");
+        // Más allá de la tolerancia sí es una fecha futura real (por ejemplo, una tarea programada).
+        expect(timeAgo("2026-09-26T13:00:00Z", now)).toBe("dentro de 1 hora");
+    });
+});
+
+describe("formatNumber", () => {
+    it("usa la coma decimal en español y fija los decimales", () => {
+        expect(formatNumber(19.5, 1)).toBe("19,5");
+        expect(formatNumber(0.8123, 2)).toBe("0,81");
+        expect(formatNumber(6, 2)).toBe("6,00");
+        expect(formatNumber(null)).toBe("—");
     });
 
     it("saluda según la hora", () => {

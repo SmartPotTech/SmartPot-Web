@@ -24,6 +24,52 @@ export function xTickCount(width: number, points: number): number {
     return Math.min(width < 480 ? 3 : width < 720 ? 4 : 5, points);
 }
 
+export interface ValueScale {
+    min: number;
+    max: number;
+    step: number;
+    ticks: number[];
+}
+
+/** Paso «redondo» (1, 2, 2,5 o 5 × 10ⁿ) más cercano por arriba a `raw`. */
+function niceStep(raw: number): number {
+    const magnitude = 10 ** Math.floor(Math.log10(raw));
+    const fraction = raw / magnitude;
+    const nice = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 2.5 ? 2.5 : fraction <= 5 ? 5 : 10;
+    return nice * magnitude;
+}
+
+/**
+ * Escala del eje Y con marcas redondas: amplía [min, max] hasta múltiplos de un paso legible (14, 16, 18…; 5,5; 6;
+ * 6,5…) en vez de repartir cuatro intervalos iguales que dan valores como 25,7 o 22,1.
+ */
+export function niceScale(min: number, max: number, targetTicks = 5): ValueScale {
+    let low = Math.min(min, max);
+    let high = Math.max(min, max);
+    if (!Number.isFinite(low) || !Number.isFinite(high)) return {min: 0, max: 1, step: 1, ticks: [0, 1]};
+    if (low === high) {
+        const spread = Math.abs(low) * 0.1 || 1;
+        low -= spread;
+        high += spread;
+    }
+    const step = niceStep((high - low) / Math.max(1, targetTicks - 1));
+    const start = Math.floor(low / step + 1e-9) * step;
+    const end = Math.ceil(high / step - 1e-9) * step;
+    const ticks: number[] = [];
+    // Se redondea cada marca al número de decimales del paso para no arrastrar errores de coma flotante.
+    const decimals = stepDecimals(step);
+    for (let value = start; value <= end + step / 2; value += step) ticks.push(Number(value.toFixed(decimals)));
+    return {min: start, max: end, step, ticks};
+}
+
+/** Decimales que necesita un paso para mostrarse sin perder información (2,5 → 1; 0,25 → 2; 5 → 0). */
+export function stepDecimals(step: number): number {
+    if (!Number.isFinite(step) || step <= 0) return 0;
+    let decimals = 0;
+    while (decimals < 4 && Math.abs(Math.round(step * 10 ** decimals) - step * 10 ** decimals) > 1e-6) decimals += 1;
+    return decimals;
+}
+
 export type TickAnchor = "start" | "middle" | "end";
 
 /**

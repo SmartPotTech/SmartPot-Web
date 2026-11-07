@@ -1,5 +1,27 @@
 import {describe, expect, it} from "vitest";
-import {nearestIndex, timeTicks, xTickCount} from "./chart";
+import {nearestIndex, niceScale, stepDecimals, timeTicks, xTickCount} from "./chart";
+
+describe("niceScale", () => {
+    it("redondea el eje a múltiplos de un paso legible", () => {
+        // Rango real del panel: 14,9 a 29,3 °C daba marcas 14.9 / 18.5 / 22.1 / 25.7 / 29.3.
+        expect(niceScale(14.9, 29.3)).toEqual({min: 10, max: 30, step: 5, ticks: [10, 15, 20, 25, 30]});
+        expect(niceScale(5.5, 6.5).ticks).toEqual([5.5, 5.75, 6, 6.25, 6.5]);
+        expect(niceScale(560, 840).ticks).toEqual([500, 600, 700, 800, 900]);
+    });
+
+    it("abre un rango cuando todos los valores son iguales", () => {
+        const scale = niceScale(20, 20);
+        expect(scale.min).toBeLessThan(20);
+        expect(scale.max).toBeGreaterThan(20);
+        expect(niceScale(0, 0).ticks.length).toBeGreaterThan(1);
+    });
+
+    it("stepDecimals cuenta los decimales del paso", () => {
+        expect(stepDecimals(5)).toBe(0);
+        expect(stepDecimals(2.5)).toBe(1);
+        expect(stepDecimals(0.25)).toBe(2);
+    });
+});
 
 describe("gráficas", () => {
     it("nearestIndex elige el punto más cercano al puntero", () => {
