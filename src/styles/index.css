@@ -1,6 +1,41 @@
 @import "tailwindcss";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/geist";
 @import "@fontsource-variable/outfit";
+
+/*
+ * Respaldos locales con métricas equivalentes: mientras llegan Geist y Outfit, Arial se ajusta al mismo ancho medio y a
+ * la misma altura de línea, así el cambio de fuente no desplaza el diseño (CLS). Valores medidos con fontTools sobre
+ * texto en español (Outfit a 700, Geist a 400 y 600).
+ */
+@font-face {
+    font-family: "Outfit Fallback";
+    font-weight: 100 900;
+    src: local("Arial Bold"), local("Arial-BoldMT");
+    size-adjust: 95.66%;
+    ascent-override: 104.53%;
+    descent-override: 27.18%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: "Geist Fallback";
+    font-weight: 100 500;
+    src: local("Arial"), local("ArialMT");
+    size-adjust: 103.7%;
+    ascent-override: 96.91%;
+    descent-override: 28.45%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: "Geist Fallback";
+    font-weight: 600 900;
+    src: local("Arial Bold"), local("Arial-BoldMT");
+    size-adjust: 101.35%;
+    ascent-override: 99.16%;
+    descent-override: 29.11%;
+    line-gap-override: 0%;
+}
 
 /* El modo oscuro se activa con la clase .dark en <html> (src/lib/theme), no con la preferencia del sistema. */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -43,8 +78,8 @@
     --color-clay-fg: #983d1f;
     --color-danger-fg: #b83232;
 
-    --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
-    --font-display: "Outfit Variable", "Segoe UI", system-ui, sans-serif;
+    --font-sans: "Geist Variable", "Geist Fallback", system-ui, sans-serif;
+    --font-display: "Outfit Variable", "Outfit Fallback", system-ui, sans-serif;
 
     --radius-card: 1.25rem;
     --shadow-card: 0 1px 2px rgb(11 61 43 / 0.06), 0 8px 24px rgb(11 61 43 / 0.06);
