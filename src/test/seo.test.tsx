@@ -5,6 +5,7 @@ import {createHash} from "node:crypto";
 import {existsSync, readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {describe, expect, it} from "vitest";
+import {routeHtml, STATIC_ROUTES} from "../../vite.config";
 import {FAQ} from "../features/landing/faq";
 import {usePageMeta} from "../hooks/usePageMeta";
 import {es} from "../lib/i18n/es";
@@ -72,7 +73,28 @@ describe("SEO y PWA", () => {
         const robots = read("public/robots.txt");
         expect(robots).toContain("Disallow: /app");
         expect(robots).toContain("Sitemap: https://smartpot.app/sitemap.xml");
-        expect(read("public/sitemap.xml")).toContain("<loc>https://smartpot.app/</loc>");
+        const sitemap = new DOMParser().parseFromString(read("public/sitemap.xml"), "application/xml");
+        const urls = [...sitemap.querySelectorAll("url")].map((url) => ({
+            loc: url.querySelector("loc")?.textContent,
+            lastmod: url.querySelector("lastmod")?.textContent ?? "",
+        }));
+        expect(urls.map((url) => url.loc)).toEqual(["https://smartpot.app/", "https://smartpot.app/register", "https://smartpot.app/login"]);
+        expect(urls.every((url) => /^\d{4}-\d{2}-\d{2}$/.test(url.lastmod))).toBe(true);
+    });
+
+    it("cada ruta pública tiene su propio <head> y nginx lo sirve antes de caer en la app", () => {
+        expect(read("nginx/default.conf.template")).toContain("try_files $uri $uri.html $uri/ /index.html;");
+        for (const route of STATIC_ROUTES) {
+            const html = routeHtml(read("index.html"), route);
+            const head = new DOMParser().parseFromString(html, "text/html");
+            const get = (selector: string, name: string) => head.querySelector(selector)?.getAttribute(name);
+            expect(head.title).toBe(`${route.title} · SmartPot`);
+            expect(get('link[rel="canonical"]', "href")).toBe(`https://smartpot.app/${route.path}`);
+            expect(get('meta[name="robots"]', "content")).toBe(route.index ? "index, follow" : "noindex, nofollow");
+            expect(get('meta[name="description"]', "content")).toBe(route.description);
+            // El FAQPage describe la landing: no se repite en otras páginas.
+            expect(head.querySelector('script[type="application/ld+json"]')).toBeNull();
+        }
     });
 
     it("el service worker no guarda la API ni la configuración", () => {

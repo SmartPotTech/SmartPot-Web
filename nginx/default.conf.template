@@ -61,9 +61,11 @@ server {
         try_files $uri =404;
     }
 
+    # Las rutas públicas tienen su propio HTML (login.html, register.html…) con título, canonical y robots; el resto
+    # de la app cae en index.html.
     location / {
         include /etc/nginx/conf.d/security-headers.inc;
         add_header Cache-Control "no-cache" always;
-        try_files $uri $uri/ /index.html;
+        try_files $uri $uri.html $uri/ /index.html;
     }
 }
