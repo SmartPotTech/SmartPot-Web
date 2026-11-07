@@ -51,6 +51,8 @@ const RANGES = [
 
 /** Tras una orden, el estado se vuelve a pedir en estos momentos para ver pronto la confirmación del dispositivo. */
 const FOLLOW_UP_MS = [700, 2_000, 4_500];
+const ACTIVE_POLL_MS = 4_000;
+const IDLE_POLL_MS = 15_000;
 /** Bucket de un minuto para que la URL de /readings sea estable y el ETag pueda responder 304. */
 const READINGS_BUCKET_MS = 60_000;
 
@@ -131,9 +133,12 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
     const tab = () => tabs().find((item) => item.id === wanted())?.id ?? "summary";
     const isVirtual = () => crop.data?.kind === "VIRTUAL";
     // La ilustración está sobre todas las secciones: actuadores y órdenes se refrescan siempre, también lo que decide
-    // el agente de IA por su cuenta.
-    const actuators = useResource(() => actuatorApi.list(cropId()), () => [cropId()], 4_000);
-    const commands = useResource(() => commandApi.list(cropId()), () => [cropId()], 4_000);
+    // el agente de IA por su cuenta. Con una orden en viaje se consulta cada 4 s para ver su confirmación; en reposo
+    // basta cada 15 s (el agente evalúa cada minuto y las lecturas llegan por SSE).
+    const commandInFlight = () => (commands.data ?? []).some((item) => item.status === "PENDING" || item.status === "SENT");
+    const pollMs = () => (commandInFlight() ? ACTIVE_POLL_MS : IDLE_POLL_MS);
+    const actuators = useResource(() => actuatorApi.list(cropId()), () => [cropId()], pollMs);
+    const commands = useResource(() => commandApi.list(cropId()), () => [cropId()], pollMs);
     const simulation = useResource<VirtualDevice | null>(
         () => (isVirtual() ? virtualDeviceApi.get(cropId()) : Promise.resolve(null)),
         () => [cropId(), isVirtual()],

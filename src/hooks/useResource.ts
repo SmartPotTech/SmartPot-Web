@@ -21,7 +21,9 @@ export interface Resource<T> {
 export function useResource<T>(
     loader: () => Promise<T>,
     deps: (() => unknown) | unknown[] = [],
-    intervalMs?: number,
+    // Un número fijo o un accessor: si cambia (por ejemplo, más rápido mientras hay una orden pendiente), el
+    // temporizador se reinicia con el nuevo ritmo sin volver a pedir el recurso.
+    intervalMs?: number | (() => number | undefined),
 ): Resource<T> {
     const [data, setDataSignal] = createSignal<T | undefined>(undefined);
     const [error, setError] = createSignal<string | null>(null);
@@ -51,13 +53,19 @@ export function useResource<T>(
     };
 
     createEffect(() => {
+        void load(key());
+    });
+
+    // El ritmo se lee dentro del efecto (que corre después de montar), no en un memo: así el accessor puede depender de
+    // este mismo recurso o de otro declarado más abajo sin tocarlo antes de que exista.
+    createEffect(() => {
         const currentKey = key();
-        void load(currentKey);
-        if (!intervalMs) return;
+        const period = typeof intervalMs === "function" ? intervalMs() : intervalMs;
+        if (!period) return;
         const refresh = () => {
             if (document.visibilityState === "visible") void load(currentKey);
         };
-        const timer = window.setInterval(refresh, intervalMs);
+        const timer = window.setInterval(refresh, period);
         document.addEventListener("visibilitychange", refresh);
         onCleanup(() => {
             window.clearInterval(timer);
