@@ -10,6 +10,7 @@ export function PublicLayout(props: { children?: JSX.Element }) {
     const auth = useAuth();
     return (
         <div class="flex min-h-dvh flex-col">
+            <a href="#main" class="skip-link">{t("nav.skipToContent")}</a>
             <header class="sticky top-0 z-30 border-b border-line/70 bg-card/85 backdrop-blur">
                 <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-3 sm:px-4" aria-label={t("nav.main")}>
                     <A href="/" aria-label={t("nav.homeLabel")}><Logo size={34}/></A>
@@ -33,7 +34,7 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                     </div>
                 </nav>
             </header>
-            <main class="flex-1">
+            <main id="main" tabindex="-1" class="flex-1">
                 {/* El ingreso y el registro llegan en trozos aparte: el cromo público se queda mientras bajan. */}
                 <Suspense fallback={<div class="min-h-[60dvh]"/>}>{props.children}</Suspense>
             </main>

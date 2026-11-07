@@ -44,7 +44,7 @@ export function Button(props: ButtonProps) {
         <button
             type={local.type ?? "button"}
             disabled={Boolean(local.disabled || local.loading)}
-            class={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-150 active:scale-[0.98]
+            class={`touch-target inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-150 ease-out active:translate-y-px
         disabled:cursor-not-allowed ${VARIANTS[local.variant ?? "primary"]} ${SIZES[local.size ?? "md"]} ${local.class ?? local.className ?? ""}`}
             {...rest}
         >

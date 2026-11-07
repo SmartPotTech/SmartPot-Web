@@ -27,6 +27,7 @@ export const es = {
     "nav.alerts": "Alertas",
     "nav.app": "Aplicación",
     "nav.main": "Principal",
+    "nav.skipToContent": "Saltar al contenido",
     "nav.homeLabel": "SmartPot, inicio",
     "nav.dashboardLabel": "SmartPot, panel general",
     "nav.installApp": "Instalar app",

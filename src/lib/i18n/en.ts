@@ -29,6 +29,7 @@ export const en: TranslationDictionary = {
     "nav.alerts": "Alerts",
     "nav.app": "Application",
     "nav.main": "Main",
+    "nav.skipToContent": "Skip to content",
     "nav.homeLabel": "SmartPot, home",
     "nav.dashboardLabel": "SmartPot, main dashboard",
     "nav.installApp": "Install app",

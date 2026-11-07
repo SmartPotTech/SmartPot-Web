@@ -116,6 +116,8 @@
     html {
         -webkit-tap-highlight-color: transparent;
         scroll-behavior: smooth;
+        /* Sin la espera del doble toque para hacer zoom; el pellizco sigue funcionando. */
+        touch-action: manipulation;
     }
 
     body {
@@ -126,6 +128,16 @@
     h2,
     h3 {
         @apply font-display tracking-tight;
+        text-wrap: balance;
+    }
+
+    p {
+        text-wrap: pretty;
+    }
+
+    /* El destino del enlace «Saltar al contenido» recibe el foco por programa: no necesita anillo propio. */
+    main[tabindex="-1"]:focus {
+        outline: none;
     }
 
     :focus-visible {
@@ -134,6 +146,16 @@
 }
 
 @layer components {
+    /* Visible solo con teclado: el primer Tab de cada página lleva directo al contenido. */
+    .skip-link {
+        @apply sr-only;
+    }
+
+    .skip-link:focus-visible {
+        @apply not-sr-only fixed top-3 left-3 z-50 rounded-xl bg-leaf-700 px-4 py-2 text-sm font-semibold text-white
+        shadow-[var(--shadow-card)];
+    }
+
     .card {
         @apply rounded-[var(--radius-card)] border border-line bg-card shadow-[var(--shadow-card)];
     }

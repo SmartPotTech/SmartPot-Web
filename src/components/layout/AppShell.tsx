@@ -49,6 +49,7 @@ export function AppShell(props: { children?: JSX.Element }) {
 
     return (
         <div class="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
+            <a href="#main" class="skip-link">{t("nav.skipToContent")}</a>
             <aside class="sticky top-0 hidden h-dvh flex-col bg-leaf-900 px-4 py-5 text-leaf-100 dark:border-r dark:border-line dark:bg-[#0a0e0c] md:flex">
                 <div aria-hidden="true"
                      class="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-leaf-950/80 to-transparent dark:from-[#0a0e0c]/80"/>
@@ -119,7 +120,7 @@ export function AppShell(props: { children?: JSX.Element }) {
                         <WifiOff size={16}/> {t("shell.offline")}
                     </div>
                 </Show>
-                <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8">
+                <main id="main" tabindex="-1" class="mx-auto w-full max-w-6xl flex-1 px-4 py-6 md:px-8">
                     {props.children}
                 </main>
             </div>

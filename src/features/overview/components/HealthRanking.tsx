@@ -39,8 +39,11 @@ export function HealthRanking(props: { crops: Crop[] }) {
                                          aria-valuemin={0}
                                          aria-valuemax={100} aria-valuenow={health ? Math.round(health.index) : 0}
                                          aria-label={t("ranking.healthOf", {name: crop.name})}>
-                                        <div class="h-full rounded-full transition-all duration-300"
-                                             style={{"width": `${health?.index ?? 0}%`, "background-color": color}}/>
+                                        <div class="h-full w-full origin-left rounded-full transition-transform duration-300 ease-out"
+                                             style={{
+                                                 "transform": `scaleX(${(health?.index ?? 0) / 100})`,
+                                                 "background-color": color,
+                                             }}/>
                                     </div>
                                 </A>
                             </li>

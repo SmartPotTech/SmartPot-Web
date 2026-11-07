@@ -13,14 +13,14 @@ export function CropCard(props: { crop: Crop }) {
     const color = () => health() ? HEALTH[health()!.level]?.color ?? HEALTH.UNKNOWN.color : undefined;
     return (
         <A href={`/app/crops/${props.crop.id}`}
-           class="card group flex flex-col overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg">
+           class="card group flex flex-col overflow-hidden transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg">
             <div class="flex items-start justify-between gap-3 bg-linear-to-r from-leaf-50 to-card px-5 pb-3 pt-5">
                 <div class="flex min-w-0 items-center gap-3">
                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-leaf-700 text-white">
                         <Sprout size={20}/>
                     </span>
                     <div class="min-w-0">
-                        <h3 class="truncate text-lg font-semibold">{props.crop.name}</h3>
+                        <h2 class="truncate text-lg font-semibold">{props.crop.name}</h2>
                         <p class="text-sm text-accent">{CROP_TYPES[props.crop.type].label} · {CROP_FORMS[props.crop.form]?.label ?? CROP_FORMS.POT.label}</p>
                     </div>
                 </div>
@@ -43,10 +43,12 @@ export function CropCard(props: { crop: Crop }) {
                 </div>
                 <div class="mt-4">
                     <div class="h-1.5 overflow-hidden rounded-full bg-surface" role="presentation">
-                        <div class="h-full rounded-full bg-line transition-all" style={{
-                            "width": `${health() ? Math.round(health()!.index) : 0}%`,
-                            "background-color": color(),
-                        }}/>
+                        {/* La barra crece con transform (en el compositor), no animando el ancho. */}
+                        <div class="h-full w-full origin-left rounded-full bg-line transition-transform duration-300 ease-out"
+                             style={{
+                                 "transform": `scaleX(${health() ? Math.round(health()!.index) / 100 : 0})`,
+                                 "background-color": color(),
+                             }}/>
                     </div>
                 </div>
                 <div class="mt-3 flex items-center justify-between gap-2">

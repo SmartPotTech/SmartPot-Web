@@ -21,6 +21,9 @@ export function TextField(props: FieldProps & JSX.InputHTMLAttributes<HTMLInputE
                 id={id}
                 aria-invalid={Boolean(local.error)}
                 aria-describedby={local.error ? `${id}-error` : undefined}
+                // El corrector y las mayúsculas automáticas estropean correos; el resto de campos los conserva.
+                spellcheck={rest.type === "email" ? false : rest.spellcheck}
+                autocapitalize={rest.type === "email" ? "off" : rest.autocapitalize}
                 class={`${CONTROL} ${local.error ? "border-danger-500" : "border-line"}`}
                 onInput={(event) => {
                     if (typeof local.onInput === "function") local.onInput(event);
