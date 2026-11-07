@@ -4,6 +4,7 @@ import {useAuth} from "../../features/auth/AuthContext";
 import {t} from "../../lib/i18n";
 import {Logo} from "../brand/Logo";
 import {PreferenceToggles} from "../ui/PreferenceControls";
+import {SkipLink} from "./SkipLink";
 
 const SECTIONS = [
     {href: "/#como-funciona", label: "public.howItWorks"},
@@ -20,7 +21,7 @@ export function PublicLayout(props: { children?: JSX.Element }) {
 
     return (
         <div class="flex min-h-dvh flex-col">
-            <a href="#main" class="skip-link">{t("nav.skipToContent")}</a>
+            <SkipLink/>
             <header class={`sticky top-0 z-30 ${dark() ? "bg-leaf-950 text-white" : "bg-card"}`}>
                 <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4 md:px-6" aria-label={t("nav.main")}>
                     <A href="/" aria-label={t("nav.homeLabel")}><Logo size={32} inverse={dark()}/></A>

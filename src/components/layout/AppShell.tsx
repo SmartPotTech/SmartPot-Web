@@ -20,6 +20,7 @@ import {notificationApi} from "../../lib/api/services";
 import {t, type TranslationKey} from "../../lib/i18n";
 import {Logo} from "../brand/Logo";
 import {PreferenceToggles} from "../ui/PreferenceControls";
+import {SkipLink} from "./SkipLink";
 
 const NAV: { to: string; label: TranslationKey; icon: typeof Bell; end: boolean; mobile: boolean }[] = [
     {to: "/app", label: "nav.dashboard", icon: LayoutDashboard, end: true, mobile: true},
@@ -49,7 +50,7 @@ export function AppShell(props: { children?: JSX.Element }) {
 
     return (
         <div class="min-h-dvh md:grid md:grid-cols-[16rem_1fr]">
-            <a href="#main" class="skip-link">{t("nav.skipToContent")}</a>
+            <SkipLink/>
             <aside class="sticky top-0 hidden h-dvh flex-col bg-leaf-900 px-4 py-5 text-leaf-100 dark:border-r dark:border-line dark:bg-[#0a0e0c] md:flex">
                 <div aria-hidden="true"
                      class="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-linear-to-t from-leaf-950/80 to-transparent dark:from-[#0a0e0c]/80"/>
