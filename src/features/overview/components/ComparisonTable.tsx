@@ -42,7 +42,8 @@ export function ComparisonTable(props: { crops: Crop[] }) {
                 <table class="w-full min-w-[720px] text-sm">
                     <thead>
                     <tr class="bg-leaf-900 text-left text-xs uppercase tracking-wide text-leaf-100">
-                        <th scope="col" class="px-4 py-2.5 font-semibold">{t("table.crop")}</th>
+                        {/* La columna del cultivo queda fija al desplazar la tabla en pantallas angostas. */}
+                        <th scope="col" class="sticky left-0 z-10 bg-leaf-900 px-4 py-2.5 font-semibold">{t("table.crop")}</th>
                         <For each={PRIMARY_METRICS}>
                             {(metric) => (
                                 <th scope="col" class="px-3 py-2.5 text-right font-semibold">{METRICS[metric].label}</th>
@@ -56,8 +57,8 @@ export function ComparisonTable(props: { crops: Crop[] }) {
                             const measures = () => crop.latestReading?.measures ?? {};
                             const profile = () => profiles[crop.type];
                             return (
-                                <tr class={index() % 2 ? "bg-surface/60" : "bg-card"}>
-                                    <th scope="row" class="px-4 py-2.5 text-left font-normal">
+                                <tr class={index() % 2 ? "bg-surface" : "bg-card"}>
+                                    <th scope="row" class="sticky left-0 z-10 bg-inherit px-4 py-2.5 text-left font-normal">
                                         <A href={`/app/crops/${crop.id}`}
                                            class="font-semibold text-accent-strong hover:underline">{crop.name}</A>
                                         <span class="block text-xs text-muted tabular-nums">

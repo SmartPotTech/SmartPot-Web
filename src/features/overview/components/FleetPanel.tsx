@@ -40,7 +40,7 @@ export function FleetPanel(props: { crops: Crop[] }) {
     const names = (ids: string[]) => ids.map((id) => props.crops.find((crop) => crop.id === id)?.name ?? t("fleet.cropFallback"));
 
     return (
-        <section class="card min-h-[603px] overflow-hidden">
+        <section class="card min-h-96 overflow-hidden lg:min-h-[603px]">
             <div class="flex items-start justify-between gap-3 bg-linear-to-r from-leaf-50 to-card p-5">
                 <div>
                     <h2 class="flex items-center gap-2 text-lg font-semibold">

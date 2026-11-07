@@ -70,7 +70,7 @@ export function OverviewSkeleton() {
                         <Skeleton class="h-14 w-full rounded-2xl"/>
                     </div>
                 </SkeletonCard>
-                <SkeletonCard height="min-h-[603px]">
+                <SkeletonCard height="min-h-96 lg:min-h-[603px]">
                     <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
                         <Skeleton class="h-28 rounded-2xl"/>
                         <Skeleton class="h-28 rounded-2xl"/>

@@ -55,7 +55,7 @@ export default function OverviewPage() {
                         {t("overview.emptyBody")}
                     </EmptyState>
                 }>
-                    <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+                    <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
                         <HealthRanking crops={crops()}/>
                         <FleetPanel crops={crops()}/>
                     </div>
