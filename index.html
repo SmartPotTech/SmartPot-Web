@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
     <title>SmartPot — Monitoreo inteligente de cultivos hidropónicos</title>
-    <meta content="SmartPot monitorea tus cultivos hidropónicos en tiempo real y un asistente de IA te dice qué necesitan o actúa por ti. Gratis, instalable y de código abierto."
+    <meta content="SmartPot lee los sensores de tu cultivo hidropónico, te explica qué necesita cada planta y puede actuar por ti. Gratis y de código abierto."
           name="description"/>
     <meta content="hidroponía, cultivos hidropónicos, huerto inteligente, IoT, ESP32, MQTT, sensores de pH, TDS, inteligencia artificial, agricultura urbana, Wokwi"
           name="keywords"/>
@@ -14,6 +14,7 @@
     <meta content="light dark" name="color-scheme"/>
     <link href="https://smartpot.app/" rel="canonical"/>
     <link href="https://smartpot.app/" hreflang="es" rel="alternate"/>
+    <link href="https://smartpot.app/" hreflang="x-default" rel="alternate"/>
 
     <link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
     <link href="/icons/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
@@ -28,16 +29,16 @@
     <meta content="SmartPot" property="og:site_name"/>
     <meta content="es_CO" property="og:locale"/>
     <meta content="https://smartpot.app/" property="og:url"/>
-    <meta content="SmartPot — Tu huerto hidropónico, en tu bolsillo" property="og:title"/>
-    <meta content="Monitoreo en tiempo real, asistente de inteligencia artificial y automatización para cultivos hidropónicos."
+    <meta content="SmartPot — Monitoreo de cultivos hidropónicos" property="og:title"/>
+    <meta content="SmartPot lee los sensores de tu cultivo hidropónico, te explica qué necesita cada planta y puede actuar por ti. Gratis y de código abierto."
           property="og:description"/>
     <meta content="https://smartpot.app/og-image.png" property="og:image"/>
     <meta content="1200" property="og:image:width"/>
     <meta content="630" property="og:image:height"/>
     <meta content="SmartPot: cultivos hidropónicos inteligentes" property="og:image:alt"/>
     <meta content="summary_large_image" name="twitter:card"/>
-    <meta content="SmartPot — Tu huerto hidropónico, en tu bolsillo" name="twitter:title"/>
-    <meta content="Monitoreo en tiempo real, asistente de IA y automatización para cultivos hidropónicos."
+    <meta content="SmartPot — Monitoreo de cultivos hidropónicos" name="twitter:title"/>
+    <meta content="SmartPot lee los sensores de tu cultivo hidropónico, te explica qué necesita cada planta y puede actuar por ti. Gratis y de código abierto."
           name="twitter:description"/>
     <meta content="https://smartpot.app/og-image.png" name="twitter:image"/>
 
@@ -71,9 +72,11 @@
                     "url": "https://smartpot.app/",
                     "applicationCategory": "LifestyleApplication",
                     "operatingSystem": "Web, Android, iOS, Windows, macOS",
-                    "description": "Aplicación web progresiva para monitorear y automatizar cultivos hidropónicos con IoT e inteligencia artificial.",
+                    "description": "SmartPot lee los sensores de tu cultivo hidropónico, te explica qué necesita cada planta y puede actuar por ti. Gratis y de código abierto.",
                     "inLanguage": "es",
                     "isAccessibleForFree": true,
+                    "license": "https://opensource.org/licenses/MIT",
+                    "codeRepository": "https://github.com/SmartPotTech",
                     "offers": {
                         "@type": "Offer",
                         "price": "0",
@@ -91,7 +94,7 @@
                             "name": "¿Qué es SmartPot?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "Una plataforma abierta para monitorear y automatizar cultivos hidropónicos en maceta, tubos NFT, torre o balsa: un ESP32 envía sus lecturas por MQTT, o SmartPot las simula en un cultivo virtual, y la aplicación las analiza con inteligencia artificial."
+                                "text": "Una plataforma abierta para monitorear y automatizar cultivos hidropónicos en maceta, tubos NFT, torre o balsa. Un ESP32 envía sus lecturas por MQTT, o SmartPot las simula en un cultivo virtual; la aplicación las muestra en vivo, las analiza y puede controlar la bomba, la luz, el ventilador, el humidificador y los dosificadores."
                             }
                         },
                         {
@@ -99,7 +102,7 @@
                             "name": "¿Necesito hardware?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "No. Puedes crear un cultivo virtual que SmartPot simula, o uno real con el firmware simulado en Wokwi o en una placa ESP32."
+                                "text": "No. Puedes crear un cultivo virtual que SmartPot simula, o uno real con el firmware simulado en Wokwi o grabado en una placa ESP32 con sensores. Al crearlo eliges real o virtual, y eso no cambia después."
                             }
                         },
                         {
@@ -107,7 +110,23 @@
                             "name": "¿Qué cultivos soporta?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "Lechuga, tomate, fresa, albahaca, espinaca y pimentón, cada uno con sus rangos ideales."
+                                "text": "Lechuga, tomate, fresa, albahaca, espinaca y pimentón, cada uno con sus rangos ideales de temperatura, humedad, luz, pH, nutrientes y humedad del sustrato."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "¿Cómo decide el asistente?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Combina un sistema experto con reglas de agronomía, lógica difusa para el índice de salud, modelos de aprendizaje automático y un agente reactivo. Cada recomendación muestra las reglas y la certeza que la respaldan."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "¿Es seguro conectar mi dispositivo?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "La conexión va cifrada con TLS, cada cultivo tiene su propia clave de dispositivo y el broker solo le permite publicar y recibir mensajes en los tópicos de ese cultivo."
                             }
                         },
                         {
@@ -115,7 +134,15 @@
                             "name": "¿Cuánto cuesta?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "SmartPot es gratuito y de código abierto bajo licencia MIT."
+                                "text": "Nada. SmartPot es gratuito y de código abierto bajo licencia MIT: puedes usarlo en smartpot.app o desplegarlo en tu propio servidor con Docker."
+                            }
+                        },
+                        {
+                            "@type": "Question",
+                            "name": "¿Se instala como una app?",
+                            "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Sí. Es una aplicación web progresiva: se instala desde el navegador en Android, iOS o escritorio, sin pasar por una tienda. Sin conexión abre la última versión guardada y lo avisa; los datos nuevos llegan al reconectar."
                             }
                         }
                     ]
@@ -127,16 +154,9 @@
          petición; la CSP lo permite por su hash (nginx/security-headers.inc.template, verificado en seo.test.tsx). -->
     <script>(function(){var d=document.documentElement;try{var s=localStorage.getItem("smartpot_theme"),k=s==="dark"||(s!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);d.classList.toggle("dark",k);d.setAttribute("data-theme",k?"dark":"light");var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content",k?"#0A0E0C":"#0B3D2B");var c=document.querySelector('meta[name="color-scheme"]');if(c)c.setAttribute("content",k?"dark":"light");if(localStorage.getItem("smartpot_locale")==="en")d.lang="en"}catch(e){}if(location.pathname!=="/")d.setAttribute("data-prerender","off")})()</script>
     <style>
-        :root{--pr-page:#F7FAF8;--pr-text:#5B6B63;--pr-title:#0B3D2B;--pr-link:#067A52}
-        :root[data-theme="dark"]{--pr-page:#0A0E0C;--pr-text:#8EA399;--pr-title:#F2F7F4;--pr-link:#00B074}
-        @media (prefers-color-scheme:dark){:root:not([data-theme]){--pr-page:#0A0E0C;--pr-text:#8EA399;--pr-title:#F2F7F4;--pr-link:#00B074}}
-        body{margin:0;background:var(--pr-page)}
+        body{margin:0;background:#F7FAF8}
+        :root.dark body{background:#0A0E0C}
         [data-prerender="off"] .prerender{display:none}
-        .prerender{box-sizing:border-box;min-height:100dvh;padding:3rem 1.25rem;display:grid;align-content:center;gap:1rem;color:var(--pr-text);font:400 1rem/1.6 "Geist Variable","Geist Fallback",system-ui,sans-serif}
-        .prerender>*{width:100%;max-width:38rem;margin:0 auto}
-        .prerender h1{color:var(--pr-title);font:700 clamp(1.75rem,6vw,2.5rem)/1.15 "Outfit Variable","Outfit Fallback",system-ui,sans-serif;letter-spacing:-0.02em}
-        .prerender ul{box-sizing:border-box;padding-left:1.25rem}
-        .prerender a{color:var(--pr-link);font-weight:600}
     </style>
     <!-- Diferido: no bloquea el pintado y, como los módulos, se ejecuta en orden de documento. Va en el <head> porque
          Vite inserta allí el módulo principal, después de esta línea. -->
@@ -144,22 +164,36 @@
 </head>
 <body>
 <div id="root">
-    <!-- Contenido para rastreadores y navegadores sin JavaScript; SolidJS lo reemplaza al cargar. -->
-    <main class="prerender">
-        <h1>SmartPot: monitoreo inteligente de cultivos hidropónicos</h1>
-        <p>SmartPot monitorea tus cultivos hidropónicos en tiempo real y un asistente de inteligencia artificial te dice
-            qué necesita cada planta, o actúa por ti con el modo automático.</p>
-        <ul>
-            <li>Temperatura, humedad, luz, pH, nutrientes y humedad del sustrato desde tu ESP32 por MQTT, o simuladas en
-                un cultivo virtual.
-            </li>
-            <li>Sistema experto, lógica difusa y aprendizaje automático para diagnosticar cada cultivo.</li>
-            <li>Automatización de bomba de agua, luz ultravioleta y ventilador.</li>
-            <li>Aplicación web progresiva: se instala en Android, iOS y escritorio.</li>
-        </ul>
-        <p><a href="/register">Crear cuenta gratis</a> · <a href="/login">Ingresar</a></p>
-        <noscript><p>Activa JavaScript para usar la aplicación.</p></noscript>
-    </main>
+    <!-- Copia estática de la barra y del hero de la landing, con las mismas clases que LandingPage y PublicLayout: la
+         leen los rastreadores y es el primer pintado (LCP) mientras baja el JavaScript, que la reemplaza al montar.
+         En otras rutas el script del <head> la oculta. -->
+    <div class="prerender flex min-h-dvh flex-col">
+        <header class="sticky top-0 z-30 bg-leaf-950 text-white">
+            <nav aria-label="Principal" class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3 sm:px-4 md:px-6">
+                <a aria-label="SmartPot, inicio" href="/"><span class="inline-flex items-center gap-2.5"><svg width="32" height="32" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#0B3D2B"/><path d="M332 112a78 78 0 0 1 68 68" fill="none" stroke="#2D9CDB" stroke-width="20" stroke-linecap="round"/><path d="M332 70a120 120 0 0 1 110 110" fill="none" stroke="#2D9CDB" stroke-width="20" stroke-linecap="round" opacity=".55"/><path d="M256 322V214" fill="none" stroke="#00B074" stroke-width="20" stroke-linecap="round"/><path d="M254 254c-10-58-56-92-120-86 4 62 48 98 120 86z" fill="#00B074"/><path d="M258 224c10-64 60-100 128-94-6 68-54 104-128 94z" fill="#7FDBB0"/><path d="M150 324h212l-26 124a26 26 0 0 1-25 21H201a26 26 0 0 1-25-21z" fill="#D9734E"/><rect x="132" y="300" width="248" height="44" rx="16" fill="#B85A38"/></svg><span translate="no" class="font-display text-xl font-bold tracking-tight text-white">Smart<span class="text-leaf-500">Pot</span></span></span></a>
+                <div class="flex min-w-0 items-center gap-0 text-sm font-semibold sm:gap-1">
+                    <a class="rounded-xl px-2 py-2 text-white max-[380px]:hidden sm:px-3" href="/login">Ingresar</a>
+                    <a class="rounded-xl bg-white px-3 py-2 text-leaf-950 sm:px-4" href="/register">Crear cuenta</a>
+                </div>
+            </nav>
+        </header>
+        <main class="flex-1">
+            <section class="relative bg-leaf-950 text-white">
+                <div aria-hidden="true" class="absolute inset-y-0 right-0 hidden w-1/2 bg-leaf-900 md:block"></div>
+                <div class="relative mx-auto grid max-w-6xl md:grid-cols-2">
+                <div class="flex flex-col justify-end px-4 pt-14 pb-12 md:min-h-[min(46rem,calc(100dvh-4rem))] md:px-6 md:pr-10 md:pb-16">
+                    <h1 class="max-w-[18ch] text-4xl leading-[1.05] font-bold md:text-5xl">Monitoreo de cultivos hidropónicos</h1>
+                    <p class="mt-6 max-w-[44ch] text-lg text-leaf-100">SmartPot lee los sensores de tu cultivo, te dice qué necesita cada planta y por qué, y puede actuar por ti.</p>
+                    <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
+                        <a class="inline-flex h-12 items-center gap-2 rounded-xl bg-leaf-500 px-6 font-semibold text-leaf-950" href="/register">Crear cuenta gratis</a>
+                    </div>
+                    <p class="mt-4 text-sm text-leaf-100/90">Sin hardware: empieza con un cultivo virtual que SmartPot simula.</p>
+                    <noscript><p class="mt-4 text-sm">Activa JavaScript para usar la aplicación.</p></noscript>
+                </div>
+                </div>
+            </section>
+        </main>
+    </div>
 </div>
 <script src="/src/main.tsx" type="module"></script>
 </body>

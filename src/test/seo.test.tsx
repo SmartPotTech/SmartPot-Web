@@ -5,7 +5,9 @@ import {createHash} from "node:crypto";
 import {existsSync, readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {describe, expect, it} from "vitest";
+import {FAQ} from "../features/landing/faq";
 import {usePageMeta} from "../hooks/usePageMeta";
+import {es} from "../lib/i18n/es";
 
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf-8");
 
@@ -25,9 +27,19 @@ describe("SEO y PWA", () => {
         expect(types).toEqual(expect.arrayContaining(["Organization", "WebSite", "SoftwareApplication", "FAQPage"]));
     });
 
-    it("el contenido para rastreadores tiene estilo en línea y la app lo quita al montar", () => {
-        const fallback = page.querySelector("#root > main.prerender");
-        expect(fallback?.querySelector("h1")?.textContent).toContain("SmartPot");
+    it("el FAQPage publica las mismas preguntas y respuestas que la landing", () => {
+        const jsonLd = page.querySelector('script[type="application/ld+json"]')?.textContent ?? "{}";
+        const faq = JSON.parse(jsonLd)["@graph"].find((node: { "@type": string }) => node["@type"] === "FAQPage");
+        const published = faq.mainEntity.map((entry: { name: string; acceptedAnswer: { text: string } }) =>
+            [entry.name, entry.acceptedAnswer.text]);
+        expect(published).toEqual(FAQ.map((item) => [es[item.question], es[item.answer]]));
+    });
+
+    it("el contenido para rastreadores copia el hero y la app lo quita al montar", () => {
+        const fallback = page.querySelector("#root > .prerender");
+        expect(fallback?.querySelector("h1")?.textContent).toBe(es["landing.heroTitle"]);
+        expect(fallback?.querySelector('a[href="/register"].bg-leaf-500')?.textContent).toBe(es["landing.ctaCreate"]);
+        expect(attribute('meta[name="description"]', "content")).toBe(es["landing.description"]);
         // Sin hojas aparte que bloqueen el primer pintado: la CSP admite estilos en línea.
         expect(page.querySelector('link[rel="stylesheet"]')).toBeNull();
         expect(page.querySelector("head > style")?.textContent).toContain(".prerender");
