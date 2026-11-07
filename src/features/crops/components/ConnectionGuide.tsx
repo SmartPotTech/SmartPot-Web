@@ -39,7 +39,7 @@ function Step(props: { number: number; title: string; children: JSX.Element }) {
     );
 }
 
-/** La CA pública del broker, para incluirla en BROKER de config.py. */
+/** La CA pública del broker, para incluirla en BROKER de config.json. */
 function useBrokerCertificate(enabled: () => boolean) {
     const [certificate, setCertificate] = createSignal<string>();
     createEffect(() => {
@@ -168,7 +168,7 @@ export function ConnectionGuide(props: { credentials: DeviceCredentials }) {
             </Show>
             <Show when={target() === "wokwi"}>
                 <Alert tone="warning">
-                    {t("guide.private1")}<code>config.py</code>{t("guide.private2")}
+                    {t("guide.private1")}<code>config.json</code>{t("guide.private2")}
                 </Alert>
             </Show>
         </div>
