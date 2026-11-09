@@ -62,7 +62,7 @@ describe("SEO y PWA", () => {
     });
 
     it("el script en línea del <head> está autorizado por su hash en la CSP", () => {
-        const inline = [...read("index.html").matchAll(/<script>([\s\S]*?)<\/script>/g)].map((match) => match[1] ?? "");
+        const inline = [...read("index.html").matchAll(/<script>([\s\S]*?)<\/script>/gi)].map((match) => match[1] ?? "");
         expect(inline).toHaveLength(1);
         const script = inline[0] ?? "";
         const hash = `'sha256-${createHash("sha256").update(script, "utf8").digest("base64")}'`;
