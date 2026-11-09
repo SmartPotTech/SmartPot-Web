@@ -89,21 +89,27 @@ Each domain feature lives in `src/features/<feature>` with its pages, components
 <!-- diagrama: SmartPot_Web_Solid_01_Crop_Creation_Flow | titulo=Crop Creation Flow -->
 
 ```mermaid
-sequenceDiagram
-  autonumber
-  actor Grower as User (PWA Client)
-  participant Web as SmartPot-Web (SolidJS)
-  participant API as SmartPot-API (Go Echo)
-  Grower->>Web: Open New Crop Wizard (/app/crops)
-  Grower->>Web: Select Species, Form (POT, NFT, TOWER, RAFT), & Kind (REAL/VIRTUAL)
-  Web->>API: POST /api/v1/crops {name, species, kind, form, outdoor, location}
-  API-->>Web: 201 Created {id, name, ...}
-  alt REAL Crop
-    API-->>Web: Return device credentials & setup guide
-  else VIRTUAL Crop
-    API-->>Web: Simulation initialized autonomously
-  end
-  Web->>Grower: Navigate to /app/crops/:id (Dynamic Scene Rendering)
+%%{init: {"theme": "base", "fontFamily": "Segoe UI, Arial, sans-serif", "themeVariables": {"fontFamily": "Segoe UI, Arial, sans-serif", "fontSize": "15px", "primaryColor": "#DDF5EA", "primaryTextColor": "#17261F", "primaryBorderColor": "#067A52", "secondaryColor": "#E3F2FB", "secondaryTextColor": "#17261F", "secondaryBorderColor": "#1F6FA0", "tertiaryColor": "#F2F7F4", "tertiaryTextColor": "#17261F", "tertiaryBorderColor": "#D5E3DC", "lineColor": "#5B6B63", "textColor": "#17261F", "mainBkg": "#DDF5EA", "nodeBorder": "#067A52", "clusterBkg": "#F7FAF8", "clusterBorder": "#D5E3DC", "edgeLabelBackground": "#FFFFFF", "actorBkg": "#067A52", "actorBorder": "#0B3D2B", "actorTextColor": "#FFFFFF", "actorLineColor": "#5B6B63", "signalColor": "#17261F", "signalTextColor": "#17261F", "labelBoxBkgColor": "#0B3D2B", "labelBoxBorderColor": "#0B3D2B", "labelTextColor": "#FFFFFF", "loopTextColor": "#0B3D2B", "noteBkgColor": "#FDF4DD", "noteBorderColor": "#C98D12", "noteTextColor": "#17261F", "activationBkgColor": "#DDF5EA", "activationBorderColor": "#067A52", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F2F7F4"}}}%%
+flowchart TB
+  start(["My Crops › New Crop"]) --> kind{"Step 1 · Real or virtual?<br/>notice: cannot be changed later"}
+  kind -->|"Real"| details["Step 2 · Name, species, and form<br/>pot · NFT channels · tower · raft<br/>preview with pump, UV light, and fan"]
+  kind -->|"Virtual"| detailsv["Step 2 · Name, species, and form<br/>preview with all six actuators"]
+  detailsv --> mode{"How does simulation start?"}
+  mode -->|"Day & Night"| postv
+  mode -->|"Real Weather"| place["Search location or use device GPS<br/>(dedicated dialog)"] --> postv
+  mode -->|"Manual"| postv["POST /crops · kind VIRTUAL"]
+  details --> post["POST /crops · kind REAL"]
+  post --> guide["Step 3 · Connect device<br/>device key displayed once<br/>Physical ESP32 or Wokwi with config.json"]
+  guide --> live(["Crop detail view<br/>with reactive illustration"])
+  postv --> live
+  classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
+  classDef water fill:#E3F2FB,stroke:#1F6FA0,color:#17261F
+  classDef sun fill:#FDF4DD,stroke:#C98D12,color:#17261F
+  classDef clay fill:#FBE9E1,stroke:#B85A38,color:#17261F
+  classDef core fill:#067A52,stroke:#0B3D2B,color:#FFFFFF
+  classDef deep fill:#0B3D2B,stroke:#06281C,color:#FFFFFF
+  classDef muted fill:#F2F7F4,stroke:#5B6B63,color:#17261F
+  class start,live core
 ```
 
 | Decision   | Detail                                                                                                                                                             |
@@ -120,15 +126,44 @@ sequenceDiagram
 <!-- diagrama: SmartPot_Web_Solid_02_Live_Scene | titulo=Dynamic Scene Rendering Engine | lamina=H -->
 
 ```mermaid
+%%{init: {"theme": "base", "fontFamily": "Segoe UI, Arial, sans-serif", "themeVariables": {"fontFamily": "Segoe UI, Arial, sans-serif", "fontSize": "15px", "primaryColor": "#DDF5EA", "primaryTextColor": "#17261F", "primaryBorderColor": "#067A52", "secondaryColor": "#E3F2FB", "secondaryTextColor": "#17261F", "secondaryBorderColor": "#1F6FA0", "tertiaryColor": "#F2F7F4", "tertiaryTextColor": "#17261F", "tertiaryBorderColor": "#D5E3DC", "lineColor": "#5B6B63", "textColor": "#17261F", "mainBkg": "#DDF5EA", "nodeBorder": "#067A52", "clusterBkg": "#F7FAF8", "clusterBorder": "#D5E3DC", "edgeLabelBackground": "#FFFFFF", "actorBkg": "#067A52", "actorBorder": "#0B3D2B", "actorTextColor": "#FFFFFF", "actorLineColor": "#5B6B63", "signalColor": "#17261F", "signalTextColor": "#17261F", "labelBoxBkgColor": "#0B3D2B", "labelBoxBorderColor": "#0B3D2B", "labelTextColor": "#FFFFFF", "loopTextColor": "#0B3D2B", "noteBkgColor": "#FDF4DD", "noteBorderColor": "#C98D12", "noteTextColor": "#17261F", "activationBkgColor": "#DDF5EA", "activationBorderColor": "#067A52", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F2F7F4"}}}%%
 flowchart LR
-  telemetry["Live Telemetry / SSE Feed"] --> engine["Dynamic Scene Engine"]
-  weather["Open-Meteo Live API"] --> engine
-  profile["Agronomic Species Profile"] --> engine
-  engine --> scene["Illustrated SVG Crop Scene"]
-  scene --> sky["Sky & Daylight Lighting"]
-  scene --> water["Water Tank & Solution Level"]
-  scene --> plant["Plant Foliage & Health Stage"]
-  scene --> lamps["UV Lamps & Fan Animations"]
+  subgraph data["SolidJS Reactive Signals · refresh 5 to 20 s"]
+    direction TB
+    crop["crop()<br/>kind · form · type · health<br/>device.online · latestReading"]
+    acts["actuators()<br/>active"]
+    cmds["commands()<br/>executed timed commands"]
+    simd["virtual-device()<br/>virtual crops only: weather, state,<br/>and simulator actuators"]
+  end
+  subgraph live["live.ts + createMemo"]
+    direction TB
+    status["liveStatus<br/>live · waiting · offline · paused · unavailable"]
+    running["runningActuators<br/>indefinite or timed active state"]
+    day["isDaylight<br/>weather · measured light · time"]
+    vigor["vigorOf<br/>color mapped to health"]
+  end
+  empty["Empty placeholder<br/>see connection guide<br/>or switch to simulation"]
+  subgraph scene["CropScene · Reactive SVG 360 × 220"]
+    direction TB
+    backdrop["Backdrop<br/>indoor window or local weather<br/>partial shade or outdoor tree"]
+    system["System Form<br/>PotSystem · NftSystem<br/>TowerSystem · RaftSystem"]
+    actrender["Actuator Overlays<br/>water pump · UV light<br/>fan · humidifier"]
+    badge["Health Badge<br/>color and icon"]
+  end
+  data --> live
+  live --> scene
+  status -.->|"unavailable"| empty
+  classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
+  classDef water fill:#E3F2FB,stroke:#1F6FA0,color:#17261F
+  classDef sun fill:#FDF4DD,stroke:#C98D12,color:#17261F
+  classDef clay fill:#FBE9E1,stroke:#B85A38,color:#17261F
+  classDef core fill:#067A52,stroke:#0B3D2B,color:#FFFFFF
+  classDef deep fill:#0B3D2B,stroke:#06281C,color:#FFFFFF
+  classDef muted fill:#F2F7F4,stroke:#5B6B63,color:#17261F
+  class crop,acts,cmds,simd water
+  class status,running,day,vigor leaf
+  class backdrop,system,actrender,badge sun
+  class empty muted
 ```
 
 | Element            | Visual Representation                                                                                                                                                    |
@@ -146,12 +181,26 @@ flowchart LR
 <!-- diagrama: SmartPot_Web_Solid_03_Session_And_Cache | titulo=Session Lifecycle and Offline Storage -->
 
 ```mermaid
+%%{init: {"theme": "base", "fontFamily": "Segoe UI, Arial, sans-serif", "themeVariables": {"fontFamily": "Segoe UI, Arial, sans-serif", "fontSize": "15px", "primaryColor": "#DDF5EA", "primaryTextColor": "#17261F", "primaryBorderColor": "#067A52", "secondaryColor": "#E3F2FB", "secondaryTextColor": "#17261F", "secondaryBorderColor": "#1F6FA0", "tertiaryColor": "#F2F7F4", "tertiaryTextColor": "#17261F", "tertiaryBorderColor": "#D5E3DC", "lineColor": "#5B6B63", "textColor": "#17261F", "mainBkg": "#DDF5EA", "nodeBorder": "#067A52", "clusterBkg": "#F7FAF8", "clusterBorder": "#D5E3DC", "edgeLabelBackground": "#FFFFFF", "actorBkg": "#067A52", "actorBorder": "#0B3D2B", "actorTextColor": "#FFFFFF", "actorLineColor": "#5B6B63", "signalColor": "#17261F", "signalTextColor": "#17261F", "labelBoxBkgColor": "#0B3D2B", "labelBoxBorderColor": "#0B3D2B", "labelTextColor": "#FFFFFF", "loopTextColor": "#0B3D2B", "noteBkgColor": "#FDF4DD", "noteBorderColor": "#C98D12", "noteTextColor": "#17261F", "activationBkgColor": "#DDF5EA", "activationBorderColor": "#067A52", "attributeBackgroundColorOdd": "#FFFFFF", "attributeBackgroundColorEven": "#F2F7F4"}}}%%
 flowchart TB
-  login["User Login / SSO"] --> cookie["HttpOnly Cookie smartpot_session"]
-  cookie --> csrf["CSRF Header Double-Submit"]
-  csrf --> sse["Live SSE Channel (Readings & Alerts)"]
-  sse --> store["SolidJS Reactive Store"]
-  store --> idb["IndexedDB & Cache API (PWA Shell)"]
+  login(["User Sign In"]) --> auth["POST /api/v1/auth/login"]
+  auth --> cookies["Cookie: smartpot_session (HttpOnly; Secure; SameSite=Lax)<br/>Cookie: smartpot_csrf (HMAC-SHA256 signature)"]
+  cookies --> sync["Multi-tab sync via BroadcastChannel('smartpot_session')"]
+  sync --> client["lib/api/client<br/>credentials: 'include'<br/>Header: X-CSRF-Token + If-None-Match"]
+  client --> api["SmartPot-API"]
+  api -->|"200 OK + ETag"| cache["In-memory LTTB Cache"]
+  api -->|"304 Not Modified"| useCache["Reuse cached series"]
+  api -->|"401 Unauthorized"| signout(["Sign out & notify all tabs via BroadcastChannel"])
+  classDef leaf fill:#DDF5EA,stroke:#067A52,color:#17261F
+  classDef water fill:#E3F2FB,stroke:#1F6FA0,color:#17261F
+  classDef sun fill:#FDF4DD,stroke:#C98D12,color:#17261F
+  classDef clay fill:#FBE9E1,stroke:#B85A38,color:#17261F
+  classDef core fill:#067A52,stroke:#0B3D2B,color:#FFFFFF
+  classDef deep fill:#0B3D2B,stroke:#06281C,color:#FFFFFF
+  classDef muted fill:#F2F7F4,stroke:#5B6B63,color:#17261F
+  class login,signout core
+  class auth,client,api water
+  class cookies,sync,cache,useCache leaf
 ```
 
 | Control               | Detail                                                                                                                                                                 |

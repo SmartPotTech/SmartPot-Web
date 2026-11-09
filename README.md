@@ -33,6 +33,29 @@ It preserves the complete functional and visual experience published at [smartpo
 
 The landing page is public and indexable; the application lives under `/app` and is excluded from search indexing.
 
+```mermaid
+flowchart LR
+  browser["Web Browser / PWA Client"]
+  subgraph nginx["Unprivileged Nginx Container · port 80"]
+    direction TB
+    static["Static Assets<br/>dist/ · precompressed gzip & brotli"]
+    csp["Security Headers<br/>CSP · HSTS · Referrer-Policy"]
+  end
+  subgraph solid["SolidJS Application Architecture"]
+    direction TB
+    shell["AppShell & Router<br/>hash routing · lazy views"]
+    state["Signals & Resources<br/>session · crops · telemetry · theme · i18n"]
+    scene["Reactive SVG CropScene<br/>dynamic plant illustration & actuators"]
+    sse["SSE Realtime Client<br/>HTTP/2 streaming · reconnect backoff"]
+  end
+  api["SmartPot-API<br/>:8091"]
+  browser -->|"HTTPS GET /"| nginx
+  nginx --> static
+  static --> solid
+  solid -->|"REST + HttpOnly Cookie"| api
+  solid -->|"SSE Telemetry Stream"| api
+```
+
 ### Architecture, Performance, and Security Highlights
 
 - **Fine-grained reactivity without a Virtual DOM (`solid-js`).** Signals (`createSignal`, `createMemo`, `createEffect`) update only the exact DOM nodes or SVG attributes that change on each telemetry tick or actuator countdown.
@@ -159,6 +182,29 @@ Conserva **idéntica** toda la experiencia funcional y gráfica de la aplicació
 - Cambiar en cualquier momento entre **español (`es`)** e **inglés (`en`)**, así como entre tema claro y oscuro.
 
 La página de inicio es pública e indexable; la aplicación vive bajo `/app` y no se indexa.
+
+```mermaid
+flowchart LR
+  browser["Web Browser / PWA Client"]
+  subgraph nginx["Unprivileged Nginx Container · port 80"]
+    direction TB
+    static["Static Assets<br/>dist/ · precompressed gzip & brotli"]
+    csp["Security Headers<br/>CSP · HSTS · Referrer-Policy"]
+  end
+  subgraph solid["SolidJS Application Architecture"]
+    direction TB
+    shell["AppShell & Router<br/>hash routing · lazy views"]
+    state["Signals & Resources<br/>session · crops · telemetry · theme · i18n"]
+    scene["Reactive SVG CropScene<br/>dynamic plant illustration & actuators"]
+    sse["SSE Realtime Client<br/>HTTP/2 streaming · reconnect backoff"]
+  end
+  api["SmartPot-API<br/>:8091"]
+  browser -->|"HTTPS GET /"| nginx
+  nginx --> static
+  static --> solid
+  solid -->|"REST + HttpOnly Cookie"| api
+  solid -->|"SSE Telemetry Stream"| api
+```
 
 ### Mejoras de Arquitectura, Rendimiento y Seguridad
 
