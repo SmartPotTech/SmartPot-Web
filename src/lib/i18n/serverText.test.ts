@@ -160,4 +160,64 @@ describe("serverText", () => {
         expect(translateServerText("«Lettuce» lost connection with SmartPot.")).toBe("«Lettuce» perdió la conexión con SmartPot.");
         expect(translateServerText("Too many requests. Please try again in 15 seconds")).toBe("Demasiadas solicitudes. Por favor intenta de nuevo en 15 segundos.");
     });
+
+    it("traduce el digest multilínea completo de Telegram y resúmenes diarios", async () => {
+        await setLocale("es", {persist: false});
+
+        // Digest con ventana de varias horas
+        const multilineDigest = [
+            "3 notices in the last 4 hours:",
+            "• 10:00 Alert: Low temperature in the morning",
+            "• 11:30 Assistant: Welcome to SmartPot!",
+            "• 12:15 Connection: online",
+            "… and 2 more in the app.",
+        ].join("\n");
+
+        const expectedDigest = [
+            "3 avisos en las últimas 4 horas:",
+            "• 10:00 Alerta: Temperatura baja por la mañana",
+            "• 11:30 Asistente: ¡Bienvenido a SmartPot!",
+            "• 12:15 Conexión: en línea",
+            "… y 2 más en la app.",
+        ].join("\n");
+
+        expect(translateServerText(multilineDigest)).toBe(expectedDigest);
+
+        // Digest con ventana de una hora
+        const singleNotice = "1 notice in the last hour:\n• 09:15 Alert: Low temperature in the morning";
+        expect(translateServerText(singleNotice)).toBe("1 aviso en la última hora:\n• 09:15 Alerta: Temperatura baja por la mañana");
+
+        // Resumen diario con métricas y estado
+        const summary = [
+            "Health: Good (85/100)",
+            "Connection: online",
+            "Latest reading: 22.5 °C · humidity 65 % · soil 70 % · light 12000 lux",
+            "Last 24 h: 2 alerts and 5 commands",
+        ].join("\n");
+
+        const expectedSummary = [
+            "Salud: Bueno (85/100)",
+            "Conexión: en línea",
+            "Última lectura: 22.5 °C · humedad 65 % · sustrato 70 % · luz 12000 lux",
+            "Últimas 24 h: 2 alertas y 5 comandos",
+        ].join("\n");
+
+        expect(translateServerText(summary)).toBe(expectedSummary);
+    });
+
+    it("traduce mensajes de validación de cuotas, duración e intervalos", async () => {
+        await setLocale("es", {persist: false});
+        expect(translateServerText("You reached the maximum of 20 crops per account"))
+            .toBe("Llegaste al máximo de 20 cultivos por cuenta");
+        expect(translateServerText("You can have up to 5 virtual crops"))
+            .toBe("Puedes tener hasta 5 cultivos virtuales");
+        expect(translateServerText("Minimum duration is 1 second"))
+            .toBe("La duración mínima es de 1 segundo");
+        expect(translateServerText("Maximum duration is 1 hour"))
+            .toBe("La duración máxima es de 1 hora");
+        expect(translateServerText("Minimum interval is 10 seconds"))
+            .toBe("El intervalo mínimo es de 10 segundos");
+        expect(translateServerText("Maximum interval is 300 seconds"))
+            .toBe("El intervalo máximo es de 300 segundos");
+    });
 });

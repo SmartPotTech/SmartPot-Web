@@ -3,10 +3,11 @@ import {createMemo, createSignal, For, Show} from "solid-js";
 import {Alert} from "../../../components/ui/Feedback";
 import {useElementSize} from "../../../hooks/useElementSize";
 import {useResource} from "../../../hooks/useResource";
+import {useCropProfiles} from "../../crops/useCropProfiles";
 import {overviewApi} from "../../../lib/api/services";
 import {MAX_COMPARED, METRICS, PRIMARY_METRICS} from "../../../lib/catalog";
 import {nearestIndex, niceScale, pointerX, stepDecimals, timeTicks, xTickCount} from "../../../lib/chart";
-import {formatDateTime, formatMetric, formatNumber, formatTime} from "../../../lib/format";
+import {formatDateTime, formatMetric, formatNumber, formatTime, rangeStatus} from "../../../lib/format";
 import {intlLocale, t} from "../../../lib/i18n";
 import type {Crop, MetricKey} from "../../../lib/api/types";
 import {useComparedCrops} from "../useComparedCrops";
@@ -24,7 +25,30 @@ export function MetricComparison(props: { crops: Crop[] }) {
     // El SVG se dibuja al tamaño real del contenedor (h-72): en un teléfono el texto no se encoge ni sobra alto.
     const box = useElementSize({width: 760, height: 288});
     const compared = useComparedCrops(() => props.crops);
+    const profiles = useCropProfiles();
     const series = useResource(() => overviewApi.series(metric(), hours()), () => [metric(), hours()], 60_000);
+
+    // Soporte de navegación accesible por teclado (WCAG 2.2).
+    const onKeyDown = (event: KeyboardEvent) => {
+        const total = rows().length;
+        if (total === 0) return;
+        if (event.key === "ArrowRight") {
+            event.preventDefault();
+            setHoverIdx((curr) => (curr === null ? 0 : Math.min(curr + 1, total - 1)));
+        } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            setHoverIdx((curr) => (curr === null ? total - 1 : Math.max(curr - 1, 0)));
+        } else if (event.key === "Home") {
+            event.preventDefault();
+            setHoverIdx(0);
+        } else if (event.key === "End") {
+            event.preventDefault();
+            setHoverIdx(total - 1);
+        } else if (event.key === "Escape") {
+            event.preventDefault();
+            setHoverIdx(null);
+        }
+    };
 
     const rows = createMemo(() => {
         const byTime = new Map<number, { time: number; values: Record<string, number> }>();
@@ -109,6 +133,9 @@ export function MetricComparison(props: { crops: Crop[] }) {
                 <div>
                     <h2 class="flex items-center gap-2 text-lg font-semibold">
                         <ChartLine size={18} class="text-accent"/> {t("compare.title")}
+                        <span class="ml-2 rounded-md bg-surface px-2 py-0.5 text-xs font-normal text-muted tabular-nums">
+                            {visible().length} / {props.crops.length} {t("compare.activeCrops")}
+                        </span>
                     </h2>
                     <p class="text-sm text-muted">{t("compare.average", {
                         metric: info().label.toLowerCase(),
@@ -144,7 +171,8 @@ export function MetricComparison(props: { crops: Crop[] }) {
             <Show when={series.error}>
                 {(err) => <div class="mt-4"><Alert tone="danger">{err()}</Alert></div>}
             </Show>
-            <div class="relative mt-4 h-72 select-none" role="img" ref={box.ref}
+            <div class="relative mt-4 h-72 select-none rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-700 dark:focus-visible:outline-leaf-300"
+                 role="region" tabindex={0} ref={box.ref} onKeyDown={onKeyDown}
                  aria-label={t("compare.chartLabel", {metric: info().label.toLowerCase(), count: visible().length})}>
                 <Show when={chart()} fallback={
                     <p class="flex h-full items-center justify-center text-sm text-muted">
@@ -161,6 +189,19 @@ export function MetricComparison(props: { crops: Crop[] }) {
                             setHoverIdx(nearestIndex(g().xs, pointerX(event, event.currentTarget, g().width)));
                         return (
                             <>
+                                <div class="sr-only" aria-live="polite" aria-atomic="true">
+                                    <Show when={hoveredRow()}>
+                                        {(row) => (
+                                            <span>
+                                                {formatDateTime(new Date(row().time).toISOString())}:{" "}
+                                                {visible()
+                                                    .filter((crop) => row().values[crop.id] !== undefined)
+                                                    .map((crop) => `${crop.name}: ${formatMetric(metric(), row().values[crop.id])}`)
+                                                    .join(", ")}
+                                            </span>
+                                        )}
+                                    </Show>
+                                </div>
                                 <svg viewBox={`0 0 ${g().width} ${g().height}`} class="h-full w-full overflow-visible"
                                      style={{"touch-action": "pan-y"}} onPointerMove={track} onPointerDown={track}
                                      onPointerLeave={(event) => event.pointerType === "mouse" && setHoverIdx(null)}>
@@ -202,18 +243,34 @@ export function MetricComparison(props: { crops: Crop[] }) {
                                 <Show when={hoveredRow()}>
                                     {(row) => (
                                         <div
-                                            class="pointer-events-none absolute right-3 top-2 rounded-xl border border-line bg-card/95 px-3 py-1.5 text-xs shadow-sm">
+                                            class="pointer-events-none absolute right-3 top-2 min-w-[12rem] rounded-xl border border-line bg-card/95 px-3 py-2 text-xs shadow-sm space-y-1">
                                             <p class="font-medium text-muted">
                                                 {formatDateTime(new Date(row().time).toISOString())}
                                             </p>
                                             <For each={visible()}>
-                                                {(crop) => (
-                                                    <Show when={row().values[crop.id] !== undefined}>
-                                                        <p class="font-semibold text-ink tabular-nums">
-                                                            {crop.name}: {formatMetric(metric(), row().values[crop.id])}
-                                                        </p>
-                                                    </Show>
-                                                )}
+                                                {(crop) => {
+                                                    const val = () => row().values[crop.id];
+                                                    const range = () => profiles[crop.type]?.ranges[metric()];
+                                                    const status = () => rangeStatus(val(), range());
+                                                    return (
+                                                        <Show when={val() !== undefined}>
+                                                            <div class="flex items-center justify-between gap-3 text-xs font-semibold">
+                                                                <span class="text-ink tabular-nums">
+                                                                    {crop.name}: {formatMetric(metric(), val())}
+                                                                </span>
+                                                                <Show when={range()}>
+                                                                    <span class={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
+                                                                        status() === "ok" ? "bg-leaf-100 text-leaf-700 dark:bg-leaf-900/50 dark:text-leaf-300" :
+                                                                        status() === "low" || status() === "high" ? "bg-sun-100 text-sun-fg dark:bg-sun-900/50 dark:text-sun-400" :
+                                                                        "text-muted"
+                                                                    }`}>
+                                                                        {status() === "ok" ? t("compare.optimal") : status() === "low" ? t("compare.low") : t("compare.high")}
+                                                                    </span>
+                                                                </Show>
+                                                            </div>
+                                                        </Show>
+                                                    );
+                                                }}
                                             </For>
                                         </div>
                                     )}

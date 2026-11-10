@@ -95,15 +95,38 @@ export function ReadingsChart(props: ReadingsChartProps) {
         return {width, height, padLeft, padRight, padTop, padBottom, plotW, plotH, coords, xs, path, yTicks, xTicks, rangeBand};
     });
 
+    // Soporte de navegación por teclado accesible (WCAG 2.2).
+    const onKeyDown = (event: KeyboardEvent) => {
+        const total = data().length;
+        if (total === 0) return;
+        if (event.key === "ArrowRight") {
+            event.preventDefault();
+            setHoverIdx((curr) => (curr === null ? 0 : Math.min(curr + 1, total - 1)));
+        } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            setHoverIdx((curr) => (curr === null ? total - 1 : Math.max(curr - 1, 0)));
+        } else if (event.key === "Home") {
+            event.preventDefault();
+            setHoverIdx(0);
+        } else if (event.key === "End") {
+            event.preventDefault();
+            setHoverIdx(total - 1);
+        } else if (event.key === "Escape") {
+            event.preventDefault();
+            setHoverIdx(null);
+        }
+    };
+
     return (
         <Show when={data().length > 0} fallback={
             <p class="flex h-40 items-center justify-center text-sm text-muted">
                 {t("chart.noReadings", {metric: info().label.toLowerCase()})}
             </p>
         }>
-            <div style={{"height": `${props.height ?? 280}px`}} role="img" ref={box.ref}
+            <div style={{"height": `${props.height ?? 280}px`}} role="region" tabindex={0} ref={box.ref}
+                 onKeyDown={onKeyDown}
                  aria-label={t("chart.label", {metric: info().label.toLowerCase(), count: data().length})}
-                 class="relative w-full select-none">
+                 class="relative w-full select-none rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-700 dark:focus-visible:outline-leaf-300">
                 <Show when={geometry()}>
                     {(g) => {
                         const hovered = () => {
@@ -115,6 +138,15 @@ export function ReadingsChart(props: ReadingsChartProps) {
                             setHoverIdx(nearestIndex(g().xs, pointerX(event, event.currentTarget, g().width)));
                         return (
                             <>
+                                <div class="sr-only" aria-live="polite" aria-atomic="true">
+                                    <Show when={hovered()}>
+                                        {(pt) => (
+                                            <span>
+                                                {info().label}: {formatMetric(props.metric, pt().value)}, {formatDateTime(pt().iso)}
+                                            </span>
+                                        )}
+                                    </Show>
+                                </div>
                                 <svg viewBox={`0 0 ${g().width} ${g().height}`} class="h-full w-full overflow-visible"
                                      style={{"touch-action": "pan-y"}} onPointerMove={track} onPointerDown={track}
                                      onPointerLeave={(event) => event.pointerType === "mouse" && setHoverIdx(null)}>

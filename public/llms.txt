@@ -1,0 +1,145 @@
+# SmartPot
+
+> Open-source IoT, edge-first hydroponics automation and telemetry platform (Stack B). / Plataforma de código abierto para automatización y telemetría de cultivos hidropónicos (Stack B).
+
+## Overview / Visión General
+
+[English]
+SmartPot is an end-to-end, multi-tenant IoT automation platform engineered for controlled-environment agriculture and precision hydroponics (NFT, DWC, substrate). It ingests real-time sensor telemetry from physical ESP32 microcontrollers and virtual simulation instances, evaluates physiological plant status through a hybrid 21-rule expert engine and ML models, and dispatches automated actuator commands to preserve crop vitality.
+
+[Español]
+SmartPot es una plataforma integral y multitenant de automatización IoT diseñada para agricultura en ambiente controlado y cultivos hidropónicos de precisión (NFT, DWC, sustrato). Ingiere telemetría de sensores en tiempo real desde microcontroladores físicos ESP32 o instancias virtuales simuladas, evalúa el estado fisiológico de la planta mediante un motor experto de 21 reglas y modelos de machine learning, y despacha comandos automáticos a actuadores para preservar la vitalidad del cultivo.
+
+## System Architecture (Stack B) / Arquitectura del Sistema (Stack B)
+
+- **Edge Firmware (`SmartPot-IoT` / `SmartPot-IoT-Python`)**: Rust on ESP32 (Embassy runtime) and MicroPython (Wokwi simulation support). Communicates over TLS 1.3 mTLS with the MQTT broker.
+- **Message Broker (`SmartPot-Broker`)**: EMQX 5 enterprise-grade message broker configured with TLS listeners supporting up to 2000 concurrent TLS connections.
+- **Backend API (`SmartPot-API`)**: Go / Echo REST and WebSocket service managing tenant isolation, RBAC, telemetry ingestion, virtual device simulation, and multi-channel notice digests (Telegram, Webhook, MCP). Concurrency bounded by internal semaphores (32 concurrent AI evaluations).
+- **Time-Series Database (`SmartPot-DB`)**: PostgreSQL 16 with TimescaleDB extension for hypertable-backed telemetry and continuous aggregates.
+- **Inference Engine (`SmartPot-AI`)**: High-performance Rust service (Axum HTTP + Tonic gRPC). CPU-bound calculations run on dedicated worker threads (`spawn_blocking`) with 1 MiB payload limits. Evaluates 21 agronomic rules, vapor pressure deficit (VPD), nutrient lockout, and fleet health.
+- **ML Training (`SmartPot-Trainer`)**: Python (scikit-learn, pyarrow, Polars) offline trainer producing ONNX and rule weights.
+- **Frontend PWA (`SmartPot-Web`)**: Offline-capable SolidJS PWA, zero blocking styles, responsive bilingual UI (Spanish/English), accessible SVG agronomic plant diagrams, and WebInterface-compliant controls.
+- **Model Context Protocol (`SmartPot-MCP`)**: Python MCP server exposing tools to LLM assistants.
+
+## Supported Hydroponic Species & Canonical Ranges / Especies Hidropónicas y Rangos Canónicos
+
+All agronomic profiles are strictly synchronized with `SmartPot-AI/src/domain/profiles.rs`:
+
+1. **Lettuce / Lechuga (`LETTUCE`)**:
+   - Description: Cool-weather leafy green; bolts under excessive heat and light.
+   - Temperature: 15–22 °C
+   - Relative Humidity: 50–70 %
+   - Brightness: 300–1400 lx
+   - pH: 5.5–6.5
+   - TDS: 560–840 ppm
+   - Soil / Substrate Moisture: 60–80 %
+
+2. **Tomato / Tomate (`TOMATO`)**:
+   - Description: Fruit crop demanding in light, warmth, and nutrients during flowering.
+   - Temperature: 20–28 °C
+   - Relative Humidity: 60–80 %
+   - Brightness: 600–1800 lx
+   - pH: 5.5–6.5
+   - TDS: 1400–2800 ppm
+   - Soil / Substrate Moisture: 55–75 %
+
+3. **Strawberry / Fresa (`STRAWBERRY`)**:
+   - Description: Sensitive to excess salts and high humidity, which promotes fungal growth.
+   - Temperature: 18–26 °C
+   - Relative Humidity: 60–75 %
+   - Brightness: 500–1600 lx
+   - pH: 5.5–6.2
+   - TDS: 700–980 ppm
+   - Soil / Substrate Moisture: 60–80 %
+
+4. **Basil / Albahaca (`BASIL`)**:
+   - Description: Warm-weather aromatic herb; tolerates dry environments.
+   - Temperature: 20–30 °C
+   - Relative Humidity: 40–60 %
+   - Brightness: 500–1600 lx
+   - pH: 5.5–6.5
+   - TDS: 700–1120 ppm
+   - Soil / Substrate Moisture: 50–70 %
+
+5. **Spinach / Espinaca (`SPINACH`)**:
+   - Description: Cool-weather leafy green with high nitrogen demand.
+   - Temperature: 15–24 °C
+   - Relative Humidity: 50–70 %
+   - Brightness: 300–1400 lx
+   - pH: 6.0–7.0
+   - TDS: 1260–1610 ppm
+   - Soil / Substrate Moisture: 60–80 %
+
+6. **Bell Pepper / Pimiento (`PEPPER`)**:
+   - Description: Warm-weather fruit crop; requires intense light and stable pH.
+   - Temperature: 21–29 °C
+   - Relative Humidity: 50–70 %
+   - Brightness: 600–1800 lx
+   - pH: 5.8–6.5
+   - TDS: 1400–2100 ppm
+   - Soil / Substrate Moisture: 55–75 %
+
+## Expert Rule Engine (21 Rules) / Motor de Reglas Expertas (21 Reglas)
+
+The platform evaluates 21 agronomic rules across atmospheric, nutritional, hydraulic, and photoperiod metrics:
+- **Thermal & Climate**:
+  - `RULE_TEMP_HIGH`: activates ventilation when temperature exceeds upper threshold.
+  - `RULE_TEMP_LOW`: deactivates ventilation and triggers heating alerts.
+  - `RULE_FROST_WARNING`: critical alarm when temperature drops near freezing.
+  - `RULE_VPD_STRESS`: computes vapor pressure deficit; alerts on stomatal closure (dry air) or fungal saturation risk (humid air).
+- **Nutrients & pH**:
+  - `RULE_NUTRIENT_LOCKOUT`: triggers when pH is out of bounds while electrical conductivity/TDS is optimal or elevated, warning that roots cannot assimilate minerals.
+  - `RULE_PH_HIGH`: commands calibrated acid dosing (`PH_DOSER`, pH Down).
+  - `RULE_PH_LOW`: diagnostic alert for low pH (no automated basic dosing for safety).
+  - `RULE_TDS_LOW`: commands nutrient doser replenishment.
+  - `RULE_TDS_HIGH`: halts fertilization to avoid root burn and osmotic stress.
+- **Lighting & Photoperiod**:
+  - `RULE_LIGHT_LOW`: activates supplemental UV/grow lights during scheduled photoperiods.
+  - `RULE_PHOTOINHIBITION`: detects excessive radiation and sheds auxiliary lighting.
+  - `RULE_DLI_DEFICIT`: accumulates Daily Light Integral against daily target.
+- **Irrigation & Root Zone**:
+  - `RULE_SUBSTRATE_DRY`: triggers water pump irrigation cycles.
+  - `RULE_SUBSTRATE_SATURATED`: interrupts irrigation to prevent root hypoxia.
+  - `RULE_WATER_DEPLETION`: trend forecast warning before the reservoir runs dry.
+
+## Protocols & Contracts / Protocolos y Contratos
+
+### MQTT Telemetry Topic Contract
+- Topic pattern: `smartpot/telemetry/{tenant_id}/{device_id}`
+- QoS: 1 (At least once delivery)
+- Payload format: JSON
+  ```json
+  {
+    "crop_id": "uuid",
+    "timestamp": "2026-11-10T08:00:00Z",
+    "temperature": 21.4,
+    "humidity": 64.2,
+    "brightness": 850.0,
+    "ph": 6.05,
+    "tds": 720.0,
+    "soil_moisture": 68.5,
+    "water_level": 82.0
+  }
+  ```
+
+### Model Context Protocol (MCP)
+- MCP endpoint: `https://mcp.smartpot.app/mcp`
+- Exposed Tools:
+  - `evaluate_crop(crop_id)`: returns real-time physiological diagnosis, rule matches, and recommended actions.
+  - `read_telemetry(crop_id, limit)`: returns recent telemetry points with statistics.
+  - `dispatch_actuator(crop_id, actuator, duration_seconds)`: dispatches manual or assisted actuator commands.
+  - `get_species_profile(species)`: returns ideal physiological bounds and descriptions.
+
+## Open Source Repositories / Repositorios de Código Abierto
+
+All components are maintained under the `SmartPotTech` GitHub organization:
+- `https://github.com/SmartPotTech/SmartPot-Web`
+- `https://github.com/SmartPotTech/SmartPot-API`
+- `https://github.com/SmartPotTech/SmartPot-AI`
+- `https://github.com/SmartPotTech/SmartPot-Trainer`
+- `https://github.com/SmartPotTech/SmartPot-IoT`
+- `https://github.com/SmartPotTech/SmartPot-IoT-Python`
+- `https://github.com/SmartPotTech/SmartPot-DataGenerator`
+- `https://github.com/SmartPotTech/SmartPot-Broker`
+- `https://github.com/SmartPotTech/SmartPot-DB`
+- `https://github.com/SmartPotTech/SmartPot-MCP`

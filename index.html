@@ -118,7 +118,7 @@
                             "name": "¿Cómo decide el asistente?",
                             "acceptedAnswer": {
                                 "@type": "Answer",
-                                "text": "Combina un sistema experto con reglas de agronomía, lógica difusa para el índice de salud, modelos de aprendizaje automático y un agente reactivo. Cada recomendación muestra las reglas y la certeza que la respaldan."
+                                "text": "Combina un sistema experto con reglas de agronomía, lógica difusa para el índice de salud, modelos de aprendizaje automático y un agente reactivo. Cada recomendación muestra las reglas y la confianza heurística que la respaldan."
                             }
                         },
                         {
@@ -187,11 +187,135 @@
                     <p class="mt-6 max-w-[44ch] text-lg text-leaf-100">SmartPot lee los sensores de tu cultivo, te dice qué necesita cada planta y por qué, y puede actuar por ti.</p>
                     <div class="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
                         <a class="inline-flex h-12 items-center gap-2 rounded-xl bg-leaf-500 px-6 font-semibold text-leaf-950" href="/register">Crear cuenta gratis</a>
+                        <a class="inline-flex h-12 items-center gap-2 rounded-xl border border-leaf-700 bg-leaf-900/60 px-5 font-semibold text-white" href="#demo">Probar el asistente interactivo</a>
                     </div>
                     <p class="mt-4 text-sm text-leaf-100/90">Sin hardware: empieza con un cultivo virtual que SmartPot simula.</p>
                     <noscript><p class="mt-4 text-sm">Activa JavaScript para usar la aplicación.</p></noscript>
                 </div>
                 </div>
+            </section>
+            <section class="mx-auto max-w-6xl px-4 py-12 md:px-6">
+                <h2 class="text-2xl font-bold text-ink">Especies hidropónicas y perfiles agronómicos / Supported Hydroponic Species</h2>
+                <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <article class="rounded-xl border border-border bg-card p-4">
+                        <h3 class="font-semibold text-ink">Lechuga / Lettuce (LETTUCE)</h3>
+                        <p class="mt-1 text-sm text-muted">Cool-weather leafy green; bolts under excessive heat and light.</p>
+                        <ul class="mt-3 space-y-1 text-xs text-muted">
+                            <li><strong>Temperatura:</strong> 15–22 °C</li>
+                            <li><strong>Humedad:</strong> 50–70 %</li>
+                            <li><strong>Luminosidad:</strong> 300–1400 lx</li>
+                            <li><strong>pH:</strong> 5.5–6.5</li>
+                            <li><strong>TDS:</strong> 560–840 ppm</li>
+                            <li><strong>Humedad sustrato:</strong> 60–80 %</li>
+                        </ul>
+                    </article>
+                    <article class="rounded-xl border border-border bg-card p-4">
+                        <h3 class="font-semibold text-ink">Tomate / Tomato (TOMATO)</h3>
+                        <p class="mt-1 text-sm text-muted">Fruit crop demanding in light, warmth, and nutrients during flowering.</p>
+                        <ul class="mt-3 space-y-1 text-xs text-muted">
+                            <li><strong>Temperatura:</strong> 20–28 °C</li>
+                            <li><strong>Humedad:</strong> 60–80 %</li>
+                            <li><strong>Luminosidad:</strong> 600–1800 lx</li>
+                            <li><strong>pH:</strong> 5.5–6.5</li>
+                            <li><strong>TDS:</strong> 1400–2800 ppm</li>
+                            <li><strong>Humedad sustrato:</strong> 55–75 %</li>
+                        </ul>
+                    </article>
+                    <article class="rounded-xl border border-border bg-card p-4">
+                        <h3 class="font-semibold text-ink">Fresa / Strawberry (STRAWBERRY)</h3>
+                        <p class="mt-1 text-sm text-muted">Sensitive to excess salts and high humidity, which promotes fungal growth.</p>
+                        <ul class="mt-3 space-y-1 text-xs text-muted">
+                            <li><strong>Temperatura:</strong> 18–26 °C</li>
+                            <li><strong>Humedad:</strong> 60–75 %</li>
+                            <li><strong>Luminosidad:</strong> 500–1600 lx</li>
+                            <li><strong>pH:</strong> 5.5–6.2</li>
+                            <li><strong>TDS:</strong> 700–980 ppm</li>
+                            <li><strong>Humedad sustrato:</strong> 60–80 %</li>
+                        </ul>
+                    </article>
+                    <article class="rounded-xl border border-border bg-card p-4">
+                        <h3 class="font-semibold text-ink">Albahaca / Basil (BASIL)</h3>
+                        <p class="mt-1 text-sm text-muted">Warm-weather aromatic herb; tolerates dry environments.</p>
+                        <ul class="mt-3 space-y-1 text-xs text-muted">
+                            <li><strong>Temperatura:</strong> 20–30 °C</li>
+                            <li><strong>Humedad:</strong> 40–60 %</li>
+                            <li><strong>Luminosidad:</strong> 500–1600 lx</li>
+                            <li><strong>pH:</strong> 5.5–6.5</li>
+                            <li><strong>TDS:</strong> 700–1120 ppm</li>
+                            <li><strong>Humedad sustrato:</strong> 50–70 %</li>
+                        </ul>
+                    </article>
+                    <article class="rounded-xl border border-border bg-card p-4">
+                        <h3 class="font-semibold text-ink">Espinaca / Spinach (SPINACH)</h3>
+                        <p class="mt-1 text-sm text-muted">Cool-weather leafy green with high nitrogen demand.</p>
+                        <ul class="mt-3 space-y-1 text-xs text-muted">
+                            <li><strong>Temperatura:</strong> 15–24 °C</li>
+                            <li><strong>Humedad:</strong> 50–70 %</li>
+                            <li><strong>Luminosidad:</strong> 300–1400 lx</li>
+                            <li><strong>pH:</strong> 6.0–7.0</li>
+                            <li><strong>TDS:</strong> 1260–1610 ppm</li>
+                            <li><strong>Humedad sustrato:</strong> 60–80 %</li>
+                        </ul>
+                    </article>
+                    <article class="rounded-xl border border-border bg-card p-4">
+                        <h3 class="font-semibold text-ink">Pimiento / Bell Pepper (PEPPER)</h3>
+                        <p class="mt-1 text-sm text-muted">Warm-weather fruit crop; requires intense light and stable pH.</p>
+                        <ul class="mt-3 space-y-1 text-xs text-muted">
+                            <li><strong>Temperatura:</strong> 21–29 °C</li>
+                            <li><strong>Humedad:</strong> 50–70 %</li>
+                            <li><strong>Luminosidad:</strong> 600–1800 lx</li>
+                            <li><strong>pH:</strong> 5.8–6.5</li>
+                            <li><strong>TDS:</strong> 1400–2100 ppm</li>
+                            <li><strong>Humedad sustrato:</strong> 55–75 %</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+            <section class="mx-auto max-w-6xl px-4 py-8 md:px-6">
+                <h2 class="text-2xl font-bold text-ink">Motor de 21 reglas agronómicas y automatización / Agronomic Rules Engine</h2>
+                <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm text-muted">
+                    <div class="rounded-lg border border-border bg-card p-3">
+                        <p class="font-semibold text-ink">Control Climático y Térmico</p>
+                        <p class="mt-1">Ventilación automática por exceso térmico, apagado en frío, alerta por riesgo de helada y cálculo continuo de VPD (déficit de presión de vapor).</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-3">
+                        <p class="font-semibold text-ink">Nutrición y pH Inteligente</p>
+                        <p class="mt-1">Detección de bloqueo de absorción radicular por pH anómalo, dosificación pH Down calibrada, reposición de solución de sales (TDS/EC) y advertencia de toxicidad por sales.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-3">
+                        <p class="font-semibold text-ink">Fotoperiodo y Radiación</p>
+                        <p class="mt-1">Activación de luz UV suplementaria ante deficiencia lumínica, protección contra fotoinhibición por estrés lumínico y cálculo acumulado de radiación PAR/DLI.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-3">
+                        <p class="font-semibold text-ink">Riego y Oxigenación</p>
+                        <p class="mt-1">Ciclos automáticos de bomba sumergible, prevención de asfixia radicular por anegamiento y alerta predictiva de agotamiento de reserva hídrica.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-3">
+                        <p class="font-semibold text-ink">Inferencia Edge y Servidor No Bloqueante</p>
+                        <p class="mt-1">Ejecución distribuida en Tokio threadpool (spawn_blocking) en Rust AI, semáforos de evaluación concurrente en Go API y fallback determinista sin red.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-3">
+                        <p class="font-semibold text-ink">Seguridad y Ecosistema Abierto</p>
+                        <p class="mt-1">Cifrado mTLS en EMQX (hasta 2000 conexiones), RBAC por tenant, integración bilingüe de Model Context Protocol (MCP) y digest multicanal de avisos.</p>
+                    </div>
+                </div>
+            </section>
+            <section class="mx-auto max-w-6xl px-4 py-8 md:px-6">
+                <h2 class="text-2xl font-bold text-ink">Preguntas Frecuentes / Frequently Asked Questions (FAQ)</h2>
+                <dl class="mt-4 space-y-4 text-sm leading-relaxed text-muted">
+                    <div>
+                        <dt class="font-semibold text-ink">¿Necesito comprar sensores o placas para probar SmartPot? / Do I need hardware to try SmartPot?</dt>
+                        <dd class="mt-1">No. Puedes crear hasta 3 cultivos virtuales en la nube sin ningún dispositivo físico. El simulador reproduce las dinámicas biológicas de las 6 especies soportadas.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-ink">¿Qué protocolos y hardware soporta? / What protocols and hardware are supported?</dt>
+                        <dd class="mt-1">ESP32 con firmware en Rust (Embassy) o MicroPython comunicándose por MQTT con TLS 1.3 sobre el broker EMQX, además de soporte para servidores MCP.</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold text-ink">¿Cómo actúa la inteligencia artificial? / How does the AI act?</dt>
+                        <dd class="mt-1">Combina un motor determinista de 21 reglas agronómicas con modelos de machine learning entrenados para proyectar tendencias y sugerir correcciones explicables antes de que la planta sufra estrés.</dd>
+                    </div>
+                </dl>
             </section>
         </main>
     </div>

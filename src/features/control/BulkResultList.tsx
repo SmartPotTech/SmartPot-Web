@@ -1,18 +1,38 @@
-import {CheckCircle2, CircleSlash, XCircle} from "lucide-solid";
-import {For} from "solid-js";
+import {CheckCircle2, CircleSlash, RefreshCw, XCircle} from "lucide-solid";
+import {For, Show} from "solid-js";
+import {Button} from "../../components/ui/Button";
 import type {BulkCommandResult} from "../../lib/api/types";
 import {t} from "../../lib/i18n";
 import {st} from "../../lib/i18n/serverText";
 
 /** Resultado de una orden en bloque, cultivo por cultivo. */
-export function BulkResultList(props: { result: BulkCommandResult }) {
+export function BulkResultList(props: {
+    result: BulkCommandResult;
+    onRetryFailed?: (failedCropIds: string[]) => void;
+    retrying?: boolean;
+}) {
+    const failedItems = () => props.result.results.filter((item) => item.status === "FAILED");
+
     return (
         <div class="rounded-xl bg-surface p-3" role="status">
-            <p class="text-sm font-semibold">
-                {t("bulk.sent", {count: props.result.sent})}
-                {props.result.skipped > 0 && t("bulk.skipped", {count: props.result.skipped})}
-                {props.result.failed > 0 && t("bulk.failed", {count: props.result.failed})}
-            </p>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="text-sm font-semibold">
+                    {t("bulk.sent", {count: props.result.sent})}
+                    {props.result.skipped > 0 && t("bulk.skipped", {count: props.result.skipped})}
+                    {props.result.failed > 0 && t("bulk.failed", {count: props.result.failed})}
+                </p>
+                <Show when={props.result.failed > 0 && props.onRetryFailed}>
+                    <Button
+                        size="sm"
+                        variant="secondary"
+                        icon={<RefreshCw size={14}/>}
+                        loading={props.retrying}
+                        onClick={() => props.onRetryFailed?.(failedItems().map((i) => i.cropId))}
+                    >
+                        {t("bulk.retryFailed")}
+                    </Button>
+                </Show>
+            </div>
             <ul class="mt-2 space-y-1.5">
                 <For each={props.result.results}>
                     {(item) => (

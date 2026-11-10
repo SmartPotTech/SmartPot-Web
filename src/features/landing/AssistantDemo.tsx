@@ -10,6 +10,7 @@ import {
     type DemoReading,
     demoStart,
     type DemoStatus,
+    PRESETS,
     type RangeKey,
     SPECIES,
     SPECIES_RANGES,
@@ -17,6 +18,54 @@ import {
 
 const METRIC_ORDER: DemoMetric[] = ["temperature", "ph", "tds"];
 const LOCKOUT_CERTAINTY = 0.85;
+
+const STORAGE_SPECIES_KEY = "smartpot_demo_species";
+const STORAGE_READING_KEY = "smartpot_demo_reading";
+
+// Carga la especie guardada en sessionStorage si es válida
+function loadSavedSpecies(): CropType {
+    if (typeof window === "undefined") return "LETTUCE";
+    try {
+        const saved = window.sessionStorage.getItem(STORAGE_SPECIES_KEY) as CropType | null;
+        if (saved && (SPECIES as readonly string[]).includes(saved)) return saved;
+    } catch {
+        // Ignora restricciones de acceso a sessionStorage
+    }
+    return "LETTUCE";
+}
+
+// Carga la lectura guardada en sessionStorage si es válida
+function loadSavedReading(sp: CropType): DemoReading {
+    const fallback = demoStart(sp);
+    if (typeof window === "undefined") return fallback;
+    try {
+        const raw = window.sessionStorage.getItem(STORAGE_READING_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (
+                typeof parsed?.temperature === "number" &&
+                typeof parsed?.ph === "number" &&
+                typeof parsed?.tds === "number"
+            ) {
+                return parsed as DemoReading;
+            }
+        }
+    } catch {
+        // Ignora restricciones de acceso a sessionStorage
+    }
+    return fallback;
+}
+
+// Persiste especie y lectura en sessionStorage
+function saveDemoState(sp: CropType, r: DemoReading) {
+    if (typeof window === "undefined") return;
+    try {
+        window.sessionStorage.setItem(STORAGE_SPECIES_KEY, sp);
+        window.sessionStorage.setItem(STORAGE_READING_KEY, JSON.stringify(r));
+    } catch {
+        // Ignora cuotas o bloqueos
+    }
+}
 
 const STATUS_CLASS: Record<DemoStatus, string> = {
     ok: "bg-leaf-50 text-accent-strong",
@@ -39,18 +88,39 @@ export function formatRange(metric: RangeKey, [low, high]: readonly [number, num
  * de esa especie y lo que haría el agente. Todo corre en el navegador con los datos de `data.ts`; no llama a la API.
  */
 export function AssistantDemo() {
-    const [species, setSpecies] = createSignal<CropType>("LETTUCE");
-    const [reading, setReading] = createSignal<DemoReading>(demoStart("LETTUCE"));
+    const initialSpecies = loadSavedSpecies();
+    const [species, setSpecies] = createSignal<CropType>(initialSpecies);
+    const [reading, setReading] = createSignal<DemoReading>(loadSavedReading(initialSpecies));
     const outcome = createMemo(() => demoOutcome(species(), reading()));
 
     const choose = (next: CropType) => {
         setSpecies(next);
-        setReading(demoStart(next));
+        const nextReading = demoStart(next);
+        setReading(nextReading);
+        saveDemoState(next, nextReading);
     };
-    const update = (metric: DemoMetric, value: number) => setReading((current) => ({...current, [metric]: value}));
+
+    const update = (metric: DemoMetric, value: number) => {
+        setReading((current) => {
+            const next = {...current, [metric]: value};
+            saveDemoState(species(), next);
+            return next;
+        });
+    };
+
+    const applyPreset = (presetId: string) => {
+        const found = PRESETS.find((p) => p.id === presetId);
+        if (!found) return;
+        const vals = found.values(species());
+        setReading((current) => {
+            const next = {...current, ...vals};
+            saveDemoState(species(), next);
+            return next;
+        });
+    };
 
     return (
-        <div data-ui class="w-full max-w-md rounded-[var(--radius-card)] bg-card p-5 text-ink shadow-[var(--shadow-card)] sm:p-6">
+        <div id="demo" data-ui class="w-full max-w-md scroll-mt-24 rounded-[var(--radius-card)] bg-card p-5 text-ink shadow-[var(--shadow-card)] sm:p-6">
             <div class="flex items-baseline justify-between gap-3">
                 <h2 class="text-lg font-semibold">{t("landing.demo.title")}</h2>
             </div>
@@ -72,6 +142,23 @@ export function AssistantDemo() {
                     </For>
                 </div>
             </fieldset>
+
+            <div class="mt-4">
+                <p class="text-xs font-medium text-muted">{t("landing.demo.presets")}</p>
+                <div class="mt-1.5 flex flex-wrap gap-1.5">
+                    <For each={PRESETS}>
+                        {(preset) => (
+                            <button
+                                type="button"
+                                onClick={() => applyPreset(preset.id)}
+                                class="touch-target inline-flex items-center rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:border-leaf-500 hover:text-ink focus-visible:outline-2 focus-visible:outline-leaf-500"
+                            >
+                                {t(preset.label)}
+                            </button>
+                        )}
+                    </For>
+                </div>
+            </div>
 
             <div class="mt-5 space-y-4">
                 <For each={METRIC_ORDER}>

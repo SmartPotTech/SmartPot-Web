@@ -89,7 +89,7 @@ describe("SEO y PWA", () => {
             loc: url.querySelector("loc")?.textContent,
             lastmod: url.querySelector("lastmod")?.textContent ?? "",
         }));
-        expect(urls.map((url) => url.loc)).toEqual(["https://smartpot.app/", "https://smartpot.app/register", "https://smartpot.app/login"]);
+        expect(urls.map((url) => url.loc)).toEqual(["https://smartpot.app/"]);
         expect(urls.every((url) => /^\d{4}-\d{2}-\d{2}$/.test(url.lastmod))).toBe(true);
     });
 
@@ -101,7 +101,7 @@ describe("SEO y PWA", () => {
             const get = (selector: string, name: string) => head.querySelector(selector)?.getAttribute(name);
             expect(head.title).toBe(`${route.title} · SmartPot`);
             expect(get('link[rel="canonical"]', "href")).toBe(`https://smartpot.app/${route.path}`);
-            expect(get('meta[name="robots"]', "content")).toBe(route.index ? "index, follow" : "noindex, nofollow");
+            expect(get('meta[name="robots"]', "content")).toBe(route.index ? "index, follow" : "noindex, follow");
             expect(get('meta[name="description"]', "content")).toBe(route.description);
             // El FAQPage describe la landing: no se repite en otras páginas.
             expect(head.querySelector('script[type="application/ld+json"]')).toBeNull();

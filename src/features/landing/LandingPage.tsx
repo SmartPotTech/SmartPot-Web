@@ -359,6 +359,9 @@ export function LandingPage() {
                             <A href="/register" class="inline-flex h-12 items-center gap-2 rounded-xl bg-leaf-500 px-6 font-semibold text-leaf-950 transition-[background-color,transform] duration-150 hover:bg-leaf-300 active:translate-y-px">
                                 {t("landing.ctaCreate")} <ArrowRight size={18} aria-hidden="true"/>
                             </A>
+                            <a href="#demo" class="inline-flex h-12 items-center gap-2 rounded-xl border border-leaf-700 bg-leaf-900/60 px-5 font-semibold text-white transition-colors duration-150 hover:bg-leaf-800 hover:border-leaf-600">
+                                {t("landing.ctaDemo")}
+                            </a>
                         </div>
                         <p class="mt-4 text-sm text-leaf-100/90">{t("landing.heroNote")}</p>
                     </div>

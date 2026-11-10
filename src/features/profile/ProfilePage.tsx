@@ -1,4 +1,4 @@
-import {KeyRound, LogOut, Save, Trash2} from "lucide-solid";
+import {GraduationCap, KeyRound, LogOut, Save, Trash2} from "lucide-solid";
 import {createSignal, Show} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Dialog} from "../../components/ui/Dialog";
@@ -132,6 +132,18 @@ export function ProfilePage() {
                            onChange={(event) => setNext(event.currentTarget.value)}/>
                 <Button type="submit" icon={<KeyRound size={16}/>} loading={busy() === "password"}>{t("profile.changePassword")}</Button>
             </form>
+
+            <section class="card flex flex-wrap items-center justify-between gap-3 p-5">
+                <div>
+                    <h2 class="flex items-center gap-2 text-lg font-semibold">
+                        <GraduationCap size={18} class="text-accent"/> {t("nav.learning")}
+                    </h2>
+                    <p class="text-sm text-muted">{t("profile.learningHint")}</p>
+                </div>
+                <a href="/app/learning">
+                    <Button variant="secondary" icon={<GraduationCap size={16}/>}>{t("profile.viewLearning")}</Button>
+                </a>
+            </section>
 
             <section class="card flex flex-wrap items-center justify-between gap-3 p-5">
                 <div>

@@ -237,6 +237,7 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                                 <Show when={mode() === "MANUAL"}>
                                     <p class="text-xs text-muted">{t("create.manualStart")}</p>
                                 </Show>
+                                <p class="text-xs text-muted font-medium">{t("create.virtualIntervalNotice")}</p>
                             </div>
                         </Show>
                     </div>

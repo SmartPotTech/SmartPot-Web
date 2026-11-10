@@ -1,6 +1,6 @@
 import {useNavigate} from "@solidjs/router";
 import {MapPinned, Save, Trash2} from "lucide-solid";
-import {createSignal, For, Show} from "solid-js";
+import {createEffect, createSignal, For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {SelectField, TextField} from "../../../components/ui/Field";
 import {Alert} from "../../../components/ui/Feedback";
@@ -23,19 +23,24 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
     const [deleting, setDeleting] = createSignal(false);
     const [confirmName, setConfirmName] = createSignal("");
     const [open, setOpen] = createSignal(false);
-    const [placement, setPlacement] = createSignal<Placement>(props.crop.placement ?? {});
+    const [placement, setPlacement] = createSignal<Placement | undefined>(props.crop.placement ?? undefined);
     const [placementMessage, setPlacementMessage] = createSignal<{ tone: "success" | "danger"; text: string } | null>(null);
     const [placing, setPlacing] = createSignal(false);
+
+    // Mantiene sincronizado el estado del selector si el cultivo cambia externamente.
+    createEffect(() => {
+        setPlacement(props.crop.placement ?? undefined);
+    });
 
     async function savePlacement() {
         setPlacing(true);
         setPlacementMessage(null);
         try {
             props.onSaved(await cropApi.update(props.crop.id, {
-                name: props.crop.name,
-                type: props.crop.type,
-                form: props.crop.form,
-                placement: placement(),
+                name: name().trim(),
+                type: type(),
+                form: form(),
+                placement: placement() ?? {},
             }));
             setPlacementMessage({tone: "success", text: t("settings.placementSaved")});
         } catch (caught) {
@@ -60,7 +65,7 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
                 name: name().trim(),
                 type: type(),
                 form: form(),
-                placement: props.crop.placement ?? undefined,
+                placement: placement(),
             }));
             setMessage({tone: "success", text: t("settings.changesSaved")});
         } catch (caught) {
@@ -126,7 +131,7 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
                 <Show when={placementMessage()}>
                     {(msg) => <Alert tone={msg().tone}>{msg().text}</Alert>}
                 </Show>
-                <PlacementPicker type={props.crop.type} value={placement()} onChange={setPlacement}/>
+                <PlacementPicker type={props.crop.type} value={placement() ?? {}} onChange={setPlacement}/>
                 <Button icon={<Save size={16}/>} loading={placing()} onClick={() => void savePlacement()}>{t("settings.savePlace")}</Button>
             </section>
 

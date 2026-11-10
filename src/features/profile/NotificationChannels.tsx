@@ -51,7 +51,13 @@ export function NotificationChannels() {
         await run("link", async () => {
             const created = await channelApi.link("telegram");
             setCode(created);
-            window.open(created.url, "_blank", "noopener,noreferrer");
+            // Intenta abrir directamente; si el navegador móvil/Safari bloquea popups tras await,
+            // el enlace directo renderizado en pantalla permite abrirlo con un toque sin fricción.
+            try {
+                window.open(created.url, "_blank", "noopener,noreferrer");
+            } catch {
+                // Popup bloqueado; el enlace directo en UI queda disponible.
+            }
         });
     }
 
@@ -145,7 +151,16 @@ export function ChannelRow(props: ChannelRowProps) {
                             {t("channels.linkButton", {name: props.option.name})}
                         </Button>
                         <Show when={props.code}>
-                            <Button size="sm" variant="secondary" onClick={props.onRefresh}>{t("channels.alreadyLinked")}</Button>
+                            {(c) => (
+                                <>
+                                    <a href={c().url} target="_blank" rel="noopener noreferrer"
+                                       class="touch-target inline-flex items-center gap-1.5 rounded-xl bg-leaf-700 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-leaf-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-leaf-700">
+                                        <ExternalLink size={14}/>
+                                        {t("channels.openTelegram")}
+                                    </a>
+                                    <Button size="sm" variant="secondary" onClick={props.onRefresh}>{t("channels.alreadyLinked")}</Button>
+                                </>
+                            )}
                         </Show>
                     </div>
                     <Show when={props.code}>

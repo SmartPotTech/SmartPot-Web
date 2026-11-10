@@ -107,8 +107,8 @@ export const ACTUATORS: Record<ActuatorType, {
     }),
     UV_LIGHT: localized({label: "catalog.actuator.UV_LIGHT"}, {
         defaultSeconds: 900,
-        durations: [900, 1800, 3600, 7200],
-        unlimited: true
+        durations: [300, 900, 1800, 3600],
+        unlimited: false
     }),
     FAN: localized({label: "catalog.actuator.FAN"}, {defaultSeconds: 600, durations: [300, 600, 1800], unlimited: true}),
     HUMIDIFIER: localized({label: "catalog.actuator.HUMIDIFIER"}, {

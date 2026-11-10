@@ -105,6 +105,10 @@ export function AppShell(props: { children?: JSX.Element }) {
                     <A href="/app" aria-label={t("nav.dashboardLabel")}><Logo size={28} inverse/></A>
                     <div class="flex min-w-0 items-center">
                         <PreferenceToggles surface="dark"/>
+                        <A href="/app/learning" aria-label={t("nav.learning")}
+                           class="touch-target rounded-lg p-2 text-leaf-100 hover:bg-leaf-800 md:hidden">
+                            <GraduationCap size={20}/>
+                        </A>
                         <Show when={installPrompt.available}>
                             <button type="button" onClick={() => void installPrompt.install()} aria-label={t("nav.installApp")}
                                     class="touch-target rounded-lg p-2 text-leaf-300 hover:bg-leaf-800"><Download size={20}/>

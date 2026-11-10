@@ -2,6 +2,7 @@ import {Bot, Send, SlidersHorizontal, Zap} from "lucide-solid";
 import {createSignal, For, Show} from "solid-js";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Button} from "../../components/ui/Button";
+import {Dialog} from "../../components/ui/Dialog";
 import {SelectField} from "../../components/ui/Field";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
 import {SkeletonCard} from "../../components/ui/Skeleton";
@@ -15,9 +16,16 @@ import {describeAction, formatDuration} from "../../lib/format";
 import {t} from "../../lib/i18n";
 import type {ActuatorType, CommandAction, Crop} from "../../lib/api/types";
 import {BulkResultList} from "./BulkResultList";
-import {useBulkCommand} from "./useBulkCommand";
+import {type BulkOrder, useBulkCommand} from "./useBulkCommand";
 
 const DURATIONS = [5, 15, 30, 60, 300, 600, 900, 1800, 3600];
+
+interface PendingConfirmation {
+    key: string;
+    order: BulkOrder;
+    label: string;
+    count: number;
+}
 
 /** Control general: modo automático y órdenes a varios cultivos a la vez. */
 export function ControlPage() {
@@ -31,10 +39,51 @@ export function ControlPage() {
     const [actuator, setActuator] = createSignal<ActuatorType>("WATER_PUMP");
     const [action, setAction] = createSignal<CommandAction>("ACTIVATE");
     const [duration, setDuration] = createSignal<number>(ACTUATORS.WATER_PUMP.defaultSeconds ?? 15);
+    const [pendingConfirm, setPendingConfirm] = createSignal<PendingConfirmation | null>(null);
+    const [lastOrder, setLastOrder] = createSignal<BulkOrder | null>(null);
 
     const selected = () => list().filter((crop) => !excluded().has(crop.id));
-    const selectedIds = () => selected().length === list().length ? undefined : selected().map((crop) => crop.id);
+    const selectedIds = () => selected().map((crop) => crop.id);
     const automated = () => list().filter((crop) => crop.automationEnabled).length;
+
+    function promptOrder(key: string, order: BulkOrder, label: string) {
+        const count = order.cropIds?.length ?? selected().length;
+        // Si la orden afecta a varios cultivos simultáneamente, exige confirmación explícita
+        // de seguridad de hardware según FW-06 / UX-10 / UX-11.
+        if (count > 1) {
+            setPendingConfirm({
+                key,
+                order,
+                label,
+                count,
+            });
+            return;
+        }
+        setLastOrder(order);
+        void bulk.send(key, order);
+    }
+
+    function confirmAndSend() {
+        const item = pendingConfirm();
+        if (!item) return;
+        setLastOrder(item.order);
+        setPendingConfirm(null);
+        void bulk.send(item.key, item.order);
+    }
+
+    function retryFailed(failedCropIds: string[]) {
+        const prev = lastOrder();
+        if (!prev || failedCropIds.length === 0) return;
+        const retryOrder: BulkOrder = {
+            ...prev,
+            cropIds: failedCropIds,
+        };
+        promptOrder(
+            "retry",
+            retryOrder,
+            describeAction(retryOrder.actuatorType, retryOrder.action, retryOrder.durationSeconds ?? null),
+        );
+    }
 
     function toggleCrop(cropId: string) {
         setExcluded((current) => {
@@ -62,12 +111,13 @@ export function ControlPage() {
 
     function submit(event: SubmitEvent) {
         event.preventDefault();
-        void bulk.send("custom", {
+        const actionLabel = describeAction(actuator(), action(), action() === "ACTIVATE" ? duration() : null);
+        promptOrder("custom", {
             actuatorType: actuator(),
             action: action(),
             durationSeconds: action() === "ACTIVATE" ? duration() : null,
             cropIds: selectedIds(),
-        });
+        }, actionLabel);
     }
 
     return (
@@ -168,10 +218,10 @@ export function ControlPage() {
                                             <Button size="sm" variant="secondary"
                                                     disabled={selected().length === 0}
                                                     loading={bulk.sending === quick.label}
-                                                    onClick={() => void bulk.send(quick.label, {
+                                                    onClick={() => promptOrder(quick.label, {
                                                         ...quick,
                                                         cropIds: selectedIds(),
-                                                    })}>
+                                                    }, quick.label)}>
                                                 {quick.label}
                                             </Button>
                                         )}
@@ -219,13 +269,32 @@ export function ControlPage() {
                                     {(err) => <Alert tone="danger">{err()}</Alert>}
                                 </Show>
                                 <Show when={bulk.result}>
-                                    {(res) => <BulkResultList result={res()}/>}
+                                    {(res) => <BulkResultList result={res()} onRetryFailed={retryFailed} retrying={bulk.sending === "retry"}/>}
                                 </Show>
                             </div>
                         </section>
                     </div>
                 </Show>
             </Show>
+
+            <Dialog open={pendingConfirm() !== null} title={t("control.confirmBulkTitle")}
+                    onClose={() => setPendingConfirm(null)}
+                    footer={<>
+                        <Button variant="secondary" onClick={() => setPendingConfirm(null)}>{t("common.cancel")}</Button>
+                        <Button onClick={confirmAndSend}>{t("control.confirmBulkAction")}</Button>
+                    </>}>
+                <div class="space-y-3">
+                    <p class="text-sm font-medium">
+                        {t("control.confirmBulkBody", {
+                            count: pendingConfirm()?.count ?? 0,
+                            action: pendingConfirm()?.label ?? "",
+                        })}
+                    </p>
+                    <p class="text-xs text-muted">
+                        {t("control.confirmBulkWarning")}
+                    </p>
+                </div>
+            </Dialog>
         </div>
     );
 }

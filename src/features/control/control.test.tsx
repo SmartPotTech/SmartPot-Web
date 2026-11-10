@@ -105,7 +105,7 @@ describe("control general", () => {
         }));
     });
 
-    it("envía la orden del formulario con el actuador, la acción y la duración elegidos", async () => {
+    it("envía la orden del formulario con el actuador, la acción y la duración elegidos tras confirmar", async () => {
         render(() => <ControlPage/>);
         await screen.findByRole("checkbox", {name: "Tomates"});
 
@@ -114,12 +114,26 @@ describe("control general", () => {
         expect(screen.getByLabelText("Duración")).toBeDisabled();
         await userEvent.click(screen.getByRole("button", {name: "Apagar luz ultravioleta en 2 cultivos"}));
 
+        expect(await screen.findByText("Confirmar acción física en lote")).toBeInTheDocument();
+        await userEvent.click(await screen.findByRole("button", {name: "Confirmar y ejecutar"}));
+
         await waitFor(() => expect(api.bulk).toHaveBeenCalledWith({
             actuatorType: "UV_LIGHT",
             action: "DEACTIVATE",
             durationSeconds: null,
-            cropIds: undefined,
+            cropIds: ["c1", "c2"],
         }));
+    });
+
+    it("cancela la orden en bloque y no despacha ningún comando al hardware", async () => {
+        render(() => <ControlPage/>);
+        await screen.findByRole("checkbox", {name: "Tomates"});
+
+        await userEvent.click(screen.getByRole("button", {name: "Regar 15 s"}));
+        expect(await screen.findByText("Confirmar acción física en lote")).toBeInTheDocument();
+
+        await userEvent.click(screen.getByRole("button", {name: "Cancelar"}));
+        expect(api.bulk).not.toHaveBeenCalled();
     });
 
     it("muestra el resultado por cultivo de una orden en bloque", async () => {
@@ -136,12 +150,50 @@ describe("control general", () => {
         await screen.findByRole("checkbox", {name: "Tomates"});
 
         await userEvent.click(screen.getByRole("button", {name: "Regar 15 s"}));
+        await userEvent.click(await screen.findByRole("button", {name: "Confirmar y ejecutar"}));
 
         expect(await screen.findByText("1 enviado · 1 con error")).toBeInTheDocument();
         const result = screen.getByRole("status");
         expect(within(result).getByText(/Enviado/)).toBeInTheDocument();
         expect(within(result).getByText(/Falló/)).toBeInTheDocument();
         expect(within(result).getByText(/El cultivo no respondió/)).toBeInTheDocument();
+    });
+
+    it("permite reintentar solo los cultivos que hayan fallado en el lote", async () => {
+        api.bulk.mockResolvedValueOnce({
+            sent: 1,
+            failed: 1,
+            skipped: 0,
+            results: [
+                {cropId: "c1", cropName: "Lechugas", status: "SENT", commandId: "k1", message: null},
+                {cropId: "c2", cropName: "Tomates", status: "FAILED", commandId: null, message: "El cultivo no respondió."},
+            ],
+        }).mockResolvedValueOnce({
+            sent: 1,
+            failed: 0,
+            skipped: 0,
+            results: [
+                {cropId: "c2", cropName: "Tomates", status: "SENT", commandId: "k2", message: null},
+            ],
+        });
+        render(() => <ControlPage/>);
+        await screen.findByRole("checkbox", {name: "Tomates"});
+
+        await userEvent.click(screen.getByRole("button", {name: "Regar 15 s"}));
+        await userEvent.click(await screen.findByRole("button", {name: "Confirmar y ejecutar"}));
+
+        expect(await screen.findByText("1 enviado · 1 con error")).toBeInTheDocument();
+        const retryButton = screen.getByRole("button", {name: "Reintentar fallidos"});
+        expect(retryButton).toBeInTheDocument();
+        await userEvent.click(retryButton);
+
+        await waitFor(() => expect(api.bulk).toHaveBeenLastCalledWith({
+            label: "Regar 15 s",
+            actuatorType: "WATER_PUMP",
+            action: "ACTIVATE",
+            durationSeconds: 15,
+            cropIds: ["c2"],
+        }));
     });
 
     it("muestra el error de permisos al cambiar el modo automático", async () => {

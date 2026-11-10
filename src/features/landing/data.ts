@@ -20,6 +20,61 @@ export const SPECIES_RANGES: Record<CropType, SpeciesRanges> = {
 export const SPECIES: CropType[] = ["LETTUCE", "TOMATO", "STRAWBERRY", "BASIL", "SPINACH", "PEPPER"];
 export const RANGE_KEYS: RangeKey[] = ["temperature", "humidity", "brightness", "ph", "tds", "soilMoisture"];
 
+/**
+ * Descripciones canónicas de las 6 especies: copia exacta de `SmartPot-AI/src/domain/profiles.rs`.
+ */
+export const SPECIES_DESCRIPTIONS: Record<CropType, string> = {
+    LETTUCE: "Cool-weather leafy green; bolts under excessive heat and light.",
+    TOMATO: "Fruit crop demanding in light, warmth, and nutrients during flowering.",
+    STRAWBERRY: "Sensitive to excess salts and high humidity, which promotes fungal growth.",
+    BASIL: "Warm-weather aromatic herb; tolerates dry environments.",
+    SPINACH: "Cool-weather leafy green with high nitrogen demand.",
+    PEPPER: "Warm-weather fruit crop; requires intense light and stable pH.",
+};
+
+export const SPECIES_NAMES: Record<CropType, string> = {
+    LETTUCE: "Lettuce",
+    TOMATO: "Tomato",
+    STRAWBERRY: "Strawberry",
+    BASIL: "Basil",
+    SPINACH: "Spinach",
+    PEPPER: "Bell pepper",
+};
+
+export type PresetKey = "optimal" | "heat" | "lockout" | "lowNutrients";
+
+export interface PresetInfo {
+    id: PresetKey;
+    label: TranslationKey;
+    values: (species: CropType) => Partial<DemoReading>;
+}
+
+export const PRESETS: PresetInfo[] = [
+    {
+        id: "optimal",
+        label: "landing.demo.preset.optimal",
+        values: (sp) => demoStart(sp),
+    },
+    {
+        id: "heat",
+        label: "landing.demo.preset.heat",
+        values: (sp) => ({temperature: Number((SPECIES_RANGES[sp].temperature[1] + 5).toFixed(1))}),
+    },
+    {
+        id: "lockout",
+        label: "landing.demo.preset.lockout",
+        values: (sp) => ({
+            ph: Number((SPECIES_RANGES[sp].ph[1] + 1.0).toFixed(1)),
+            tds: Number(SPECIES_RANGES[sp].tds[0] + 50),
+        }),
+    },
+    {
+        id: "lowNutrients",
+        label: "landing.demo.preset.lowNutrients",
+        values: (sp) => ({tds: Math.max(100, SPECIES_RANGES[sp].tds[0] - 200)}),
+    },
+];
+
 export type DemoMetric = "temperature" | "ph" | "tds";
 export type DemoStatus = "low" | "ok" | "high";
 

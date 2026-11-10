@@ -141,7 +141,12 @@
     }
 
     :focus-visible {
-        @apply outline-2 outline-offset-2 outline-leaf-500;
+        outline: 2px solid var(--color-leaf-700);
+        outline-offset: 2px;
+    }
+
+    :root.dark :focus-visible {
+        outline-color: var(--color-leaf-300);
     }
 }
 
@@ -183,6 +188,8 @@
     *::before,
     *::after {
         animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        animation: none !important;
         transition-duration: 0.01ms !important;
     }
 }

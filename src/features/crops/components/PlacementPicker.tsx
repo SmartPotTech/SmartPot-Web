@@ -21,7 +21,7 @@ interface PlacementPickerProps {
  * Tiene su propio buscador de lugar (un formulario): no va dentro de otro formulario.
  */
 export function PlacementPicker(props: PlacementPickerProps) {
-    const setting = () => props.value.setting ?? null;
+    const setting = () => props.value?.setting ?? null;
     const need = () => LIGHT_NEEDS[props.type];
     return (
         <div class="space-y-3">
@@ -32,7 +32,7 @@ export function PlacementPicker(props: PlacementPickerProps) {
                         return (
                             <button type="button" role="radio" aria-checked={setting() === option}
                                     onClick={() => props.onChange({
-                                        ...props.value,
+                                        ...(props.value ?? {}),
                                         setting: option,
                                         exposure: props.value.exposure ?? need().exposure,
                                     })}

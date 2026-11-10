@@ -8,8 +8,8 @@ const SITE = "https://smartpot.app";
 
 /** Rutas públicas con su propio <head> estático: lo que lee un rastreador antes (o en vez) de ejecutar el JS. */
 export const STATIC_ROUTES: { path: string; title: string; description: string; index: boolean }[] = [
-    {path: "login", title: es["auth.login.title"], description: es["auth.login.description"], index: true},
-    {path: "register", title: es["auth.register.title"], description: es["auth.register.description"], index: true},
+    {path: "login", title: es["auth.login.title"], description: es["auth.login.description"], index: false},
+    {path: "register", title: es["auth.register.title"], description: es["auth.register.description"], index: false},
     {path: "forgot-password", title: es["auth.forgot.title"], description: es["auth.login.description"], index: false},
     {path: "reset-password", title: es["auth.reset.title"], description: es["auth.login.description"], index: false},
 ];
@@ -26,7 +26,7 @@ export function routeHtml(html: string, route: (typeof STATIC_ROUTES)[number]): 
         .replace(/<title>[^<]*<\/title>/, () => `<title>${escapeAttribute(title)}</title>`)
         .replace(/<meta content="[^"]*"\s*name="description"\/>/, () => `<meta content="${description}" name="description"/>`)
         .replace(/<meta content="[^"]*" name="robots"\/>/, () =>
-            `<meta content="${route.index ? "index, follow" : "noindex, nofollow"}" name="robots"/>`)
+            `<meta content="${route.index ? "index, follow" : "noindex, follow"}" name="robots"/>`)
         .replace(/<link href="[^"]*" rel="canonical"\/>/, () => `<link href="${url}" rel="canonical"/>`)
         .replace(/<link href="[^"]*" hreflang="es" rel="alternate"\/>/, () => `<link href="${url}" hreflang="es" rel="alternate"/>`)
         .replace(/<link href="[^"]*" hreflang="x-default" rel="alternate"\/>/, () => `<link href="${url}" hreflang="x-default" rel="alternate"/>`)
