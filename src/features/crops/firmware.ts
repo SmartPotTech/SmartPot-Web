@@ -1,11 +1,18 @@
 import type {DeviceCredentials} from "../../lib/api/types";
 import {t} from "../../lib/i18n";
 
-/** Dónde corre el firmware: un ESP32 físico en tu red o el ESP32 simulado de Wokwi. */
-export type FirmwareTarget = "esp32" | "wokwi";
+/** Dónde corre el firmware y con qué runtime. */
+export type FirmwareTarget = "rust" | "python" | "wokwi" | "esp32";
 
-/** Firmware MicroPython de la guía (`fs/` + `mpremote`); el de Rust lee el mismo config.json al compilar. */
-export const FIRMWARE_REPO = "https://github.com/SmartPotTech/SmartPot-IoT-Python";
+/** Firmware principal canónico en Rust (Embassy no_std) para placa física. */
+export const FIRMWARE_RUST_REPO = "https://github.com/SmartPotTech/SmartPot-IoT";
+
+/** Firmware alternativo en MicroPython para prototipado rápido o simulación Wokwi. */
+export const FIRMWARE_PYTHON_REPO = "https://github.com/SmartPotTech/SmartPot-IoT-Python";
+
+/** Alias histórico para retrocompatibilidad con importadores existentes. */
+export const FIRMWARE_REPO = FIRMWARE_PYTHON_REPO;
+
 export const WOKWI_PROJECT = "https://wokwi.com/projects/408863167711709185";
 
 /** Ruta pública de la CA que firma el certificado del broker. */
@@ -17,7 +24,7 @@ export const BROKER_CA_PATH = "/ca.crt";
  */
 export function firmwareConfig(
     credentials: DeviceCredentials,
-    target: FirmwareTarget = "esp32",
+    target: FirmwareTarget = "rust",
     caCertificate?: string,
 ): string {
     const wifi = target === "wokwi"

@@ -3,26 +3,49 @@ import {createEffect, createSignal, For, type JSX, onCleanup, Show} from "solid-
 import {Alert} from "../../../components/ui/Feedback";
 import type {DeviceCredentials} from "../../../lib/api/types";
 import {t, type TranslationKey} from "../../../lib/i18n";
-import {BROKER_CA_PATH, FIRMWARE_REPO, firmwareConfig, type FirmwareTarget, WOKWI_PROJECT} from "../firmware";
+import {
+    BROKER_CA_PATH,
+    FIRMWARE_PYTHON_REPO,
+    FIRMWARE_RUST_REPO,
+    firmwareConfig,
+    type FirmwareTarget,
+    WOKWI_PROJECT,
+} from "../firmware";
 import {CredentialsView} from "./CredentialsView";
 
 const TARGETS: { id: FirmwareTarget; label: TranslationKey; hint: TranslationKey; icon: typeof Cpu }[] = [
-    {id: "esp32", label: "guide.esp32", hint: "guide.esp32Hint", icon: Cpu},
-    {id: "wokwi", label: "guide.wokwi", hint: "guide.wokwiHint", icon: MonitorPlay},
+    {id: "rust", label: "guide.targetRust", hint: "guide.targetRustHint", icon: Cpu},
+    {id: "python", label: "guide.targetPython", hint: "guide.targetPythonHint", icon: Cpu},
+    {id: "wokwi", label: "guide.targetWokwi", hint: "guide.targetWokwiHint", icon: MonitorPlay},
 ];
 
-/** Pines del circuito, los mismos del proyecto de Wokwi. */
-const PINS: [TranslationKey, string][] = [
-    ["guide.pin.dht", "GPIO 15"],
-    ["guide.pin.light", "GPIO 34"],
-    ["guide.pin.ph", "GPIO 35"],
-    ["guide.pin.tds", "GPIO 32"],
-    ["guide.pin.soil", "GPIO 33"],
-    ["guide.pin.pump", "GPIO 19"],
-    ["guide.pin.uv", "GPIO 18"],
-    ["guide.pin.fan", "GPIO 5"],
-    ["guide.pin.lcd", "SCL 16 · SDA 17"],
+/** Pines del circuito físico con firmware Rust Embassy (main.rs / diagram.json). */
+export const RUST_PINS: [TranslationKey, string][] = [
+    ["guide.pin.rust.i2c", "SDA 21 · SCL 22"],
+    ["guide.pin.rust.tds", "GPIO 34"],
+    ["guide.pin.rust.ph", "GPIO 35"],
+    ["guide.pin.rust.soil", "GPIO 32"],
+    ["guide.pin.rust.pump", "GPIO 25"],
+    ["guide.pin.rust.uv", "GPIO 26"],
+    ["guide.pin.rust.fan", "GPIO 27"],
+    ["guide.pin.rust.humidifier", "GPIO 5"],
 ];
+
+/** Pines del circuito con firmware MicroPython / Wokwi (fs/main.py). */
+export const PYTHON_PINS: [TranslationKey, string][] = [
+    ["guide.pin.py.dht", "GPIO 15"],
+    ["guide.pin.py.light", "GPIO 34"],
+    ["guide.pin.py.ph", "GPIO 35"],
+    ["guide.pin.py.tds", "GPIO 32"],
+    ["guide.pin.py.soil", "GPIO 33"],
+    ["guide.pin.py.pump", "GPIO 19"],
+    ["guide.pin.py.uv", "GPIO 18"],
+    ["guide.pin.py.fan", "GPIO 5"],
+    ["guide.pin.py.lcd", "SCL 16 · SDA 17"],
+];
+
+/** Alias retrocompatible con pruebas e importadores existentes. */
+export const PINS = PYTHON_PINS;
 
 function Step(props: { number: number; title: string; children: JSX.Element }) {
     return (
@@ -96,23 +119,26 @@ function Link(props: { href: string; children: JSX.Element }) {
 }
 
 /**
- * Guía para conectar un cultivo real: un ESP32 físico o el mismo firmware simulado en Wokwi. Los dos usan la
- * cuenta MQTT del cultivo; lo simulado en Wokwi también es un cultivo real, distinto de un cultivo virtual.
+ * Guía para conectar un cultivo real: firmware canónico en Rust (Embassy), firmware en MicroPython
+ * o simulación en Wokwi. Todos usan la cuenta MQTT del cultivo real.
  */
-export function ConnectionGuide(props: { credentials: DeviceCredentials }) {
-    const [target, setTarget] = createSignal<FirmwareTarget>("esp32");
+export function ConnectionGuide(props: { credentials: DeviceCredentials; initialTarget?: FirmwareTarget }) {
+    const [target, setTarget] = createSignal<FirmwareTarget>(props.initialTarget ?? "rust");
+    const activeTarget = () => (target() === "esp32" ? "rust" : target());
+
     return (
         <div class="space-y-5">
             <CredentialsView credentials={props.credentials}/>
 
-            <div class="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label={t("guide.where")}>
+            <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t("guide.where")}>
                 <For each={TARGETS}>
                     {(item) => {
                         const Icon = item.icon;
+                        const isChecked = () => activeTarget() === item.id;
                         return (
-                            <button type="button" role="radio" aria-checked={target() === item.id}
+                            <button type="button" role="radio" aria-checked={isChecked()}
                                     onClick={() => setTarget(item.id)}
-                                    class={`flex items-start gap-3 rounded-xl border p-3 text-left transition-colors ${target() === item.id
+                                    class={`flex items-start gap-3 rounded-xl border p-3 text-left transition-colors ${isChecked()
                                         ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
                                 <Icon size={20} class="mt-0.5 shrink-0 text-accent"/>
                                 <span>
@@ -125,7 +151,66 @@ export function ConnectionGuide(props: { credentials: DeviceCredentials }) {
                 </For>
             </div>
 
-            <Show when={target() === "esp32"} fallback={
+            <Show when={activeTarget() === "rust"}>
+                <ol class="space-y-4">
+                    <Step number={1} title={t("guide.rust.step1")}>
+                        <ul class="grid gap-x-4 gap-y-1 text-muted sm:grid-cols-2">
+                            <For each={RUST_PINS}>
+                                {([part, pin]) => (
+                                    <li class="flex justify-between gap-2 border-b border-line/70 py-0.5">
+                                        <span>{t(part)}</span><span class="font-medium text-ink">{pin}</span>
+                                    </li>
+                                )}
+                            </For>
+                        </ul>
+                    </Step>
+                    <Step number={2} title={t("guide.rust.step2")}>
+                        <p class="text-muted">
+                            {t("guide.rust.step2Body1")}
+                            <Link href={FIRMWARE_RUST_REPO}>{t("guide.rust.step2Link")}</Link>
+                            {t("guide.rust.step2Body2")}
+                            <code class="rounded bg-surface px-1.5 py-0.5 font-mono text-ink">cargo +esp run --release</code>.
+                        </p>
+                    </Step>
+                    <Step number={3} title={t("guide.rust.step3")}>
+                        <ConfigBlock credentials={props.credentials} target="rust"/>
+                    </Step>
+                    <Step number={4} title={t("guide.rust.step4")}>
+                        <p class="text-muted">{t("guide.p4Body1")}<strong class="text-ink">{t("card.online")}</strong>{t("guide.p4Body2")}</p>
+                    </Step>
+                </ol>
+            </Show>
+
+            <Show when={activeTarget() === "python"}>
+                <ol class="space-y-4">
+                    <Step number={1} title={t("guide.py.step1")}>
+                        <ul class="grid gap-x-4 gap-y-1 text-muted sm:grid-cols-2">
+                            <For each={PYTHON_PINS}>
+                                {([part, pin]) => (
+                                    <li class="flex justify-between gap-2 border-b border-line/70 py-0.5">
+                                        <span>{t(part)}</span><span class="font-medium text-ink">{pin}</span>
+                                    </li>
+                                )}
+                            </For>
+                        </ul>
+                    </Step>
+                    <Step number={2} title={t("guide.py.step2")}>
+                        <p class="text-muted">
+                            {t("guide.py.step2Body1")}<code>fs/</code>{t("guide.py.step2Body2")}
+                            <Link href={FIRMWARE_PYTHON_REPO}>{t("guide.py.step2Link")}</Link>
+                            {t("guide.py.step2Body3")}<code>mpremote</code>.
+                        </p>
+                    </Step>
+                    <Step number={3} title={t("guide.py.step3")}>
+                        <ConfigBlock credentials={props.credentials} target="python"/>
+                    </Step>
+                    <Step number={4} title={t("guide.py.step4")}>
+                        <p class="text-muted">{t("guide.p4Body1")}<strong class="text-ink">{t("card.online")}</strong>{t("guide.p4Body2")}</p>
+                    </Step>
+                </ol>
+            </Show>
+
+            <Show when={activeTarget() === "wokwi"}>
                 <ol class="space-y-4">
                     <Step number={1} title={t("guide.w1")}>
                         <p class="text-muted">
@@ -139,34 +224,6 @@ export function ConnectionGuide(props: { credentials: DeviceCredentials }) {
                         <p class="text-muted">{t("guide.w3Body1")}<code>Wokwi-GUEST</code>{t("guide.w3Body2")}</p>
                     </Step>
                 </ol>
-            }>
-                <ol class="space-y-4">
-                    <Step number={1} title={t("guide.p1")}>
-                        <ul class="grid gap-x-4 gap-y-1 text-muted sm:grid-cols-2">
-                            <For each={PINS}>
-                                {([part, pin]) => (
-                                    <li class="flex justify-between gap-2 border-b border-line/70 py-0.5">
-                                        <span>{t(part)}</span><span class="font-medium text-ink">{pin}</span>
-                                    </li>
-                                )}
-                            </For>
-                        </ul>
-                    </Step>
-                    <Step number={2} title={t("guide.p2")}>
-                        <p class="text-muted">
-                            {t("guide.p2Body1")}<code>fs/</code>{t("guide.p2Body2")}<Link
-                            href={FIRMWARE_REPO}>{t("guide.p2Link")}</Link>{t("guide.p2Body3")}<code>mpremote</code>.
-                        </p>
-                    </Step>
-                    <Step number={3} title={t("guide.p3")}>
-                        <ConfigBlock credentials={props.credentials} target="esp32"/>
-                    </Step>
-                    <Step number={4} title={t("guide.p4")}>
-                        <p class="text-muted">{t("guide.p4Body1")}<strong class="text-ink">{t("card.online")}</strong>{t("guide.p4Body2")}</p>
-                    </Step>
-                </ol>
-            </Show>
-            <Show when={target() === "wokwi"}>
                 <Alert tone="warning">
                     {t("guide.private1")}<code>config.json</code>{t("guide.private2")}
                 </Alert>

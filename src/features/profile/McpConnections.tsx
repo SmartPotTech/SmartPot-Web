@@ -11,7 +11,7 @@ import {connectionApi} from "../../lib/api/services";
 import type {Connection, ConnectionCreated, ConnectionScope} from "../../lib/api/types";
 import {formatDateTime, timeAgo} from "../../lib/format";
 import {t, type TranslationKey} from "../../lib/i18n";
-import {CONNECTION_EXPIRY, mcpClientConfig} from "../../lib/mcp";
+import {CONNECTION_EXPIRY, DEFAULT_EXPIRY_INDEX, mcpClientConfig} from "../../lib/mcp";
 
 type Message = { tone: "success" | "danger"; text: string } | null;
 
@@ -28,7 +28,7 @@ export function McpConnections() {
     const connections = useResource(() => connectionApi.list(), []);
     const [name, setName] = createSignal("");
     const [scope, setScope] = createSignal<ConnectionScope>("READ");
-    const [expiry, setExpiry] = createSignal(0);
+    const [expiry, setExpiry] = createSignal(DEFAULT_EXPIRY_INDEX);
     const [nameError, setNameError] = createSignal<string | undefined>();
     const [created, setCreated] = createSignal<ConnectionCreated | null>(null);
     const [revoking, setRevoking] = createSignal<Connection | null>(null);
@@ -53,6 +53,7 @@ export function McpConnections() {
             });
             setCreated(result);
             setName("");
+            setExpiry(DEFAULT_EXPIRY_INDEX);
             await connections.reload();
         } catch (caught) {
             setMessage({tone: "danger", text: caught instanceof ApiError ? caught.message : t("mcp.createFailed")});

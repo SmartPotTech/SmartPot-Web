@@ -403,6 +403,8 @@ const EXACT_TRANSLATIONS: Record<string, string> = {
     "Health: not evaluated yet": "Salud: aún sin evaluar",
     "Connection: online": "Conexión: en línea",
     "Connection: offline": "Conexión: desconectada",
+    online: "en línea",
+    offline: "desconectado",
     "Latest reading: no data": "Última lectura: sin datos",
 
     // Clima
@@ -778,12 +780,37 @@ const DYNAMIC_RULES: Rule[] = [
         return m ? `Resumen diario de «${group(m, 1)}»` : null;
     },
     (input) => {
-        const m = /^(\d+) avisos? en the last (\d+) hours?:$/.exec(input);
-        return m ? `${group(m, 1)} avisos en las últimas ${group(m, 2)} horas:` : null;
+        const m = /^(\d+)\s+notices?\s+in\s+(?:the\s+last\s+(\d+)\s+hours?|the\s+last\s+hour):$/i.exec(input);
+        if (!m) return null;
+        const count = group(m, 1);
+        const hours = group(m, 2);
+        const pluralNotices = count === "1" ? "aviso" : "avisos";
+        const windowText = !hours || hours === "1" ? "la última hora" : `las últimas ${hours} horas`;
+        return `${count} ${pluralNotices} en ${windowText}:`;
     },
     (input) => {
-        const m = /^… and (\d+) more in the app\.$/.exec(input);
+        const m = /^…\s*and\s+(\d+)\s+more\s+in\s+the\s+app\.$/i.exec(input);
         return m ? `… y ${group(m, 1)} más en la app.` : null;
+    },
+    (input) => {
+        const m = /^([•\-*])\s+(\d{1,2}:\d{2})\s+(Alert|Connection|Assistant|Command|Notice):\s+(.+)$/i.exec(input);
+        if (!m) return null;
+        const bullet = group(m, 1);
+        const timeStr = group(m, 2);
+        const kind = group(m, 3).toLowerCase();
+        const title = group(m, 4);
+        const kindMap: Record<string, string> = {
+            alert: "Alerta",
+            connection: "Conexión",
+            assistant: "Asistente",
+            command: "Comando",
+            notice: "Aviso",
+        };
+        const translatedKind = kindMap[kind] ?? kind;
+        let translatedTitle = translateText(title.trim(), 1);
+        if (title.trim().toLowerCase() === "online") translatedTitle = "en línea";
+        if (title.trim().toLowerCase() === "offline") translatedTitle = "desconectada";
+        return `${bullet} ${timeStr} ${translatedKind}: ${translatedTitle}`;
     },
     (input) => {
         const m = /^• (.+?) Connection: (.+)$/.exec(input);
@@ -794,12 +821,24 @@ const DYNAMIC_RULES: Rule[] = [
         return m ? `Salud: ${healthLabel(group(m, 1))} (${group(m, 2)}/100)` : null;
     },
     (input) => {
-        const m = /^Last 24 h: (\d+) alerts? and (\d+) commands?$/.exec(input);
+        const m = /^Last 24 h: (\d+) alerts? and (\d+) commands?$/i.exec(input);
         return m ? `Últimas 24 h: ${group(m, 1)} alertas y ${group(m, 2)} comandos` : null;
     },
     (input) => {
-        const m = /^Latest reading: (.+)$/.exec(input);
-        return m ? `Última lectura: ${translateText(group(m, 1), 1)}` : null;
+        const m = /^Latest reading:\s+(.+)$/i.exec(input);
+        if (!m) return null;
+        const raw = group(m, 1);
+        if (raw.toLowerCase() === "no data") return "Última lectura: sin datos";
+        const parts = raw.split(" · ").map((part) => {
+            const hum = /^humidity\s+(\d+)\s*%/i.exec(part);
+            if (hum) return `humedad ${group(hum, 1)} %`;
+            const soil = /^soil\s+(\d+)\s*%/i.exec(part);
+            if (soil) return `sustrato ${group(soil, 1)} %`;
+            const light = /^light\s+(\d+)\s*lux/i.exec(part);
+            if (light) return `luz ${group(light, 1)} lux`;
+            return translateText(part, 1);
+        });
+        return `Última lectura: ${parts.join(" · ")}`;
     },
     (input) => {
         const m = /^«(.+)» lost connection with SmartPot\.$/.exec(input);
@@ -865,6 +904,34 @@ const DYNAMIC_RULES: Rule[] = [
         const m = /^Telegram rejected the message \((\d+)\)$/.exec(input);
         return m ? `Telegram rechazó el mensaje (${group(m, 1)})` : null;
     },
+    (input) => {
+        const m = /^You can have up to (\d+) virtual crops$/i.exec(input);
+        return m ? `Puedes tener hasta ${group(m, 1)} cultivos virtuales` : null;
+    },
+    (input) => {
+        const m = /^Minimum duration is (\d+)\s+seconds?$/i.exec(input);
+        return m ? `La duración mínima es de ${group(m, 1)} ${group(m, 1) === "1" ? "segundo" : "segundos"}` : null;
+    },
+    (input) => {
+        const m = /^Maximum duration is (\d+)\s+(hour|hours|minutes?|seconds?)$/i.exec(input);
+        if (!m) return null;
+        const num = group(m, 1);
+        const unit = group(m, 2).toLowerCase();
+        const translatedUnit = unit.startsWith("hour")
+            ? (num === "1" ? "hora" : "horas")
+            : unit.startsWith("min")
+                ? (num === "1" ? "minuto" : "minutos")
+                : (num === "1" ? "segundo" : "segundos");
+        return `La duración máxima es de ${num} ${translatedUnit}`;
+    },
+    (input) => {
+        const m = /^Minimum interval is (\d+)\s+seconds?$/i.exec(input);
+        return m ? `El intervalo mínimo es de ${group(m, 1)} segundos` : null;
+    },
+    (input) => {
+        const m = /^Maximum interval is (\d+)\s+seconds?$/i.exec(input);
+        return m ? `El intervalo máximo es de ${group(m, 1)} segundos` : null;
+    },
 ];
 
 function translateParameter(text: string): string {
@@ -901,6 +968,35 @@ function translateText(input: string, depth: number): string {
     if (weather) return weather;
     const crop = SPECIES[input.trim().toLowerCase()];
     if (crop) return capitalize(crop);
+
+    // Si el texto trae saltos de línea (\n), traducir cada línea conservando viñetas y formato
+    if (input.includes("\n")) {
+        const lines = input.split("\n");
+        let changed = false;
+        const translated = lines.map((line) => {
+            if (!line.trim()) return line;
+            const full = translateText(line, depth + 1);
+            if (full !== line) {
+                changed = true;
+                return full;
+            }
+            const bullet = /^(\s*(?:[•\-*]|\d+\.)\s*)(.+)$/.exec(line);
+            if (bullet) {
+                const prefix = group(bullet, 1);
+                const content = group(bullet, 2);
+                if (content) {
+                    const translatedContent = translateText(content, depth + 1);
+                    if (translatedContent !== content) {
+                        changed = true;
+                        return `${prefix}${translatedContent}`;
+                    }
+                }
+            }
+            return line;
+        });
+        if (changed) return translated.join("\n");
+    }
+
     for (const rule of DYNAMIC_RULES) {
         const value = rule(input);
         if (value !== null) return value;

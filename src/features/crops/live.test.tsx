@@ -288,7 +288,7 @@ describe("crear un cultivo", () => {
 
         expect(await screen.findByText("Guarda la clave ahora")).toBeInTheDocument();
         expect(screen.getByText("clave-secreta-0001")).toBeInTheDocument();
-        expect(screen.getByText("Arma el circuito")).toBeInTheDocument();
+        expect(screen.getByText("Conecta los sensores y actuadores a la placa")).toBeInTheDocument();
         expect(vi.mocked(cropApi.create).mock.calls[0]?.[0]).not.toHaveProperty("virtual");
     });
 });
@@ -433,6 +433,25 @@ describe("consejo de lugar", () => {
 });
 
 describe("guía de conexión", () => {
+    it("diferencia claramente el target canónico en Rust y el de MicroPython", async () => {
+        render(() => <ConnectionGuide credentials={{
+            host: "mqtt.smartpot.app", port: 8883, tls: true, username: "c1",
+            topics: {telemetry: "t", commands: "c", commandAck: "a", status: "s"},
+        }}/>);
+        // Por defecto muestra el firmware canónico en Rust Embassy
+        expect(screen.getByText("SDA 21 · SCL 22")).toBeInTheDocument();
+        expect(screen.getByText("cargo +esp run --release")).toBeInTheDocument();
+        const rustLink = screen.getByRole("link", {name: /SmartPot-IoT \(Rust Embassy\)/});
+        expect(rustLink).toHaveAttribute("href", "https://github.com/SmartPotTech/SmartPot-IoT");
+
+        // Cambiar al target MicroPython
+        await userEvent.click(screen.getByRole("radio", {name: /ESP32 · MicroPython/}));
+        expect(screen.getByText("GPIO 15")).toBeInTheDocument();
+        expect(screen.getAllByText(/mpremote/).length).toBeGreaterThanOrEqual(1);
+        const pyLink = screen.getByRole("link", {name: /SmartPot-IoT-Python/});
+        expect(pyLink).toHaveAttribute("href", "https://github.com/SmartPotTech/SmartPot-IoT-Python");
+    });
+
     it("Wokwi usa su red y advierte sobre proyectos públicos", async () => {
         render(() => <ConnectionGuide credentials={{
             host: "mqtt.smartpot.app", port: 8883, tls: true, username: "c1",

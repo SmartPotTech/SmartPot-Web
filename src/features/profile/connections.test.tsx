@@ -55,7 +55,7 @@ describe("conexiones MCP", () => {
         await userEvent.click(screen.getByRole("button", {name: "Crear conexión"}));
 
         await waitFor(() => expect(api.create).toHaveBeenCalledWith({
-            name: "Asistente", scope: "CONTROL", expiresInDays: undefined,
+            name: "Asistente", scope: "CONTROL", expiresInDays: 30,
         }));
         expect(await screen.findByText(/no se vuelve a mostrar/)).toBeInTheDocument();
         expect(screen.getAllByText(new RegExp(TOKEN)).length).toBeGreaterThan(0);

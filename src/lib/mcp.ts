@@ -41,3 +41,7 @@ export const CONNECTION_EXPIRY: { label: string; days?: number }[] = [
         }, days: 365
     },
 ];
+
+/** Expiración por defecto recomendada: 30 días (índice 1 de CONNECTION_EXPIRY). */
+export const DEFAULT_EXPIRY_DAYS = 30;
+export const DEFAULT_EXPIRY_INDEX = 1;
