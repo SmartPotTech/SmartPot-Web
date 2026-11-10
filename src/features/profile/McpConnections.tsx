@@ -34,6 +34,8 @@ export function McpConnections() {
     const [revoking, setRevoking] = createSignal<Connection | null>(null);
     const [message, setMessage] = createSignal<Message>(null);
     const [busy, setBusy] = createSignal<string | null>(null);
+    const count = () => (connections.data ?? []).length;
+    const atQuota = () => count() >= 10;
 
     async function create(event: SubmitEvent) {
         event.preventDefault();
@@ -80,17 +82,26 @@ export function McpConnections() {
 
     return (
         <section class="card space-y-4 p-5" aria-labelledby="connections-title">
-            <div>
-                <h2 id="connections-title" class="flex items-center gap-2 text-lg font-semibold">
-                    <Plug size={18} class="text-accent"/> {t("mcp.title")}
-                </h2>
-                <p class="text-sm text-muted">
-                    {t("mcp.description")}
-                </p>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h2 id="connections-title" class="flex items-center gap-2 text-lg font-semibold">
+                        <Plug size={18} class="text-accent"/> {t("mcp.title")}
+                    </h2>
+                    <p class="text-sm text-muted">
+                        {t("mcp.description")}
+                    </p>
+                </div>
+                <Badge tone={atQuota() ? "warning" : "neutral"}>
+                    {t("mcp.quotaUsage", {current: count(), max: 10})}
+                </Badge>
             </div>
 
             <Show when={message()}>
                 {(msg) => <Alert tone={msg().tone}>{msg().text}</Alert>}
+            </Show>
+
+            <Show when={atQuota()}>
+                <Alert tone="warning">{t("mcp.quotaReached")}</Alert>
             </Show>
 
             <Show when={created()}>
@@ -126,7 +137,7 @@ export function McpConnections() {
                         {(option, index) => <option value={String(index())}>{option.label}</option>}
                     </For>
                 </SelectField>
-                <Button type="submit" size="sm" icon={<Plus size={16}/>} loading={busy() === "create"}>
+                <Button type="submit" size="sm" icon={<Plus size={16}/>} loading={busy() === "create"} disabled={atQuota()}>
                     {t("mcp.create")}
                 </Button>
             </form>

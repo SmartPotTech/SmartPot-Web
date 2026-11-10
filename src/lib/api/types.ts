@@ -55,6 +55,25 @@ export interface Placement {
     location?: GeoLocation | null;
 }
 
+export interface DeviceCapabilities {
+    schema?: number;
+    device?: {
+        firmware?: string;
+        hardware?: string;
+        telemetry?: {
+            formats?: string[];
+            compactBytes?: number;
+        };
+    };
+    sensors?: Array<{
+        key: string;
+        unit?: string;
+        resolution?: number;
+        range?: (number | null)[];
+    }>;
+    actuators?: string[];
+}
+
 export interface Crop {
     id: string;
     name: string;
@@ -63,7 +82,14 @@ export interface Crop {
     form: CropForm;
     placement?: Placement | null;
     automationEnabled: boolean;
-    device: { online: boolean; lastSeenAt: string | null; keyRotatedAt: string | null };
+    device: {
+        online: boolean;
+        lastSeenAt: string | null;
+        keyRotatedAt: string | null;
+        capabilities?: DeviceCapabilities | null;
+        capabilitiesUpdatedAt?: string | null;
+        capabilitiesStale?: boolean;
+    };
     health: CropHealth | null;
     latestReading: Reading | null;
     createdAt: string;

@@ -3,6 +3,7 @@ import {createSignal, Show} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Alert} from "../../components/ui/Feedback";
 import {TextField} from "../../components/ui/Field";
+import {PrivacySecurityModal} from "../../components/layout/PrivacySecurityModal";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {ApiError} from "../../lib/api/client";
 import {authApi} from "../../lib/api/services";
@@ -21,6 +22,7 @@ export function RegisterPage() {
     const [errors, setErrors] = createSignal<Partial<Record<Fields, string>>>({});
     const [error, setError] = createSignal<string | null>(null);
     const [loading, setLoading] = createSignal(false);
+    const [showLegal, setShowLegal] = createSignal(false);
     const strength = () => passwordStrength(form().password);
 
     const update = (field: Fields) => (event: Event & { currentTarget: HTMLInputElement }) =>
@@ -73,9 +75,13 @@ export function RegisterPage() {
                            hint={form().password ? t("auth.register.strength", {label: strength().label}) : t("auth.passwordHint")}/>
                 <Button type="submit" size="lg" loading={loading()} class="w-full">{t("auth.register.title")}</Button>
                 <p class="text-center text-xs text-muted">
-                    {t("auth.register.privacy")}
+                    {t("auth.register.privacy")}{" "}
+                    <button type="button" class="font-semibold text-accent hover:underline" onClick={() => setShowLegal(true)}>
+                        {t("legal.openModal")}
+                    </button>
                 </p>
             </form>
+            <PrivacySecurityModal open={showLegal()} onClose={() => setShowLegal(false)}/>
         </AuthCard>
     );
 }

@@ -46,7 +46,18 @@ vi.mock("../auth/AuthContext", () => ({
     }),
 }));
 
-vi.mock("../../lib/api/services", () => ({userApi: api}));
+vi.mock("../../lib/api/services", () => ({
+    userApi: api,
+    cropApi: {
+        list: vi.fn().mockResolvedValue([]),
+    },
+    connectionApi: {
+        list: vi.fn().mockResolvedValue([]),
+    },
+    notificationApi: {
+        listTelegramRecipients: vi.fn().mockResolvedValue([]),
+    },
+}));
 
 // Los paneles de canales y MCP tienen sus propias pruebas; aquí se aíslan para no pedir la API.
 vi.mock("./NotificationChannels", () => ({NotificationChannels: () => null}));

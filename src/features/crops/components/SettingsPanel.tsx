@@ -1,12 +1,12 @@
 import {useNavigate} from "@solidjs/router";
-import {MapPinned, Save, Trash2} from "lucide-solid";
+import {Download, MapPinned, Save, Trash2} from "lucide-solid";
 import {createEffect, createSignal, For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {SelectField, TextField} from "../../../components/ui/Field";
 import {Alert} from "../../../components/ui/Feedback";
 import {Dialog} from "../../../components/ui/Dialog";
 import {ApiError} from "../../../lib/api/client";
-import {cropApi} from "../../../lib/api/services";
+import {actuatorApi, commandApi, cropApi, readingApi} from "../../../lib/api/services";
 import {CROP_FORMS, CROP_KINDS, CROP_TYPES} from "../../../lib/catalog";
 import type {Crop, CropForm, CropType, Placement} from "../../../lib/api/types";
 import {t} from "../../../lib/i18n";
@@ -26,6 +26,37 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
     const [placement, setPlacement] = createSignal<Placement | undefined>(props.crop.placement ?? undefined);
     const [placementMessage, setPlacementMessage] = createSignal<{ tone: "success" | "danger"; text: string } | null>(null);
     const [placing, setPlacing] = createSignal(false);
+    const [downloading, setDownloading] = createSignal(false);
+
+    async function downloadBackup() {
+        setDownloading(true);
+        try {
+            const [cropData, readingsData, actuatorsData, commandsData] = await Promise.all([
+                cropApi.get(props.crop.id).catch(() => props.crop),
+                readingApi.list(props.crop.id, undefined, 500).catch(() => []),
+                actuatorApi.list(props.crop.id).catch(() => []),
+                commandApi.list(props.crop.id, 100).catch(() => []),
+            ]);
+            const backup = {
+                exportedAt: new Date().toISOString(),
+                crop: cropData,
+                readings: readingsData,
+                actuators: actuatorsData,
+                commands: commandsData,
+            };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `smartpot_crop_${props.crop.id}_backup.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } finally {
+            setDownloading(false);
+        }
+    }
 
     // Mantiene sincronizado el estado del selector si el cultivo cambia externamente.
     createEffect(() => {
@@ -153,6 +184,23 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
                         </Button>
                     </>}>
                 <p class="mb-3 text-sm text-muted">{t("settings.deleteWarning")}<strong>{props.crop.name}</strong>{t("settings.deleteToConfirm")}</p>
+
+                <div class="mb-4 rounded-xl border border-danger-500/30 bg-danger-50/50 p-3.5 space-y-2 dark:bg-danger-950/20">
+                    <p class="text-xs font-semibold text-danger-fg uppercase tracking-wide">{t("settings.cascadeTitle")}</p>
+                    <ul class="list-disc list-inside space-y-1 text-xs text-muted">
+                        <li>{t("settings.cascadeReadings")}</li>
+                        <li>{t("settings.cascadeCommands")}</li>
+                        <li>{t("settings.cascadeActuators")}</li>
+                        <li>{t("settings.cascadeAlerts")}</li>
+                        <li>{t("settings.cascadeChannels")}</li>
+                    </ul>
+                    <div class="pt-1">
+                        <Button variant="secondary" size="sm" icon={<Download size={14}/>} loading={downloading()} onClick={() => void downloadBackup()}>
+                            {downloading() ? t("settings.downloadingBackup") : t("settings.downloadBackup")}
+                        </Button>
+                    </div>
+                </div>
+
                 <TextField label={t("settings.cropName")} value={confirmName()}
                            onChange={(event) => setConfirmName(event.currentTarget.value)}/>
             </Dialog>

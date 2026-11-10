@@ -38,6 +38,8 @@ interface CreateCropDialogProps {
     open: boolean;
     onClose: () => void;
     onCreated: (crop: Crop) => void;
+    cropsCount?: number;
+    virtualCount?: number;
 }
 
 /**
@@ -124,7 +126,7 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                     <Switch>
                         <Match when={step() === "kind"}>
                             <Button variant="secondary" onClick={close}>{t("common.cancel")}</Button>
-                            <Button icon={<ArrowRight size={16}/>} disabled={!kind()}
+                            <Button icon={<ArrowRight size={16}/>} disabled={!kind() || (props.cropsCount != null && props.cropsCount >= 20)}
                                     onClick={() => setStep("details")}>{t("create.next")}</Button>
                         </Match>
                         <Match when={step() === "details"}>
@@ -142,26 +144,41 @@ export function CreateCropDialog(props: CreateCropDialogProps) {
                 }>
             <Show when={step() === "kind"}>
                 <div class="space-y-4">
+                    <Show when={props.cropsCount != null && props.cropsCount >= 20}>
+                        <Alert tone="danger">{t("create.cropLimitReached")}</Alert>
+                    </Show>
                     <p class="text-sm text-muted">{t("create.howReadings")}</p>
                     <div class="grid gap-3" role="radiogroup" aria-label={t("create.kindLabel")}>
                         <For each={Object.keys(CROP_KINDS) as CropKind[]}>
                             {(option) => {
                                 const Icon = KIND_ICONS[option];
+                                const isVirtualDisabled = () => option === "VIRTUAL" && props.virtualCount != null && props.virtualCount >= 5;
                                 return (
                                     <button type="button" role="radio" aria-checked={kind() === option}
+                                            disabled={isVirtualDisabled() || (props.cropsCount != null && props.cropsCount >= 20)}
                                             onClick={() => setKind(option)}
-                                            class={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${kind() === option
-                                                ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30" : "border-line bg-card hover:bg-surface"}`}>
+                                            class={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
+                                                isVirtualDisabled()
+                                                    ? "opacity-60 cursor-not-allowed border-line bg-surface"
+                                                    : kind() === option
+                                                    ? "border-leaf-600 bg-leaf-50 ring-2 ring-leaf-600/30"
+                                                    : "border-line bg-card hover:bg-surface"
+                                            }`}>
                                         <span
                                             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-leaf-700 text-white">
                                             <Icon size={20}/>
                                         </span>
-                                        <span>
+                                        <span class="flex-1">
                                             <span class="block font-semibold">{CROP_KINDS[option].label}</span>
                                             <span class="mt-0.5 block text-sm text-muted">{CROP_KINDS[option].hint}</span>
                                             <span class="mt-1 block text-xs text-muted">
                                                 {option === "REAL" ? t("create.realNote") : t("create.virtualNote")}
                                             </span>
+                                            <Show when={isVirtualDisabled()}>
+                                                <span class="mt-1.5 block text-xs font-semibold text-danger-fg">
+                                                    {t("create.virtualLimitReached")}
+                                                </span>
+                                            </Show>
                                         </span>
                                     </button>
                                 );

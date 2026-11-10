@@ -1,5 +1,5 @@
-import {GraduationCap, KeyRound, LogOut, Save, Trash2} from "lucide-solid";
-import {createSignal, Show} from "solid-js";
+import {Download, GraduationCap, KeyRound, LogOut, Save, Trash2} from "lucide-solid";
+import {createEffect, createSignal, Show} from "solid-js";
 import {Button} from "../../components/ui/Button";
 import {Dialog} from "../../components/ui/Dialog";
 import {PreferenceSelectors} from "../../components/ui/PreferenceControls";
@@ -7,7 +7,7 @@ import {TextField} from "../../components/ui/Field";
 import {Alert} from "../../components/ui/Feedback";
 import {usePageMeta} from "../../hooks/usePageMeta";
 import {ApiError} from "../../lib/api/client";
-import {userApi} from "../../lib/api/services";
+import {connectionApi, cropApi, notificationApi, userApi} from "../../lib/api/services";
 import {formatDateTime} from "../../lib/format";
 import {t} from "../../lib/i18n";
 import {useAuth} from "../auth/AuthContext";
@@ -29,6 +29,44 @@ export function ProfilePage() {
     const [busy, setBusy] = createSignal<string | null>(null);
     const [confirmDelete, setConfirmDelete] = createSignal(false);
     const [deleteError, setDeleteError] = createSignal<string | null>(null);
+    const [downloading, setDownloading] = createSignal(false);
+    const [cropCount, setCropCount] = createSignal(0);
+
+    createEffect(() => {
+        if (confirmDelete()) {
+            cropApi?.list?.()?.then((c) => setCropCount(c?.length ?? 0))?.catch(() => undefined);
+        }
+    });
+
+    async function downloadAccountBackup() {
+        setDownloading(true);
+        try {
+            const [userData, cropsData, connectionsData, notificationsData] = await Promise.all([
+                userApi.me().catch(() => auth.user),
+                cropApi.list().catch(() => []),
+                connectionApi.list().catch(() => []),
+                notificationApi.list(false).catch(() => []),
+            ]);
+            const backup = {
+                exportedAt: new Date().toISOString(),
+                user: userData,
+                crops: cropsData,
+                connections: connectionsData,
+                notifications: notificationsData,
+            };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `smartpot_account_${auth.user?.id || "backup"}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } finally {
+            setDownloading(false);
+        }
+    }
 
     async function saveProfile(event: SubmitEvent) {
         event.preventDefault();
@@ -173,7 +211,24 @@ export function ProfilePage() {
                         <Button variant="secondary" onClick={() => setConfirmDelete(false)}>{t("common.cancel")}</Button>
                         <Button variant="danger" loading={busy() === "delete"} onClick={() => void deleteAccount()}>{t("profile.deleteConfirm")}</Button>
                     </>}>
-                <p class="text-sm text-muted">{t("profile.deleteBody")}</p>
+                <p class="mb-3 text-sm text-muted">{t("profile.deleteBody")}</p>
+
+                <div class="mb-4 rounded-xl border border-danger-500/30 bg-danger-50/50 p-3.5 space-y-2 dark:bg-danger-950/20">
+                    <p class="text-xs font-semibold text-danger-fg uppercase tracking-wide">{t("profile.cascadeTitle")}</p>
+                    <ul class="list-disc list-inside space-y-1 text-xs text-muted">
+                        <li>{t("profile.cascadeCrops", {count: cropCount()})}</li>
+                        <li>{t("profile.cascadeReadings")}</li>
+                        <li>{t("profile.cascadeCommands")}</li>
+                        <li>{t("profile.cascadeNotifications")}</li>
+                        <li>{t("profile.cascadeTelegram")}</li>
+                        <li>{t("profile.cascadeMcp")}</li>
+                    </ul>
+                    <div class="pt-1">
+                        <Button variant="secondary" size="sm" icon={<Download size={14}/>} loading={downloading()} onClick={() => void downloadAccountBackup()}>
+                            {downloading() ? t("profile.downloadingBackup") : t("profile.downloadBackup")}
+                        </Button>
+                    </div>
+                </div>
             </Dialog>
         </div>
     );

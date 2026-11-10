@@ -1,9 +1,10 @@
 import {A, useLocation} from "@solidjs/router";
-import {type JSX, Show, Suspense} from "solid-js";
+import {createSignal, type JSX, Show, Suspense} from "solid-js";
 import {useAuth} from "../../features/auth/AuthContext";
 import {t} from "../../lib/i18n";
 import {Logo} from "../brand/Logo";
 import {PreferenceToggles} from "../ui/PreferenceControls";
+import {PrivacySecurityModal} from "./PrivacySecurityModal";
 import {SkipLink} from "./SkipLink";
 
 const SECTIONS = [
@@ -15,6 +16,7 @@ const SECTIONS = [
 export function PublicLayout(props: { children?: JSX.Element }) {
     const auth = useAuth();
     const location = useLocation();
+    const [showLegal, setShowLegal] = createSignal(false);
     // En la landing la barra toma el verde profundo del hero para que la primera pantalla sea un solo campo de color;
     // en el ingreso y el registro va sobre la superficie clara. Nunca vidrio esmerilado.
     const dark = () => location.pathname === "/";
@@ -63,12 +65,17 @@ export function PublicLayout(props: { children?: JSX.Element }) {
                     <p class="flex flex-wrap gap-x-6 gap-y-1">
                         <a href="https://github.com/SmartPotTech" target="_blank" rel="noopener noreferrer"
                            class="inline-block py-1 font-medium hover:text-accent-strong">{t("public.github")}</a>
+                        <button type="button" onClick={() => setShowLegal(true)}
+                                class="inline-block py-1 font-medium hover:text-accent-strong text-left">
+                            {t("legal.openModal")}
+                        </button>
                         <A href="/login" class="inline-block py-1 font-medium hover:text-accent-strong">{t("public.signIn")}</A>
                         <A href="/register" class="inline-block py-1 font-medium hover:text-accent-strong">{t("public.signUp")}</A>
                     </p>
                     <p class="text-muted md:text-right">© {new Date().getFullYear()} SmartPot Tech · {t("public.licence")}</p>
                 </div>
             </footer>
+            <PrivacySecurityModal open={showLegal()} onClose={() => setShowLegal(false)}/>
         </div>
     );
 }

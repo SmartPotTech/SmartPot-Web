@@ -1,8 +1,8 @@
-import {KeyRound, Wifi, WifiOff} from "lucide-solid";
-import {createSignal, Show} from "solid-js";
+import {Cpu, KeyRound, Wifi, WifiOff} from "lucide-solid";
+import {createSignal, For, Show} from "solid-js";
 import {Button} from "../../../components/ui/Button";
 import {Dialog} from "../../../components/ui/Dialog";
-import {Alert} from "../../../components/ui/Feedback";
+import {Alert, Badge} from "../../../components/ui/Feedback";
 import {useResource} from "../../../hooks/useResource";
 import {ApiError} from "../../../lib/api/client";
 import {cropApi} from "../../../lib/api/services";
@@ -47,6 +47,89 @@ export function DevicePanel(props: { crop: Crop }) {
                     <p class="text-sm text-muted">{t("device.lastSignal", {time: timeAgo(props.crop.device.lastSeenAt)})}</p>
                 </div>
             </section>
+
+            <Show when={props.crop.device.capabilities}>
+                {(caps) => (
+                    <section class="card space-y-4 p-5" aria-labelledby="hardware-specs-title">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <h3 id="hardware-specs-title" class="flex items-center gap-2 font-semibold text-ink">
+                                    <Cpu size={18} class="text-accent"/> {t("device.specsTitle")}
+                                </h3>
+                                <Show when={props.crop.device.capabilitiesUpdatedAt}>
+                                    {(updated) => (
+                                        <p class="text-xs text-muted">{t("device.specsUpdated", {time: timeAgo(updated())})}</p>
+                                    )}
+                                </Show>
+                            </div>
+                            <Show when={props.crop.device.capabilitiesStale}>
+                                <Badge tone="warning">{t("device.specsStale")}</Badge>
+                            </Show>
+                        </div>
+
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <Show when={caps().device?.firmware}>
+                                <div class="rounded-lg bg-surface p-3">
+                                    <p class="text-xs font-semibold uppercase text-muted">{t("device.specsFirmware")}</p>
+                                    <p class="mt-0.5 text-sm font-medium text-ink">{caps().device!.firmware}</p>
+                                </div>
+                            </Show>
+                            <Show when={caps().device?.hardware}>
+                                <div class="rounded-lg bg-surface p-3">
+                                    <p class="text-xs font-semibold uppercase text-muted">{t("device.specsHardware")}</p>
+                                    <p class="mt-0.5 text-sm font-medium text-ink">{caps().device!.hardware}</p>
+                                </div>
+                            </Show>
+                        </div>
+
+                        <Show when={caps().device?.telemetry?.formats?.length}>
+                            <div class="rounded-lg bg-surface p-3">
+                                <p class="text-xs font-semibold uppercase text-muted">{t("device.specsTelemetry")}</p>
+                                <div class="mt-1 flex flex-wrap gap-1.5">
+                                    <For each={caps().device!.telemetry!.formats!}>
+                                        {(fmt) => <Badge tone="neutral">{fmt}</Badge>}
+                                    </For>
+                                    <Show when={caps().device?.telemetry?.compactBytes}>
+                                        <span class="self-center text-xs text-muted">({caps().device!.telemetry!.compactBytes} bytes)</span>
+                                    </Show>
+                                </div>
+                            </div>
+                        </Show>
+
+                        <Show when={caps().sensors?.length}>
+                            <div>
+                                <p class="mb-2 text-xs font-semibold uppercase text-muted">{t("device.specsSensors")}</p>
+                                <div class="grid gap-2 sm:grid-cols-2">
+                                    <For each={caps().sensors}>
+                                        {(sensor) => (
+                                            <div class="flex items-center justify-between rounded-lg border border-line bg-card p-2.5 text-xs">
+                                                <span class="font-semibold text-ink">{sensor.key}</span>
+                                                <div class="flex items-center gap-2 text-muted">
+                                                    <Show when={sensor.unit}><Badge tone="success">{sensor.unit}</Badge></Show>
+                                                    <Show when={sensor.range && sensor.range.length === 2 && sensor.range[0] != null && sensor.range[1] != null}>
+                                                        <span>{sensor.range![0]}..{sensor.range![1]}</span>
+                                                    </Show>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </For>
+                                </div>
+                            </div>
+                        </Show>
+
+                        <Show when={caps().actuators?.length}>
+                            <div>
+                                <p class="mb-1.5 text-xs font-semibold uppercase text-muted">{t("device.specsActuators")}</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <For each={caps().actuators}>
+                                        {(actuator) => <Badge tone="neutral">{actuator}</Badge>}
+                                    </For>
+                                </div>
+                            </div>
+                        </Show>
+                    </section>
+                )}
+            </Show>
 
             <section class="card p-5">
                 <h3 class="font-semibold">{t("device.howTitle")}</h3>

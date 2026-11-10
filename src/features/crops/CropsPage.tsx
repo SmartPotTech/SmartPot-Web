@@ -28,15 +28,26 @@ export function CropsPage() {
     const list = () => crops.data ?? [];
     const online = () => list().filter((crop) => crop.device.online).length;
     const attention = () => list().filter((crop) => crop.health && ["POOR", "CRITICAL"].includes(crop.health.level)).length;
+    const virtualCount = () => list().filter((crop) => crop.kind === "VIRTUAL").length;
+    const atQuota = () => list().length >= 20;
 
     return (
         <div class="space-y-6">
             <PageHeader eyebrow={`${greeting()}, ${auth.user?.name ?? ""}`} title={t("crops.title")} icon={<Sprout size={24}/>}
                         description={t("crops.description")}
-                        actions={<Button variant="light" icon={<Plus size={18}/>} onClick={() => setCreating(true)}>{t("crops.new")}</Button>}>
+                        actions={
+                            <div class="flex items-center gap-2">
+                                <Button variant="light" icon={<Plus size={18}/>} disabled={atQuota()}
+                                        title={atQuota() ? t("crops.quotaMaxReached") : undefined}
+                                        onClick={() => setCreating(true)}>
+                                    {t("crops.new")}
+                                </Button>
+                            </div>
+                        }>
                 <Show when={list().length > 0}>
                     <div class="grid grid-cols-3 gap-3">
-                        <HeaderStat label={t("crops.statCrops")} value={list().length}/>
+                        <HeaderStat label={t("crops.statCrops")} value={`${list().length}/20`}
+                                    hint={t("crops.quotaVirtualUsage", {current: virtualCount(), max: 5})}/>
                         <HeaderStat label={t("crops.statOnline")} value={online()}/>
                         <HeaderStat label={t("crops.statAttention")} value={attention()}/>
                     </div>
@@ -68,6 +79,7 @@ export function CropsPage() {
                     </div>
                 }>
                     <CreateCropDialog open onClose={() => setCreating(false)}
+                                      cropsCount={list().length} virtualCount={virtualCount()}
                                       onCreated={() => void crops.reload()}/>
                 </Suspense>
             </Show>

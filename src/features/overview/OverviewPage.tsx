@@ -1,5 +1,5 @@
 import {A} from "@solidjs/router";
-import {LayoutDashboard, Plus, Sprout} from "lucide-solid";
+import {Download, LayoutDashboard, Plus, Sprout} from "lucide-solid";
 import {Show} from "solid-js";
 import {HeaderStat, PageHeader} from "../../components/layout/PageHeader";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
@@ -23,13 +23,100 @@ export default function OverviewPage() {
     const totals = () => overview.data?.totals;
     const crops = () => overview.data?.crops ?? [];
 
+    function exportFleetCsv() {
+        const cropList = crops();
+        if (!cropList.length) return;
+        const headers = [
+            "id",
+            "name",
+            "type",
+            "kind",
+            "form",
+            "health_level",
+            "health_index",
+            "online",
+            "last_seen",
+            "automation_enabled",
+            "temperature",
+            "humidity",
+            "brightness",
+            "ph",
+            "tds",
+            "soil_moisture",
+            "latest_reading_time",
+        ];
+        const rows = cropList.map((c) => [
+            c.id,
+            `"${c.name.replace(/"/g, '""')}"`,
+            c.type,
+            c.kind,
+            c.form,
+            c.health?.level ?? "UNKNOWN",
+            c.health?.index ?? "",
+            c.device.online ? "YES" : "NO",
+            c.device.lastSeenAt ?? "",
+            c.automationEnabled ? "YES" : "NO",
+            c.latestReading?.measures.temperature ?? "",
+            c.latestReading?.measures.humidity ?? "",
+            c.latestReading?.measures.brightness ?? "",
+            c.latestReading?.measures.ph ?? "",
+            c.latestReading?.measures.tds ?? "",
+            c.latestReading?.measures.soilMoisture ?? "",
+            c.latestReading?.measuredAt ?? "",
+        ]);
+        const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+        const blob = new Blob([csvContent], {type: "text/csv;charset=utf-8;"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `smartpot_fleet_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function exportFleetJson() {
+        const data = {
+            exportedAt: new Date().toISOString(),
+            totals: totals(),
+            crops: crops(),
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `smartpot_fleet_${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
     return (
         <div class="space-y-6">
             <PageHeader eyebrow={`${greeting()}, ${auth.user?.name ?? ""}`} title={t("overview.title")}
                         icon={<LayoutDashboard size={24}/>}
                         description={t("overview.description")}
-                        actions={<A href="/app/crops" class="inline-flex h-11 items-center gap-2 rounded-xl border border-white/25
-          bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20"><Sprout size={18}/> {t("overview.viewCrops")}</A>}>
+                        actions={
+                            <div class="flex flex-wrap items-center gap-2">
+                                <Show when={crops().length > 0}>
+                                    <button type="button" onClick={exportFleetCsv}
+                                            class="inline-flex h-11 items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 px-3 text-sm font-semibold text-white hover:bg-white/20"
+                                            title={t("overview.exportCsv")}>
+                                        <Download size={16}/> {t("overview.exportCsv")}
+                                    </button>
+                                    <button type="button" onClick={exportFleetJson}
+                                            class="inline-flex h-11 items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 px-3 text-sm font-semibold text-white hover:bg-white/20"
+                                            title={t("overview.exportJson")}>
+                                        <Download size={16}/> {t("overview.exportJson")}
+                                    </button>
+                                </Show>
+                                <A href="/app/crops" class="inline-flex h-11 items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20">
+                                    <Sprout size={18}/> {t("overview.viewCrops")}
+                                </A>
+                            </div>
+                        }>
                 <Show when={totals() && totals()!.crops > 0} fallback={<Show when={overview.loading && !overview.data}><SkeletonHeaderStats/></Show>}>
                     <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
                         <HeaderStat label={t("overview.avgHealth")}
