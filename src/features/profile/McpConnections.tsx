@@ -233,13 +233,17 @@ export function CreatedConnection(props: { result: ConnectionCreated; onDone: ()
 
 function CopyBlock(props: { label: string; value: string }) {
     const [copied, setCopied] = createSignal(false);
+    const [copyError, setCopyError] = createSignal(false);
     async function copy() {
         try {
+            if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
             await navigator.clipboard.writeText(props.value);
+            setCopyError(false);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch {
             setCopied(false);
+            setCopyError(true);
         }
     }
     return (
@@ -251,6 +255,9 @@ function CopyBlock(props: { label: string; value: string }) {
                     {copied() ? t("mcp.copied") : t("mcp.copy")}
                 </Button>
             </div>
+            <Show when={copyError()}>
+                <p role="status" class="mt-1 text-xs text-danger-fg">{t("common.copyFailed")}</p>
+            </Show>
             <pre class="overflow-x-auto whitespace-pre-wrap break-all rounded-lg bg-card p-3 font-mono text-xs text-ink">
                 <code>{props.value}</code>
             </pre>

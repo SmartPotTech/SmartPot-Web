@@ -72,4 +72,27 @@ describe("conexiones MCP", () => {
         await waitFor(() => expect(api.revoke).toHaveBeenCalledWith("c1"));
         expect(await screen.findByText("Conexión «Portátil» revocada")).toBeInTheDocument();
     });
+
+    it("muestra un aviso si falla la copia al portapapeles", async () => {
+        api.create.mockResolvedValue({connection: {...existing, id: "c3", name: "Portátil", scope: "READ"}, token: TOKEN});
+        const descriptor = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+        render(() => <McpConnections/>);
+        await screen.findByText("Portátil");
+
+        await userEvent.type(screen.getByLabelText("Nombre de la conexión"), "Portátil");
+        await userEvent.click(screen.getByRole("button", {name: "Crear conexión"}));
+        const copyButton = (await screen.findAllByRole("button", {name: /^Copiar /}))[0]!;
+
+        Object.defineProperty(navigator, "clipboard", {
+            configurable: true,
+            value: {writeText: vi.fn().mockRejectedValue(new Error("clipboard denied"))},
+        });
+        try {
+            copyButton.click();
+            const status = await screen.findByText("No se pudo copiar al portapapeles.");
+            expect(status).toHaveAttribute("role", "status");
+        } finally {
+            if (descriptor) Object.defineProperty(navigator, "clipboard", descriptor);
+        }
+    });
 });

@@ -9,6 +9,7 @@ import {BROKER_CA_PATH, firmwareConfig} from "../firmware";
 
 export function CopyRow(props: { label: string; value: string; secret?: boolean }) {
     const [copied, setCopied] = createSignal(false);
+    const [copyError, setCopyError] = createSignal(false);
     return (
         <div>
             <p class="text-xs font-semibold uppercase tracking-wide text-muted">{props.label}</p>
@@ -18,15 +19,25 @@ export function CopyRow(props: { label: string; value: string; secret?: boolean 
                 <button type="button" aria-label={t("cred.copy", {label: props.label.toLowerCase()})}
                         class="rounded p-1 text-muted hover:text-accent"
                         onClick={async () => {
-                            await navigator.clipboard?.writeText(props.value);
-                            setCopied(true);
-                            setTimeout(() => setCopied(false), 1500);
+                            try {
+                                if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+                                await navigator.clipboard.writeText(props.value);
+                                setCopyError(false);
+                                setCopied(true);
+                                setTimeout(() => setCopied(false), 1500);
+                            } catch {
+                                setCopied(false);
+                                setCopyError(true);
+                            }
                         }}>
                     <Show when={copied()} fallback={<Copy size={16}/>}>
                         <Check size={16}/>
                     </Show>
                 </button>
             </div>
+            <Show when={copyError()}>
+                <p role="status" class="mt-1 text-xs text-danger-fg">{t("common.copyFailed")}</p>
+            </Show>
         </div>
     );
 }

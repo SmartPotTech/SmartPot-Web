@@ -12,6 +12,8 @@ interface ReadingsChartProps {
     metric: MetricKey;
     range?: ProfileRange;
     height?: number;
+    loading?: boolean;
+    error?: string | null;
 }
 
 const MAX_POINTS = 480;
@@ -120,7 +122,7 @@ export function ReadingsChart(props: ReadingsChartProps) {
     return (
         <Show when={data().length > 0} fallback={
             <p class="flex h-40 items-center justify-center text-sm text-muted">
-                {t("chart.noReadings", {metric: info().label.toLowerCase()})}
+                {props.error ? t("chart.loadFailed", {metric: info().label.toLowerCase()}) : props.loading ? t("common.loading") : t("chart.noReadings", {metric: info().label.toLowerCase()})}
             </p>
         }>
             <div style={{"height": `${props.height ?? 280}px`}} role="region" tabindex={0} ref={box.ref}

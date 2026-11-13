@@ -305,7 +305,7 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
                                             </select>
                                         </div>
                                         <div class="mt-4">
-                                            <ReadingsChart readings={readings.data ?? []} metric={metric()}
+                                            <ReadingsChart readings={readings.data ?? []} loading={readings.loading} error={readings.error} metric={metric()}
                                                            range={profile()?.ranges[metric()]}/>
                                         </div>
                                         <Show when={profile()}>
@@ -362,7 +362,7 @@ export default function CropDetailPage(props: { cropId?: string } = {}) {
                                                         </span>
                                                     </div>
                                                     <div class="mt-3">
-                                                        <ReadingsChart readings={readings.data ?? []} metric={key}
+                                                        <ReadingsChart readings={readings.data ?? []} loading={readings.loading} error={readings.error} metric={key}
                                                                        range={profile()?.ranges[key]} height={200}/>
                                                     </div>
                                                 </section>

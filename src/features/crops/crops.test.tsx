@@ -6,11 +6,14 @@ import {ApiError} from "../../lib/api/client";
 import type {Actuator, Crop, Insight, VirtualDevice} from "../../lib/api/types";
 import {setLocale} from "../../lib/i18n";
 import {actuatorApi, commandApi, cropApi, cropChannelApi, insightApi, readingApi, virtualDeviceApi} from "../../lib/api/services";
+import {SelectField} from "../../components/ui/Field";
+import {Switch} from "../../components/ui/Switch";
 import {ControlPanel} from "./components/ControlPanel";
 import {CreateCropDialog} from "./components/CreateCropDialog";
 import {HealthGauge} from "./components/HealthGauge";
 import {InsightPanel} from "./components/InsightPanel";
 import {MetricTile} from "./components/MetricTile";
+import {ReadingsChart} from "./components/ReadingsChart";
 import {SettingsPanel} from "./components/SettingsPanel";
 import {SimulationPanel} from "./components/SimulationPanel";
 import CropDetailPage from "./CropDetailPage";
@@ -697,5 +700,59 @@ describe("detalle de un cultivo ajeno", () => {
 
         expect(await screen.findByRole("alert")).toHaveTextContent("El cultivo no existe");
         expect(screen.getByRole("link", {name: "Mis cultivos"})).toHaveAttribute("href", "/app/crops");
+    });
+});
+
+describe("controles accesibles y estados de lectura", () => {
+    it("HealthGauge usa clases semánticas de texto sin estilos en línea", () => {
+        const {container} = render(() => (
+            <>
+                <HealthGauge index={92} level="GOOD" label="Óptimo"/>
+                <HealthGauge index={65} level="FAIR" label="Aceptable"/>
+                <HealthGauge index={30} level="POOR" label="En riesgo"/>
+            </>
+        ));
+        const captions = Array.from(container.querySelectorAll("figcaption"));
+        expect(captions).toHaveLength(3);
+        expect(captions[0]?.className).toContain("text-accent-strong");
+        expect(captions[1]?.className).toContain("text-sun-fg");
+        expect(captions[2]?.className).toContain("text-danger-fg");
+        for (const caption of captions) {
+            expect(caption.style.color).toBe("");
+        }
+    });
+
+    it("ReadingsChart distingue carga y error de la ausencia real de lecturas", () => {
+        const {unmount} = render(() => <ReadingsChart readings={[]} loading={true} metric="temperature"/>);
+        expect(screen.getByText("Cargando…")).toBeInTheDocument();
+        unmount();
+
+        render(() => <ReadingsChart readings={[]} error="fallo de red" metric="temperature"/>);
+        expect(screen.getByText("No pudimos cargar las lecturas de temperatura.")).toBeInTheDocument();
+    });
+
+    it("SelectField enlaza hint y error con aria-describedby y Switch apagado usa bg-muted", () => {
+        render(() => (
+            <>
+                <SelectField label="Especie" hint="Elige una especie">
+                    <option value="LETTUCE">Lechuga</option>
+                </SelectField>
+                <SelectField label="Forma" error="Campo obligatorio">
+                    <option value="POT">Maceta</option>
+                </SelectField>
+                <Switch checked={false} onChange={() => undefined} label="Riego"/>
+            </>
+        ));
+
+        const species = screen.getByLabelText("Especie");
+        expect(species).toHaveAttribute("aria-describedby", `${species.id}-hint`);
+        expect(document.getElementById(`${species.id}-hint`)).toHaveTextContent("Elige una especie");
+
+        const form = screen.getByLabelText("Forma");
+        expect(form).toHaveAttribute("aria-invalid", "true");
+        expect(form).toHaveAttribute("aria-describedby", `${form.id}-error`);
+        expect(document.getElementById(`${form.id}-error`)).toHaveTextContent("Campo obligatorio");
+
+        expect(screen.getByRole("switch", {name: "Riego"}).className).toContain("bg-muted");
     });
 });

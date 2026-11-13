@@ -1,6 +1,7 @@
 import {A} from "@solidjs/router";
 import {AlertTriangle, Bell, Bot, CheckCheck, Info, Radio, Trash2, Zap} from "lucide-solid";
-import {For, Show} from "solid-js";
+import {createSignal, For, Show} from "solid-js";
+import {ApiError} from "../../lib/api/client";
 import {Button} from "../../components/ui/Button";
 import {Alert, EmptyState} from "../../components/ui/Feedback";
 import {SkeletonCard} from "../../components/ui/Skeleton";
@@ -25,9 +26,17 @@ export function NotificationsPage() {
     const notifications = useResource(() => notificationApi.list(), [], 30_000);
     const list = () => notifications.data ?? [];
 
+    const [actionError, setActionError] = createSignal<string | null>(null);
+
     async function act(task: Promise<unknown>) {
-        await task.catch(() => undefined);
-        void notifications.reload();
+        setActionError(null);
+        try {
+            await task;
+            window.dispatchEvent(new Event("smartpot:notifications-changed"));
+            void notifications.reload();
+        } catch (err) {
+            setActionError(err instanceof ApiError ? err.message : t("notifications.actionFailed"));
+        }
     }
 
     return (
@@ -41,6 +50,9 @@ export function NotificationsPage() {
                     </Button>
                 </Show>
             </div>
+            <Show when={actionError()}>
+                {(err) => <Alert tone="danger">{err()}</Alert>}
+            </Show>
             <Show when={notifications.error}>
                 {(err) => <Alert tone="danger">{err()}</Alert>}
             </Show>
@@ -55,7 +67,7 @@ export function NotificationsPage() {
                             {(item) => {
                                 const Icon = ICONS[item.type] ?? Info;
                                 return (
-                                    <li class={`card flex gap-3 p-4 ${item.read ? "opacity-75" : "border-leaf-300"}`}>
+                                    <li class={`card flex gap-3 p-4 ${item.read ? "bg-surface/70" : "border-leaf-300"}`}>
                                         <div class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
                       ${item.type === "ALERT" ? "bg-sun-100 text-sun-fg" : "bg-leaf-50 text-accent"}`}>
                                             <Icon size={18}/>

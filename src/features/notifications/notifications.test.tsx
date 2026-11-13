@@ -143,7 +143,8 @@ describe("alertas de la cuenta", () => {
         await userEvent.click(screen.getAllByRole("button", {name: "Eliminar alerta"})[0]!);
 
         await waitFor(() => expect(api.remove).toHaveBeenCalledWith("n1"));
-        expect(await screen.findByText("Humedad baja en el sustrato")).toBeInTheDocument();
+        expect(await screen.findByRole("alert")).toHaveTextContent("La alerta no existe.");
+        expect(screen.getByText("Humedad baja en el sustrato")).toBeInTheDocument();
         expect(screen.getByRole("heading", {name: "Alertas"})).toBeInTheDocument();
     });
 
@@ -215,5 +216,6 @@ describe("contador de alertas", () => {
         const counter = await screen.findByText("3");
         expect(counter.closest("a")).toHaveAttribute("href", "/app/notifications");
         expect(within(counter.closest("a") as HTMLElement).getByText("Alertas")).toBeInTheDocument();
+        expect(screen.getByText(/3 alertas sin leer/)).toBeInTheDocument();
     });
 });

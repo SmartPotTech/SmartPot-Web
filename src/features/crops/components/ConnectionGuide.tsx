@@ -83,6 +83,7 @@ function useBrokerCertificate(enabled: () => boolean) {
 
 function ConfigBlock(props: { credentials: DeviceCredentials; target: FirmwareTarget }) {
     const [copied, setCopied] = createSignal(false);
+    const [copyError, setCopyError] = createSignal(false);
     const certificate = useBrokerCertificate(() => props.credentials.tls);
     const config = () => firmwareConfig(props.credentials, props.target, certificate());
     return (
@@ -91,14 +92,24 @@ function ConfigBlock(props: { credentials: DeviceCredentials; target: FirmwareTa
             <button type="button" aria-label={t("guide.copyConfig")}
                     class="absolute right-2 top-2 rounded p-1 text-leaf-100/80 hover:text-white"
                     onClick={async () => {
-                        await navigator.clipboard?.writeText(config());
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 1500);
+                        try {
+                            if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+                            await navigator.clipboard.writeText(config());
+                            setCopyError(false);
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 1500);
+                        } catch {
+                            setCopied(false);
+                            setCopyError(true);
+                        }
                     }}>
                 <Show when={copied()} fallback={<Copy size={16}/>}>
                     <Check size={16}/>
                 </Show>
             </button>
+            <Show when={copyError()}>
+                <p role="status" class="mt-1 text-xs text-danger-fg">{t("common.copyFailed")}</p>
+            </Show>
             <Show when={props.credentials.tls}>
                 <p class="mt-1.5 text-xs text-muted">
                     <code>BROKER</code>{t("guide.caIncluded")}<a
