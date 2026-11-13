@@ -151,7 +151,7 @@ export function AssistantDemo() {
                             <button
                                 type="button"
                                 onClick={() => applyPreset(preset.id)}
-                                class="touch-target inline-flex items-center rounded-lg border border-border bg-surface px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:border-leaf-500 hover:text-ink focus-visible:outline-2 focus-visible:outline-leaf-500"
+                                class="touch-target inline-flex items-center rounded-lg border border-line bg-surface px-2.5 py-1 text-xs font-medium text-muted transition-colors hover:border-leaf-500 hover:text-ink focus-visible:outline-2 focus-visible:outline-leaf-500"
                             >
                                 {t(preset.label)}
                             </button>

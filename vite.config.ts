@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 import type {Plugin} from "vite";
 import solidPlugin from "vite-plugin-solid";
 import {defineConfig} from "vitest/config";
-import {es} from "./src/lib/i18n/es";
+import {es} from "./src/lib/i18n/es.ts";
 
 const SITE = "https://smartpot.app";
 
@@ -10,8 +10,8 @@ const SITE = "https://smartpot.app";
 export const STATIC_ROUTES: { path: string; title: string; description: string; index: boolean }[] = [
     {path: "login", title: es["auth.login.title"], description: es["auth.login.description"], index: false},
     {path: "register", title: es["auth.register.title"], description: es["auth.register.description"], index: false},
-    {path: "forgot-password", title: es["auth.forgot.title"], description: es["auth.login.description"], index: false},
-    {path: "reset-password", title: es["auth.reset.title"], description: es["auth.login.description"], index: false},
+    {path: "forgot-password", title: es["auth.forgot.title"], description: es["auth.forgot.description"], index: false},
+    {path: "reset-password", title: es["auth.reset.title"], description: es["auth.reset.description"], index: false},
 ];
 
 const escapeAttribute = (value: string) => value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");

@@ -15,7 +15,7 @@ import {passwordStrength, validateEmail, validateName, validatePassword} from ".
 type Fields = "name" | "lastName" | "email" | "password";
 
 export function RegisterPage() {
-    usePageMeta(() => t("auth.register.title"), {index: true, description: () => t("auth.register.description")});
+    usePageMeta(() => t("auth.register.title"), {index: false, description: () => t("auth.register.description")});
     const auth = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = createSignal<Record<Fields, string>>({name: "", lastName: "", email: "", password: ""});

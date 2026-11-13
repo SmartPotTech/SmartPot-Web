@@ -11,7 +11,7 @@ import {AuthCard} from "./AuthCard";
 import {validateEmail, validatePassword} from "./validation";
 
 export function ForgotPasswordPage() {
-    usePageMeta(() => t("auth.forgot.title"));
+    usePageMeta(() => t("auth.forgot.title"), {description: () => t("auth.forgot.description")});
     const [email, setEmail] = createSignal("");
     const [emailError, setEmailError] = createSignal<string>();
     const [sent, setSent] = createSignal(false);
@@ -55,7 +55,7 @@ export function ForgotPasswordPage() {
 }
 
 export function ResetPasswordPage() {
-    usePageMeta(() => t("auth.reset.title"));
+    usePageMeta(() => t("auth.reset.title"), {description: () => t("auth.reset.description")});
     const [params] = useSearchParams();
     const navigate = useNavigate();
     const token = () => (typeof params.token === "string" ? params.token : "");

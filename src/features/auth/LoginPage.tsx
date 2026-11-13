@@ -12,7 +12,7 @@ import {useAuth} from "./AuthContext";
 import {validateEmail} from "./validation";
 
 export function LoginPage() {
-    usePageMeta(() => t("auth.login.title"), {index: true, description: () => t("auth.login.description")});
+    usePageMeta(() => t("auth.login.title"), {index: false, description: () => t("auth.login.description")});
     const auth = useAuth();
     const navigate = useNavigate();
     const location = useLocation<{ from?: string }>();
