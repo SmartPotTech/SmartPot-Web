@@ -9,6 +9,15 @@ interface HealthGaugeProps {
     size?: number;
 }
 
+const LEVEL_TEXT: Record<HealthLevel, string> = {
+    EXCELLENT: "text-accent-strong",
+    GOOD: "text-accent-strong",
+    FAIR: "text-sun-fg",
+    POOR: "text-danger-fg",
+    CRITICAL: "text-danger-fg",
+    UNKNOWN: "text-muted",
+};
+
 /** Medidor semicircular del índice difuso de salud (0 a 100). */
 export function HealthGauge(props: HealthGaugeProps) {
     const size = () => props.size ?? 160;
@@ -16,6 +25,7 @@ export function HealthGauge(props: HealthGaugeProps) {
     const radius = 70;
     const circumference = Math.PI * radius;
     const color = () => HEALTH[props.level]?.color ?? HEALTH.UNKNOWN.color;
+    const textClass = () => LEVEL_TEXT[props.level] ?? "text-muted";
     return (
         <figure class="flex flex-col items-center"
                 aria-label={props.index === null ? t("gauge.noData", {label: props.label}) : t("gauge.value", {value: Math.round(value()), label: props.label})}>
@@ -29,7 +39,7 @@ export function HealthGauge(props: HealthGaugeProps) {
                     {props.index === null ? "—" : Math.round(value())}
                 </text>
             </svg>
-            <figcaption class="-mt-1 text-sm font-semibold" style={{"color": color()}}>{props.label}</figcaption>
+            <figcaption class={`-mt-1 text-sm font-semibold ${textClass()}`}>{props.label}</figcaption>
         </figure>
     );
 }

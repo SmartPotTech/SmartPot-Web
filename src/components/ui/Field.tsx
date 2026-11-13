@@ -45,6 +45,7 @@ export function TextField(props: FieldProps & JSX.InputHTMLAttributes<HTMLInputE
 export function SelectField(props: FieldProps & JSX.SelectHTMLAttributes<HTMLSelectElement>) {
     const id = createUniqueId();
     const [local, rest] = splitProps(props, ["label", "error", "hint", "class", "className", "children"]);
+    const describedBy = () => (local.error ? `${id}-error` : local.hint ? `${id}-hint` : undefined);
 
     return (
         <div class={local.class ?? local.className ?? ""}>
@@ -52,6 +53,7 @@ export function SelectField(props: FieldProps & JSX.SelectHTMLAttributes<HTMLSel
             <select
                 id={id}
                 aria-invalid={Boolean(local.error)}
+                aria-describedby={describedBy()}
                 class={`${CONTROL} ${local.error ? "border-danger-500" : "border-line"}`}
                 {...rest}
             >
@@ -59,10 +61,10 @@ export function SelectField(props: FieldProps & JSX.SelectHTMLAttributes<HTMLSel
             </select>
             <Show when={local.error} fallback={
                 <Show when={local.hint}>
-                    <p class="mt-1 text-xs text-muted">{local.hint}</p>
+                    <p id={`${id}-hint`} class="mt-1 text-xs text-muted">{local.hint}</p>
                 </Show>
             }>
-                <p class="mt-1 text-sm text-danger-fg">{local.error}</p>
+                <p id={`${id}-error`} class="mt-1 text-sm text-danger-fg">{local.error}</p>
             </Show>
         </div>
     );

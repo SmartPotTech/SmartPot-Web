@@ -185,7 +185,7 @@ export function SettingsPanel(props: { crop: Crop; onSaved: (crop: Crop) => void
                     </>}>
                 <p class="mb-3 text-sm text-muted">{t("settings.deleteWarning")}<strong>{props.crop.name}</strong>{t("settings.deleteToConfirm")}</p>
 
-                <div class="mb-4 rounded-xl border border-danger-500/30 bg-danger-50/50 p-3.5 space-y-2 dark:bg-danger-950/20">
+                <div class="mb-4 rounded-xl border border-danger-500/30 bg-danger-100/60 p-3.5 space-y-2 dark:bg-danger-100/40">
                     <p class="text-xs font-semibold text-danger-fg uppercase tracking-wide">{t("settings.cascadeTitle")}</p>
                     <ul class="list-disc list-inside space-y-1 text-xs text-muted">
                         <li>{t("settings.cascadeReadings")}</li>

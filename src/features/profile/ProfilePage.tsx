@@ -213,7 +213,7 @@ export function ProfilePage() {
                     </>}>
                 <p class="mb-3 text-sm text-muted">{t("profile.deleteBody")}</p>
 
-                <div class="mb-4 rounded-xl border border-danger-500/30 bg-danger-50/50 p-3.5 space-y-2 dark:bg-danger-950/20">
+                <div class="mb-4 rounded-xl border border-danger-500/30 bg-danger-100/60 p-3.5 space-y-2 dark:bg-danger-100/40">
                     <p class="text-xs font-semibold text-danger-fg uppercase tracking-wide">{t("profile.cascadeTitle")}</p>
                     <ul class="list-disc list-inside space-y-1 text-xs text-muted">
                         <li>{t("profile.cascadeCrops", {count: cropCount()})}</li>

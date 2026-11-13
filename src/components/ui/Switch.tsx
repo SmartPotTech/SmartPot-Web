@@ -15,7 +15,7 @@ export function Switch(props: SwitchProps) {
             disabled={props.disabled}
             onClick={() => props.onChange(!props.checked)}
             class={`touch-target relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors disabled:opacity-50
-        ${props.checked ? "bg-leaf-600" : "bg-line"}`}
+        ${props.checked ? "bg-leaf-600" : "bg-muted"}`}
         >
             <span class={`inline-block h-5 w-5 rounded-full bg-card shadow transition-transform
         ${props.checked ? "translate-x-6" : "translate-x-1"}`}/>

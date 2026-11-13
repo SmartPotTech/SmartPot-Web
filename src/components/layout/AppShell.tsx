@@ -11,7 +11,7 @@ import {
     UserRound,
     WifiOff,
 } from "lucide-solid";
-import {For, type JSX, Show} from "solid-js";
+import {createEffect, For, type JSX, onCleanup, Show} from "solid-js";
 import {useAuth} from "../../features/auth/AuthContext";
 import {useInstallPrompt} from "../../features/pwa/pwa";
 import {useOnlineStatus} from "../../hooks/useOnlineStatus";
@@ -44,6 +44,11 @@ export function AppShell(props: { children?: JSX.Element }) {
     const installPrompt = useInstallPrompt();
     const unread = useResource(() => notificationApi.unreadCount(), [], 60_000);
     const count = () => unread.data?.unread ?? 0;
+    createEffect(() => {
+        const refresh = () => void unread.reload();
+        window.addEventListener("smartpot:notifications-changed", refresh);
+        onCleanup(() => window.removeEventListener("smartpot:notifications-changed", refresh));
+    });
 
     const isActive = (to: string, end?: boolean) =>
         end ? location.pathname === to : location.pathname === to || location.pathname.startsWith(`${to}/`);
@@ -143,7 +148,8 @@ export function AppShell(props: { children?: JSX.Element }) {
                             </span>
                             {t(label)}
                             <Show when={to === "/app/notifications" && count() > 0}>
-                                <span class="absolute right-[26%] top-1.5 h-2.5 w-2.5 rounded-full bg-sun-500 ring-2 ring-leaf-900"/>
+                                <span aria-hidden="true" class="absolute right-[26%] top-1.5 h-2.5 w-2.5 rounded-full bg-sun-500 ring-2 ring-leaf-900"/>
+                                <span class="sr-only"> ({t("overview.unreadAlerts", {count: count()})})</span>
                             </Show>
                         </A>
                     )}

@@ -53,7 +53,8 @@ export function ActionsPage() {
             <div class="flex gap-2 rounded-xl bg-card p-1 shadow-[var(--shadow-card)] sm:w-fit" role="tablist">
                 <For each={[["suggested", "actions.tabSuggested", Sparkles], ["history", "actions.tabHistory", History]] as const}>
                     {([key, label, Icon]) => (
-                        <button type="button" role="tab" aria-selected={tab() === key} onClick={() => openTab(key)}
+                        <button type="button" role="tab" id={`actions-tab-${key}`} aria-controls={`actions-panel-${key}`}
+                                aria-selected={tab() === key} onClick={() => openTab(key)}
                                 class={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold sm:flex-none
                   ${tab() === key ? "bg-leaf-700 text-white" : "text-muted hover:text-ink"}`}>
                             <Icon size={16}/> {t(label)}
@@ -63,7 +64,7 @@ export function ActionsPage() {
             </div>
 
             <Show when={tab() === "suggested"} fallback={
-                <section class="card p-5" role="tabpanel">
+                <section class="card p-5" role="tabpanel" id="actions-panel-history" aria-labelledby="actions-tab-history">
                     <div class="flex flex-wrap gap-3">
                         <label class="text-sm">
                             <span class="mr-2 font-semibold">{t("actions.filterStatus")}</span>
@@ -135,7 +136,7 @@ export function ActionsPage() {
                     </Show>
                 </section>
             }>
-                <section class="card p-5" role="tabpanel">
+                <section class="card p-5" role="tabpanel" id="actions-panel-suggested" aria-labelledby="actions-tab-suggested">
                     <Show when={fleet.error}>
                         {(err) => <Alert tone="info" title={t("actions.unavailable")}>{err()}</Alert>}
                     </Show>

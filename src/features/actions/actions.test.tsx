@@ -140,7 +140,12 @@ describe("acciones sugeridas por la IA", () => {
 
         expect(await screen.findByText("El asistente no está disponible")).toBeInTheDocument();
         expect(screen.getByText("No se pudo conectar con el servidor. Revisa tu conexión.")).toBeInTheDocument();
-        expect(screen.getByRole("tab", {name: "Sugeridas por la IA"})).toHaveAttribute("aria-selected", "true");
+        const suggestedTab = screen.getByRole("tab", {name: "Sugeridas por la IA"});
+        expect(suggestedTab).toHaveAttribute("aria-selected", "true");
+        expect(suggestedTab).toHaveAttribute("aria-controls", "actions-panel-suggested");
+        const initialPanel = screen.getByRole("tabpanel");
+        expect(initialPanel).toHaveAttribute("id", "actions-panel-suggested");
+        expect(initialPanel).toHaveAttribute("aria-labelledby", suggestedTab.id);
     });
 
     it("muestra el estado vacío cuando el agente no propone acciones", async () => {
@@ -163,8 +168,12 @@ describe("historial de acciones", () => {
     async function openHistory() {
         renderPage();
         await screen.findByText("Hay dos cultivos con sed.");
-        await userEvent.click(screen.getByRole("tab", {name: "Historial"}));
+        const historyTab = screen.getByRole("tab", {name: "Historial"});
+        await userEvent.click(historyTab);
         const panel = screen.getByRole("tabpanel");
+        expect(historyTab).toHaveAttribute("aria-controls", "actions-panel-history");
+        expect(panel).toHaveAttribute("id", "actions-panel-history");
+        expect(panel).toHaveAttribute("aria-labelledby", historyTab.id);
         await waitFor(() => expect(within(panel).getAllByRole("listitem")).toHaveLength(4));
         return panel;
     }
