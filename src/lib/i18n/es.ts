@@ -613,6 +613,7 @@ export const es = {
     "cred.saveNowBody": "Por seguridad no volveremos a mostrarla. Si la pierdes, genera una nueva desde la pestaña Dispositivo.",
     "cred.broker": "Broker",
     "cred.username": "Usuario (id del cultivo)",
+    "cred.clientId": "ID de cliente MQTT",
     "cred.key": "Clave del dispositivo",
     "cred.telemetry": "Tópico de telemetría",
     "device.rotateFailed": "No se pudo generar la clave",

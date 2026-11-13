@@ -615,6 +615,7 @@ export const en: TranslationDictionary = {
     "cred.saveNowBody": "For security we won't show it again. If you lose it, generate a new one from the Device tab.",
     "cred.broker": "Broker",
     "cred.username": "Username (crop id)",
+    "cred.clientId": "MQTT Client ID",
     "cred.key": "Device key",
     "cred.telemetry": "Telemetry topic",
     "device.rotateFailed": "Couldn't generate the key",

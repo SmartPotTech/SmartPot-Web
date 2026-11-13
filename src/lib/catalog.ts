@@ -151,7 +151,7 @@ export const METRICS: Record<MetricKey, MetricInfo> = {
     temperature: metric("temperature", "°C", 1, "#D9734E", "#F0956F"),
     humidity: metric("humidity", "%", 0, "#2D9CDB", "#7CC4EE"),
     soilMoisture: metric("soilMoisture", "%", 0, "#1F6FA0", "#4C9FD0"),
-    brightness: metric("brightness", "lux", 0, "#F2B632", "#F2B632"),
+    brightness: metric("brightness", "lux", 0, "#946200", "#F2B632"),
     ph: metric("ph", "", 2, "#067A52", "#3FD39B"),
     tds: metric("tds", "ppm", 0, "#00B074", "#2FD29A"),
     atmosphere: metric("atmosphere", "hPa", 0, "#5B6B63", "#A9C4B8"),
@@ -232,7 +232,7 @@ export function healthLabel(value: { level: HealthLevel; label?: string }): stri
 export const HEALTH: Record<HealthLevel, { label: string; tone: Tone; color: string }> = {
     EXCELLENT: health("EXCELLENT", "success", "#00B074", "#00B074"),
     GOOD: health("GOOD", "success", "#009A64", "#2FD29A"),
-    FAIR: health("FAIR", "warning", "#F2B632", "#F2B632"),
+    FAIR: health("FAIR", "warning", "#946200", "#F2B632"),
     POOR: health("POOR", "danger", "#D9734E", "#F0956F"),
     CRITICAL: health("CRITICAL", "danger", "#D64545", "#F07070"),
     UNKNOWN: health("UNKNOWN", "neutral", "#5B6B63", "#A9C4B8"),

@@ -439,6 +439,7 @@ describe("guía de conexión", () => {
             topics: {telemetry: "t", commands: "c", commandAck: "a", status: "s"},
         }}/>);
         // Por defecto muestra el firmware canónico en Rust Embassy
+        expect(screen.getByText("smartpot-c1")).toBeInTheDocument();
         expect(screen.getByText("SDA 21 · SCL 22")).toBeInTheDocument();
         expect(screen.getByText("cargo +esp run --release")).toBeInTheDocument();
         const rustLink = screen.getByRole("link", {name: /SmartPot-IoT \(Rust Embassy\)/});

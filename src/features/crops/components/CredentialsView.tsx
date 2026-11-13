@@ -101,11 +101,12 @@ export function CredentialsView(props: { credentials: DeviceCredentials }) {
                 <CopyRow label={t("cred.broker")}
                          value={`${props.credentials.host}:${props.credentials.port}${props.credentials.tls ? " (TLS)" : ""}`}/>
                 <CopyRow label={t("cred.username")} value={props.credentials.username}/>
+                <CopyRow label={t("cred.clientId")} value={`smartpot-${props.credentials.username}`}/>
+                <CopyRow label={t("cred.telemetry")} value={props.credentials.topics.telemetry}/>
             </div>
             <Show when={props.credentials.key}>
                 {(key) => <CopyRow label={t("cred.key")} value={key()} secret/>}
             </Show>
-            <CopyRow label={t("cred.telemetry")} value={props.credentials.topics.telemetry}/>
 
             <Show when={props.credentials.keyRotatedAt}>
                 {(rotated) => (
