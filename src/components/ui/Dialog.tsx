@@ -18,9 +18,22 @@ export function Dialog(props: DialogProps) {
     const titleId = createUniqueId();
 
     createEffect(() => {
+        const open = props.open;
         if (!ref) return;
-        if (props.open && !ref.open) ref.showModal?.();
-        if (!props.open && ref.open) ref.close?.();
+        if (open && !ref.open) {
+            if (ref.isConnected) {
+                ref.showModal?.();
+            } else {
+                // En límites con <Suspense>, esperar a que el nodo quede conectado evita InvalidStateError.
+                queueMicrotask(() => {
+                    if (ref && props.open && !ref.open && ref.isConnected) {
+                        ref.showModal?.();
+                    }
+                });
+            }
+        } else if (!open && ref.open) {
+            ref.close?.();
+        }
     });
 
     return (
@@ -28,7 +41,6 @@ export function Dialog(props: DialogProps) {
             ref={(el) => {
                 ref = el;
             }}
-            open={props.open}
             onClose={() => props.onClose()}
             onCancel={(event) => {
                 event.preventDefault();
