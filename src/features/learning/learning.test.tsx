@@ -1,9 +1,9 @@
 import {MemoryRouter, Route} from "@solidjs/router";
 import {render, screen, within} from "@solidjs/testing-library";
 import {describe, expect, it} from "vitest";
-import type {Learning, ModelCard} from "../../lib/api/types";
+import type {CropTypeLearning, Learning, ModelCard} from "../../lib/api/types";
 import {LearningCard} from "../crops/components/LearningCard";
-import {ModelSummary} from "./LearningPage";
+import {ModelSummary, SpeciesLearning} from "./LearningPage";
 
 const LEARNED: Learning = {
     source: "LEARNED",
@@ -80,5 +80,52 @@ describe("aprendizaje continuo", () => {
         }}/>);
         expect(screen.getByText("Pendiente")).toBeInTheDocument();
         expect(screen.getByText(/suficientes casos positivos/)).toBeInTheDocument();
+    });
+
+    it("SpeciesLearning no marca Al día mientras haya modelos pendientes", () => {
+        const pendingCard: ModelCard = {
+            task: "needs_water",
+            label: "¿Se secará el sustrato en la próxima hora?",
+            status: "PENDING",
+            metric: "F1 macro",
+            reason: "Lecturas insuficientes: 0 de 200.",
+            samples: 0,
+            version: 0,
+            candidates: [],
+        };
+        const trainedCard: ModelCard = {
+            ...pendingCard,
+            task: "moisture_1h",
+            label: "Humedad del sustrato dentro de una hora",
+            status: "TRAINED",
+            samples: 220,
+            version: 1,
+        };
+        const base: CropTypeLearning = {
+            cropType: "LETTUCE",
+            name: "Lechuga",
+            readings: 203,
+            crops: 2,
+            newSinceTraining: 0,
+            training: false,
+            trainedAt: new Date().toISOString(),
+            quality: {rows: 203, completeness: 0.86, validity: 1, outliers: 12, score: 0.8},
+            models: [pendingCard],
+            states: null,
+            anomaly: null,
+        };
+
+        const {unmount} = render(() => <SpeciesLearning item={base}/>);
+        expect(screen.getByText("Juntando datos")).toBeInTheDocument();
+        expect(screen.queryByText("Al día")).not.toBeInTheDocument();
+        unmount();
+
+        const partial = render(() => <SpeciesLearning item={{...base, models: [pendingCard, trainedCard]}}/>);
+        expect(screen.getByText("Entrenamiento parcial")).toBeInTheDocument();
+        expect(screen.queryByText("Al día")).not.toBeInTheDocument();
+        partial.unmount();
+
+        render(() => <SpeciesLearning item={{...base, models: [trainedCard]}}/>);
+        expect(screen.getByText("Al día")).toBeInTheDocument();
     });
 });

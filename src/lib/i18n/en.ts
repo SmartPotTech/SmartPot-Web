@@ -533,6 +533,7 @@ export const en: TranslationDictionary = {
     "learning.training": "Training",
     "learning.upToDate": "Up to date",
     "learning.gathering": "Gathering data",
+    "learning.partial": "Partially trained",
     "learning.quality": "Data quality {score} %",
     "learning.completeness": "completeness {value} %",
     "learning.validity": "validity {value} %",

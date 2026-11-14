@@ -84,7 +84,21 @@ export function LearningPage() {
     );
 }
 
-function SpeciesLearning(props: { item: CropTypeLearning }) {
+function speciesBadge(item: CropTypeLearning) {
+    if (item.training) {
+        return <Badge tone="info"><Hourglass size={12}/> {t("learning.training")}</Badge>;
+    }
+    const trainedCount = item.models.filter((model) => model.status === "TRAINED").length;
+    if (item.models.length > 0 && trainedCount === item.models.length) {
+        return <Badge tone="success"><CheckCircle2 size={12}/> {t("learning.upToDate")}</Badge>;
+    }
+    if (trainedCount > 0) {
+        return <Badge tone="info">{t("learning.partial")}</Badge>;
+    }
+    return <Badge tone="neutral">{t("learning.gathering")}</Badge>;
+}
+
+export function SpeciesLearning(props: { item: CropTypeLearning }) {
     return (
         <section class="card p-5" aria-labelledby={`species-${props.item.cropType}`}>
             <div class="flex flex-wrap items-start justify-between gap-3">
@@ -103,9 +117,7 @@ function SpeciesLearning(props: { item: CropTypeLearning }) {
                             : t("learning.untrained")}
                     </p>
                 </div>
-                {props.item.training ? <Badge tone="info"><Hourglass size={12}/> {t("learning.training")}</Badge>
-                    : props.item.trainedAt ? <Badge tone="success"><CheckCircle2 size={12}/> {t("learning.upToDate")}</Badge>
-                        : <Badge tone="neutral">{t("learning.gathering")}</Badge>}
+                {speciesBadge(props.item)}
             </div>
 
             <Show when={props.item.quality}>

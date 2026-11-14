@@ -531,6 +531,7 @@ export const es = {
     "learning.training": "Entrenando",
     "learning.upToDate": "Al día",
     "learning.gathering": "Juntando datos",
+    "learning.partial": "Entrenamiento parcial",
     "learning.quality": "Calidad de datos {score} %",
     "learning.completeness": "completitud {value} %",
     "learning.validity": "validez {value} %",
